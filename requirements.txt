@@ -1,0 +1,6 @@
+praw
+requests
+beautifulsoup4
+python-dotenv
+duckduckgo-search
+google-api-python-client
