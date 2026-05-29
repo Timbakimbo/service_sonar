@@ -1,0 +1,86 @@
+[
+  {
+    "run_label": "run1_unfiltered",
+    "timestamp": "2026-05-25T17:01:21.467199",
+    "urls_found": 201,
+    "urls_scraped": 148,
+    "filter_rate_pct": 26.4,
+    "file_size_mb": 55.03,
+    "median_words": 1006,
+    "min_words": 4,
+    "max_words": 317183,
+    "top_domains": {
+      "www.zbfs.bayern.de": 13,
+      "www.bayernportal.de": 11,
+      "www.sueddeutsche.de": 6,
+      "www.tiktok.com": 5,
+      "www.elterngeld.de": 4,
+      "www.arbeitsagentur.de": 4,
+      "www.stmas.bayern.de": 4,
+      "www.gesetze-bayern.de": 3,
+      "www.ra-klose.com": 2,
+      "misshandeltenachkriegskinder.com": 2
+    },
+    "categories": {
+      "forum": 3,
+      "amt": 49,
+      "sonstige": 96
+    }
+  },
+  {
+    "run_label": "run2_filtered",
+    "timestamp": "2026-05-25T19:07:12.665896",
+    "urls_found": 178,
+    "urls_scraped": 136,
+    "filter_rate_pct": 23.6,
+    "file_size_mb": 2.27,
+    "median_words": 906,
+    "min_words": 1,
+    "max_words": 50168,
+    "top_domains": {
+      "www.bayernportal.de": 8,
+      "www.zbfs.bayern.de": 6,
+      "einfach-elterngeld.de": 5,
+      "www.br.de": 5,
+      "www.sueddeutsche.de": 5,
+      "familienportal.de": 4,
+      "www.elterngeld.de": 3,
+      "www.mamacommunity.de": 3,
+      "www.welt.de": 3,
+      "www.stmas.bayern.de": 3
+    },
+    "categories": {
+      "forum": 2,
+      "amt": 29,
+      "sonstige": 105
+    }
+  },
+  {
+    "run_label": "run2_check",
+    "timestamp": "2026-05-26T13:03:59.973906",
+    "urls_found": 178,
+    "urls_scraped": 136,
+    "filter_rate_pct": 23.6,
+    "file_size_mb": 2.27,
+    "median_words": 906,
+    "min_words": 1,
+    "max_words": 50168,
+    "top_domains": {
+      "www.bayernportal.de": 8,
+      "www.zbfs.bayern.de": 6,
+      "einfach-elterngeld.de": 5,
+      "www.br.de": 5,
+      "www.sueddeutsche.de": 5,
+      "familienportal.de": 4,
+      "www.elterngeld.de": 3,
+      "www.mamacommunity.de": 3,
+      "www.welt.de": 3,
+      "www.stmas.bayern.de": 3
+    },
+    "categories": {
+      "forum": 2,
+      "amt": 29,
+      "sonstige": 105
+    }
+  }
+]
