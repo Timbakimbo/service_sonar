@@ -39,14 +39,16 @@ def process_doc(doc: spacy.tokens.Doc, raw_text: str) -> tuple[str, str]:
     cleaned = " ".join(cleaned.split())  # Whitespace normalisieren
     # ── Output 2: preprocessed_text (für BERTopic) ──
     tokens = [
-        token.lemma_.lower()
-        for token in doc
-        if not token.is_stop
-        and not token.is_punct
-        and not token.is_space
-        and not token.like_num
-        and len(token.lemma_) > 2
-    ]
+    token.lemma_.lower()
+    for token in doc
+    if not token.is_stop
+    and not token.is_punct
+    and not token.is_space
+    and not token.like_num
+    and not token.like_url           # URLs raus
+    and len(token.lemma_) > 2
+    and not any(x in token.text.lower() for x in ["http", "www", ".de", ".com"])
+]
     preprocessed = " ".join(tokens)
 
     return cleaned, preprocessed
