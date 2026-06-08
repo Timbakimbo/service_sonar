@@ -82,5 +82,33 @@
       "amt": 29,
       "sonstige": 105
     }
+  },
+  {
+    "run_label": "run3",
+    "timestamp": "2026-06-05T20:49:03.597851",
+    "urls_found": 180,
+    "urls_scraped": 146,
+    "filter_rate_pct": 18.9,
+    "file_size_mb": 13.06,
+    "median_words": 803,
+    "min_words": 1,
+    "max_words": 300821,
+    "top_domains": {
+      "www.bayernportal.de": 10,
+      "www.zbfs.bayern.de": 9,
+      "einfach-elterngeld.de": 4,
+      "www.daselterngeld.de": 4,
+      "familienportal.de": 3,
+      "www.elterngeld.de": 3,
+      "www.urbia.de": 3,
+      "www.bundesjustizamt.de": 2,
+      "www.nuernberg.de": 2,
+      "www.elternzeit.de": 2
+    },
+    "categories": {
+      "forum": 3,
+      "amt": 30,
+      "sonstige": 113
+    }
   }
 ]

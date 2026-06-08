@@ -14,9 +14,7 @@ nlp = spacy.load("de_core_news_lg")
 
 # PII Platzhalter
 PII_LABELS = {
-    "PER": "[NAME]",
-    "LOC": "[ORT]",
-    "ORG": "[ORGANISATION]",
+    "PER": "[NAME]"
 }
 
 
@@ -80,7 +78,8 @@ def run():
     print(f"  {len(docs)} Dokumente gesamt")
 
     # Texte extrahieren für nlp.pipe()
-    texts = [doc.get("text", "") for doc in docs]
+    MAX_CHARS = 900000  # spaCy hat 1M Char Limit — Sicherheitsmarge
+    texts = [doc.get("text", "")[:MAX_CHARS] for doc in docs]
 
     results = []
     # nlp.pipe() verarbeitet in Batches — deutlich schneller als einzeln

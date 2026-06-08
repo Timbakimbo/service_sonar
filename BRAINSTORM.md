@@ -34,6 +34,14 @@
 - [ ] Wie testen wir ob der Keyword Agent sinnvolle Entscheidungen trifft?
 - [ ] Konzept "Analysis Agent passt BERTopic Parameter selbst an" — für nächste Iteration
 
+### Gap Analysis Qualität
+- [ ] Warum klassifiziert der Gap Analysis Agent aktuell nahezu alle Topics als Prozessproblem oder Informationslücke?
+- [ ] Werden echte Versorgungslücken durch allgemeine Beratungsangebote überschattet?
+- [ ] Ab wann gilt eine Beratungsleistung als tatsächliche Bedarfsabdeckung?
+- [ ] Braucht der Gap Analysis Agent einen vorgeschalteten semantischen Retriever statt reinem LLM-Matching?
+- [ ] Soll der Evaluator Agent Gap-Klassifizierungen nachträglich prüfen und korrigieren?
+- [ ] Welche Kriterien rechtfertigen formal die Klasse `echte_luecke`?
+
 ## Getroffene Entscheidungen
 
 ### Architektur — Agent vs. Hardcoded Pipeline
@@ -46,17 +54,20 @@ Bewusste Entscheidung: Agents nur wo Reasoning nötig ist, hardcoded wo Regeln a
 - FragdenStaat Scraper — öffentliche API, deterministisch, inkrementell
 - Preprocessing — deterministisch, spaCy
 
-**Echter Agent (Claude API / kostenlose Modelle):**
+**Echter Agent (LLM Reasoning Layer):**
 - Analysis Agent → Gemini 2.5 Flash
-- Gap Analysis Agent → Gemini 2.5 Flash
-- Innovation Agent → Claude Haiku / DeepSeek V4
-- Evaluator Agent → Claude Haiku
-- Keyword Agent → kostenlos
+- Gap Analysis Agent → Groq (`llama-3.3-70b-versatile`)
+- Innovation Agent → noch offen (Claude Haiku / DeepSeek / Groq möglich)
+- Evaluator Agent → noch offen
+- Keyword Agent → kostenloses Modell geplant
 
 ### Modell-Strategie
-- Einfache Reasoning-Aufgaben → kostenlose Modelle (Gemini 2.5 Flash)
-- Komplexere Aufgaben → günstige paid Modelle (Claude Haiku, DeepSeek V4)
+- Analysis Agent → Gemini 2.5 Flash
+- Gap Analysis Agent → Groq `llama-3.3-70b-versatile`
+- Build Reference nutzt Gemini zur Extraktion bestehender Leistungen
+- Komplexere Aufgaben → günstige paid Modelle möglich (Claude Haiku, DeepSeek, Groq)
 - Kein Sonnet nötig — bewusste Kostenstrategie
+- Qualitätsziel: erst funktionierende Pipeline, danach gezieltes Modell-Upgrade falls nötig
 
 ### BERTopic Tuning (Analysis Agent)
 - Embedding: `paraphrase-multilingual-mpnet-base-v2` (768 dim) statt MiniLM default
@@ -130,6 +141,77 @@ Filter auf zwei Ebenen:
 - Minimale Starter-Keywords — kein manuelles Erweitern
 - Keyword Agent übernimmt Erweiterung nach erstem BERTopic Durchlauf
 
+### Reference Builder — bestehende Leistungen
+- Zweck: Aufbau von `data/reference/existing_services.json` als Referenz für den Gap Analysis Agent
+- Quelle: gescrapte Web-Dokumente mit offiziellen, kommunalen, freien und privaten Angeboten
+- Ursprünglich war ein Migrationsskript geplant
+- Tatsächliche Entscheidung: alte `existing_services.json` gelöscht und durch angepasste Build-Reference Pipeline neu erzeugt
+- Ergebnis: 77 bestehende Leistungen im deutschen v2-Schema
+- Schema enthält u.a.:
+  - `name`
+  - `beschreibung`
+  - `zielgruppe`
+  - `zustaendige_stelle`
+  - `leistungsart`
+  - `ebene`
+  - `abgedeckte_bedarfe`
+  - `zugangsvoraussetzungen`
+  - `antragskanaele`
+  - `bekannte_prozessrisiken`
+  - `quellen_urls`
+  - `konfidenz`
+- Beratungen und Rechtsansprüche gelten ausdrücklich als Leistungen, nicht nur Geldleistungen
+- Private Angebote werden dokumentiert, dürfen aber im Gap Agent nicht als vollwertige staatliche Bedarfsabdeckung zählen
+
+### Gap Analysis Agent — aktueller Stand
+- Gap Analysis Agent implementiert
+- Input:
+  - `data/analysis/analysis_output.json`
+  - `data/reference/existing_services.json`
+- Output:
+  - `data/gap_analysis/gap_analysis_output.json`
+- Backend:
+  - Groq API
+  - `llama-3.3-70b-versatile`
+- Klassifizierung:
+  - `echte_luecke`
+  - `prozessproblem`
+  - `informationsluecke`
+  - `bereits_abgedeckt`
+  - `irrelevant`
+- Ein einziger Groq-Call für alle relevanten Topics
+- Topic-IDs werden string-normalisiert, da BERTopic teilweise Integer und JSON Sentiments String-Keys erzeugt
+- JSON Parsing wurde robuster gemacht
+- `max_tokens` ergänzt, damit der Output nicht abgeschnitten wird
+- Zusammenfassung der Klassifikationen wird im Output gespeichert
+
+### Gap Analysis — Qualitätssicherung
+- Matching Services dürfen nur noch exakte Namen aus `existing_services.json` sein
+- Post-Validation entfernt halluzinierte Matching Services
+- Ungültige Behörden-/Trägernamen wie Familienkasse, Gesundheitsamt oder Krankenkasse werden nicht als Leistung akzeptiert
+- `needs_review` Flag markiert unsichere Fälle
+- `confidence` Feld pro Gap ergänzt
+- Review-Fälle werden im Output gezählt
+- Entfernte ungültige Matching Services werden als Kennzahl gespeichert
+
+### Gap Analysis — bisherige Beobachtung
+- Erster stabiler Lauf:
+  - 15 relevante Topics
+  - 77 Referenzleistungen
+  - 11 Prozessprobleme
+  - 4 Informationslücken
+  - 0 echte Lücken
+  - 0 bereits abgedeckt
+  - 0 irrelevant
+  - 1 Review-Fall
+  - 1 entfernter ungültiger Matching Service
+- Ergebnis ist technisch stabil, aber fachlich noch nicht final validiert
+- Hauptproblem: Service-Matching ist semantisch noch zu grob
+- Beispiele problematischer Matches:
+  - Aufenthaltsrecht/Migration → Bayerisches Familiengeld / Elterngeld
+  - gesundheitliche Herausforderungen → Kinderkrankengeld / Mutterschaftsgeld
+- Erkenntnis: Der schwierigste Teil ist nicht mehr Topic-Erkennung, sondern korrektes Mapping von Bürgerproblemen auf bestehende Leistungen
+
 ## Nächste Schritte
 - [x] Content Filter Source Discovery ✅
 - [x] Content Filter Web Scraper ✅
@@ -138,12 +220,18 @@ Filter auf zwei Ebenen:
 - [x] FragdenStaat Scraper (ZBFS + Familienkasse + StMAS) ✅
 - [x] Preprocessing Modul ✅
 - [x] Analysis Agent inkl. BERTopic Tuning ✅
-- [x] Präsentation ✅
+- [x] Reference Builder / existing_services.json ✅
+- [x] Gap Analysis Agent (Groq + Llama 3.3 70B) ✅
+- [x] Matching Validation gegen Referenzdatenbank ✅
+- [x] needs_review + Confidence Scores ✅
+- [x] FINDINGS.md + BRAINSTORM.md ins Repo legen (für Claude Code Kontext)
+- [x] Präsentationsstand dokumentieren ✅
 - [ ] Min-Wörter Bug in Web Scraper fixen (1 Wort durch Filter)
-- [ ] Gap Analysis Agent (Gemini 2.5 Flash)
-- [ ] Service Innovation Agent (Claude Haiku / DeepSeek)
-- [ ] Evaluator Agent (Claude Haiku)
+- [ ] Qualität des Service-Matchings verbessern
+- [ ] Semantische Service-Suche / Retrieval vor Gap Analysis prüfen
+- [ ] Echte-Lücke-Kriterien schärfen
+- [ ] Service Innovation Agent
+- [ ] Evaluator Agent
 - [ ] Keyword Agent + Feedback Loop
 - [ ] Orchestrator
-- [x] FINDINGS.md + BRAINSTORM.md ins Repo legen (für Claude Code Kontext)
 - [ ] Umbenennung: nicht-Agent Module aus `agents/` Ordner raus, neuer `modules/` Ordner

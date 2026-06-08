@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.1-de",
+  "erstellt_am": "2026-06-06T17:18:10",
+  "modell": "llama-3.3-70b-versatile",
+  "max_tokens": 6000,
+  "zusammenfassung": {
+    "echte_luecke": 0,
+    "prozessproblem": 11,
+    "informationsluecke": 4,
+    "bereits_abgedeckt": 0,
+    "irrelevant": 0
+  },
+  "review_count": 1,
+  "invalid_matches_removed": 1,
+  "gaps": [
+    {
+      "topic_id": "0",
+      "kernproblem": "Familien mit Migrationshintergrund haben Probleme und erhalten Ablehnungsbescheide bei behördlichen Anträgen bezüglich ihres Aufenthaltsrechts",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Bayerisches Familiengeld",
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Leistungen wie dem Bayerischen Familiengeld oder Elterngeld. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Familien mit Migrationshintergrund, um die Ablehnungsquote zu reduzieren.",
+      "needs_review": true,
+      "review_reason": "moeglicherweise_ausserhalb_familienleistungs_scope"
+    },
+    {
+      "topic_id": "2",
+      "kernproblem": "Familien in Bayern erleben Schwierigkeiten und negative Erfahrungen bei Anträgen oder dem Erhalt des bayerischen Familiengeldes",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Bayerisches Familiengeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung des Bayerischen Familiengeldes. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für das Bayerische Familiengeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "3",
+      "kernproblem": "Familien in Bayern stoßen auf Probleme und bürokratische Hürden im Zusammenhang mit Kindergeld, Kinderzuschlag oder Kinderstartgeld bei der Familienkasse",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Kindergeld",
+        "Kinderzuschlag",
+        "Kinderstartgeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Leistungen wie Kindergeld, Kinderzuschlag oder Kinderstartgeld. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Kindergeld, Kinderzuschlag und Kinderstartgeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "4",
+      "kernproblem": "Familien sind von Problemen im Zusammenhang mit Arbeitslosengeld und der Beschäftigungssituation betroffen, was den Bedarf an Beratungsstellen erhöht und zu finanziellen Engpässen führen kann",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Arbeitslosengeld",
+        "Grundsicherung für Arbeitsuchende"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Leistungen wie Arbeitslosengeld oder Grundsicherung für Arbeitsuchende. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Arbeitslosengeld und Grundsicherung für Arbeitsuchende, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "7",
+      "kernproblem": "Familien, insbesondere solche mit Bezug zu einem 'Heimatland' außerhalb Deutschlands, erleben Probleme oder Unklarheiten im Zusammenhang mit der Elternzeit und dem Erhalt des Elterngeldbescheids",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Elterngeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "9",
+      "kernproblem": "Familien suchen Informationen oder Beratung zum Elterngeldantrag in Bayern und möglicherweise zu Unterschieden oder Vergleichen mit anderen Bundesländern",
+      "klassifizierung": "informationsluecke",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf ein Informationsdefizit hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf eine Informationslücke hin.",
+      "prioritaet": 3,
+      "confidence": 0.6,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Informationsportals für Elterngeld, um die Informationen zu verbessern und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "10",
+      "kernproblem": "Familien sind mit gesundheitlichen Herausforderungen und Erkrankungen konfrontiert, die eine Unterstützung durch das Gesundheitsamt erfordern und potenziell auf einen Bedarf an Pflegegeld oder Leistungen im Kontext von Schwerbehinderung hinweisen",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Kinderkrankengeld",
+        "Mutterschaftsgeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Leistungen wie Kinderkrankengeld oder Mutterschaftsgeld. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Kinderkrankengeld und Mutterschaftsgeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "12",
+      "kernproblem": "Familien haben Schwierigkeiten beim Beantragen des Elterngeldes, insbesondere bezüglich der Zuständigkeiten der Elterngeldstelle und der monatlichen Auszahlung",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Elterngeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "14",
+      "kernproblem": "Familien haben Schwierigkeiten, die korrekte Höhe des Elterngeldes (Basiselterngeld, ElterngeldPlus) zu ermitteln oder verstehen die Berechnung im Elterngeldbescheid nicht, was zu Unzufriedenheit führt",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Elterngeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "16",
+      "kernproblem": "Familien suchen nach umfassender Familienunterstützung und Beratung, stoßen dabei aber auf Herausforderungen oder unzureichende Angebote",
+      "klassifizierung": "informationsluecke",
+      "matching_services": [
+        "Familienpatenschaften",
+        "Familienunterstützung durch die Stiftung Liebenau"
+      ],
+      "begruendung": "Das Kernproblem deutet auf ein Informationsdefizit hin, insbesondere bei der Suche nach umfassender Familienunterstützung und Beratung. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf eine Informationslücke hin.",
+      "prioritaet": 3,
+      "confidence": 0.6,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Informationsportals für Familienunterstützung und Beratung, um die Informationen zu verbessern und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "20",
+      "kernproblem": "Mütter stehen vor Herausforderungen und Unsicherheiten bei der Planung von Elternzeit und Elterngeld in Bezug auf ihre Vollzeitbeschäftigung oder deren Vereinbarkeit mit der Familie",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Elterngeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "21",
+      "kernproblem": "Familien sind mit Fragen und Problemen bezüglich des bayerischen Familiengeldes im Kontext von Bundesleistungen wie Sozialhilfe oder Bürgergeld konfrontiert, was die Komplexität der Antragstellung und den Leistungsbezug erhöht",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Bayerisches Familiengeld",
+        "Sozialhilfe"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Leistungen wie dem Bayerischen Familiengeld, Sozialhilfe oder Bürgergeld. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für das Bayerische Familiengeld, Sozialhilfe und Bürgergeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "removed_invalid_matching_services": [
+        "Bürgergeld"
+      ],
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "22",
+      "kernproblem": "Väter sehen sich mit Schwierigkeiten bei der Beantragung und Inanspruchnahme von Elterngeld und Elternzeit konfrontiert",
+      "klassifizierung": "prozessproblem",
+      "matching_services": [
+        "Elterngeld"
+      ],
+      "begruendung": "Das Kernproblem deutet auf Probleme beim Zugang oder Ablauf hin, insbesondere bei der Beantragung von Elterngeld. Es existiert eine bestehende Leistung, die den Bedarf grundsätzlich abdeckt, aber das Topic deutet auf Prozessprobleme hin.",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Antragsprozesses für Elterngeld, um die Bearbeitungszeit zu reduzieren und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "23",
+      "kernproblem": "Schwangere und junge Eltern stoßen auf Herausforderungen und benötigen Unterstützung in der Schwangerschaft und bei der Betreuung ihres Babys",
+      "klassifizierung": "informationsluecke",
+      "matching_services": [
+        "Stillberatung",
+        "Trageberatung",
+        "Familienpatenschaften"
+      ],
+      "begruendung": "Das Kernproblem deutet auf ein Informationsdefizit hin, insbesondere bei der Suche nach Unterstützung in der Schwangerschaft und bei der Betreuung des Babys. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf eine Informationslücke hin.",
+      "prioritaet": 3,
+      "confidence": 0.6,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Informationsportals für Schwangere und junge Eltern, um die Informationen zu verbessern und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "topic_id": "27",
+      "kernproblem": "Mütter erleben emotionalen Stress und suchen nach Möglichkeiten, ihre Sorgen und negativen Erfahrungen auszudrücken und Unterstützung zu finden",
+      "klassifizierung": "informationsluecke",
+      "matching_services": [
+        "Familienberatungsdienste",
+        "Psychosoziale Beratung und Unterstützung für Familien"
+      ],
+      "begruendung": "Das Kernproblem deutet auf ein Informationsdefizit hin, insbesondere bei der Suche nach Unterstützung und Beratung. Es existieren bestehende Leistungen, die den Bedarf grundsätzlich abdecken, aber das Topic deutet auf eine Informationslücke hin.",
+      "prioritaet": 3,
+      "confidence": 0.6,
+      "empfehlung_innovation": "Entwicklung eines einfachen und transparenten Informationsportals für Mütter, um die Informationen zu verbessern und die Zufriedenheit der Familien zu erhöhen.",
+      "needs_review": false,
+      "review_reason": ""
+    }
+  ]
+}

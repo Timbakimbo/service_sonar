@@ -228,10 +228,10 @@ BERTopic und GerVader brauchen unterschiedliche Textformen:
 | Agent | Modell | Begründung |
 |-------|--------|------------|
 | Analysis Agent | Gemini 2.5 Flash | Interpretiert BERTopic/Sentiment im Kontext sozialer Dienstleistungen |
-| Gap Analysis Agent | Gemini 2.5 Flash | Reasoning ob Problem wirklich eine Lücke ist |
-| Innovation Agent | Claude Haiku / DeepSeek V4 | Kreative Ideengenerierung |
-| Evaluator Agent | Claude Haiku | Komplexes Judgment über alle Outputs |
-| Keyword Agent | Kostenlos | Entscheidet welche Keywords rausfliegen |
+| Gap Analysis Agent | Groq `llama-3.3-70b-versatile` | Reasoning ob Problem wirklich eine Lücke, ein Prozessproblem oder eine Informationslücke ist |
+| Innovation Agent | Offen (Claude Haiku / DeepSeek / Groq möglich) | Kreative Ideengenerierung |
+| Evaluator Agent | Offen | Komplexes Judgment über alle Outputs |
+| Keyword Agent | Kostenlos geplant | Entscheidet welche Keywords rausfliegen |
 
 ### Kommunikation zwischen Agents
 - Sequentiell: Analysis → Gap Analysis → Innovation → Evaluator
@@ -256,6 +256,135 @@ Diese Aufgaben sind die direkte Spezifikation aus unseren manuellen Iterationen.
 
 ---
 
+
+## Reference Builder — bestehende Leistungen
+
+### Ziel
+Der Gap Analysis Agent benötigt eine strukturierte Referenz bestehender Leistungen, um Bürgerprobleme gegen vorhandene Angebote abgleichen zu können.
+
+### Entwicklung
+Ursprünglich war geplant, bestehende Referenzeinträge über ein Migrationsskript in ein neues Schema zu überführen.
+
+Während der Entwicklung wurde entschieden:
+
+- kein separates Migrationsskript
+- alte `existing_services.json` löschen
+- Build-Reference Pipeline anpassen
+- Referenzdatenbank vollständig neu erzeugen
+
+### Ergebnis
+- `existing_services.json` neu aufgebaut
+- 77 bestehende Leistungen extrahiert
+- Deutsches v2-Schema verwendet
+- Enthaltene Leistungstypen:
+  - Geldleistung
+  - Beratung
+  - Förderprogramm
+  - Sachleistung
+  - Rechtsanspruch
+  - Verfahrensleistung
+- Beratungen und Rechtsansprüche werden ausdrücklich als Leistungen behandelt
+- Private Angebote werden zwar gespeichert, zählen im Gap Agent aber nicht als vollwertige staatliche Bedarfsabdeckung
+
+### Erkenntnis
+Die Referenzdatenbank ist für die Qualität der Gap Analysis zentral. Wenn die Referenz zu breit oder zu unsauber ist, kann der Gap Agent echte Lücken übersehen oder unpassende Leistungen matchen.
+
+---
+
+## Gap Analysis Agent — Implementierung
+
+### Ziel
+Der Gap Analysis Agent klassifiziert relevante Topics aus dem Analysis Agent anhand bestehender Leistungen.
+
+Input:
+
+- `data/analysis/analysis_output.json`
+- `data/reference/existing_services.json`
+
+Output:
+
+- `data/gap_analysis/gap_analysis_output.json`
+
+### Klassifikationen
+Der Agent unterscheidet:
+
+| Klasse | Bedeutung |
+|--------|-----------|
+| `echte_luecke` | Keine bestehende Leistung deckt den Bedarf substanziell ab |
+| `prozessproblem` | Leistung existiert, aber Zugang, Bearbeitung oder Zuständigkeit sind problematisch |
+| `informationsluecke` | Leistung existiert, wird aber nicht verstanden oder gefunden |
+| `bereits_abgedeckt` | Leistung deckt Bedarf sauber ab |
+| `irrelevant` | Topic passt nicht zum familienbezogenen Leistungskontext |
+
+### Backend
+- Groq API
+- Modell: `llama-3.3-70b-versatile`
+- Ein einziger LLM-Call für alle relevanten Topics
+- JSON Output via `response_format={"type": "json_object"}`
+
+### Technische Fixes
+| Problem | Fix |
+|---------|-----|
+| Topic-IDs uneinheitlich (`int` vs. `str`) | Topic-IDs konsequent als String normalisiert |
+| JSON Response teilweise mit Markdown-Fences | Robustes JSON Parsing ergänzt |
+| Output konnte abgeschnitten werden | `max_tokens` gesetzt |
+| LLM erfand Matching Services | Post-Validation gegen Referenzdatenbank |
+| Behörden wurden als Leistungen gematcht | Ungültige Matches werden entfernt |
+| Unsichere Fälle nicht sichtbar | `needs_review` Flag ergänzt |
+| Bewertung schwer prüfbar | `confidence` Feld ergänzt |
+
+---
+
+## Gap Analysis Agent — Erste Ergebnisse
+
+### Datenbasis
+- 15 relevante Topics aus dem Analysis Agent
+- 77 bestehende Leistungen aus der Referenzdatenbank
+- 1 Groq-Call für alle Topics
+
+### Ergebnis nach Validierung
+| Kategorie | Anzahl |
+|-----------|--------|
+| Prozessproblem | 11 |
+| Informationslücke | 4 |
+| Echte Lücke | 0 |
+| Bereits abgedeckt | 0 |
+| Irrelevant | 0 |
+
+Zusätzliche Kennzahlen:
+
+- Review-Fälle: 1
+- Entfernte ungültige Matching Services: 1
+
+### Beispiele plausibler Klassifikationen
+| Topic | Kernproblem | Klassifikation | Matching |
+|-------|-------------|----------------|----------|
+| 2 | Probleme beim Bayerischen Familiengeld | Prozessproblem | Bayerisches Familiengeld |
+| 12 | Zuständigkeit und Auszahlung beim Elterngeld | Prozessproblem | Elterngeld |
+| 16 | Familien suchen umfassende Unterstützung | Informationslücke | Familienpatenschaften, Familienunterstützung |
+| 27 | Mütter suchen emotionale Unterstützung | Informationslücke | Familienberatungsdienste, psychosoziale Beratung |
+
+### Problematische Klassifikationen
+| Topic | Problem | Fragwürdiges Matching |
+|-------|---------|----------------------|
+| 0 | Aufenthaltsrecht / Migrationshintergrund | Bayerisches Familiengeld, Elterngeld |
+| 10 | gesundheitliche Herausforderungen / Gesundheitsamt | Kinderkrankengeld, Mutterschaftsgeld |
+
+### Erkenntnisse
+- Technisch läuft der Gap Analysis Agent stabil.
+- Die JSON-Ausgabe ist valide und vollständig.
+- Die Post-Validation entfernt erfundene Matching Services.
+- Der Agent erkennt viele Themen als Prozessprobleme, weil die meisten Bürgerprobleme bestehende Leistungen betreffen.
+- 0 echte Lücken wirken fachlich fragwürdig und müssen weiter untersucht werden.
+- Die Matching-Qualität hängt stark von der Qualität und Granularität der Referenzdatenbank ab.
+- Reines LLM-Matching ist nicht ausreichend zuverlässig.
+- Ein semantischer Retrieval-Schritt vor dem LLM könnte die Service-Zuordnung verbessern.
+
+### Schlussfolgerung
+Der Gap Analysis Agent ist als erste Version implementiert und pipeline-fähig. Er ist jedoch noch keine finale Entscheidungsinstanz. Für den nächsten Entwicklungsschritt braucht es entweder einen semantischen Service-Retriever oder einen Evaluator Agent, der die Gap-Klassifikationen prüft.
+
+---
+
 ## Methodische Erkenntnisse
 
 ### Datenquellen im Vergleich
@@ -264,6 +393,8 @@ Diese Aufgaben sind die direkte Spezifikation aus unseren manuellen Iterationen.
 | Web Scraper | 136 Seiten | Gemischt | Amt-Referenz für Gap Analysis |
 | Reddit Scraper | 361 Posts | Hoch | Echte Nutzererfahrungen |
 | FragdenStaat | 68 Anfragen | Sehr hoch | IFG-Anfragen direkt an Behörde |
+| Existing Services Reference | 77 Leistungen | Mittel | Abgleich bestehender Leistungen |
+| Gap Analysis Output | 15 Topics | Erste Version | Prozess-/Informationslücken ableiten |
 
 ### Content Filter
 - Zwei-Ebenen-Ansatz bewährt sich
@@ -277,3 +408,35 @@ Diese Aufgaben sind die direkte Spezifikation aus unseren manuellen Iterationen.
 - BERTopic findet nach Tuning konkrete Pain Points: Bearbeitungszeit, Bescheid-Probleme, Elterngeldstelle
 - Wichtige Familienleistungen erscheinen organisch im Output: Familiengeld, Landeserziehungsgeld, Kindergeld, Schulpflicht
 - Nicht-familiäre Themen (Impfschäden, Schwerbehinderung) sind im Output und müssen vom Evaluator gefiltert werden
+
+---
+
+## Aktueller Präsentationsstand
+
+### Fertig
+- Source Discovery
+- Web Scraper
+- Reddit Scraper
+- FragdenStaat Scraper
+- Preprocessing
+- Sentiment Analyse
+- BERTopic Tuning
+- Analysis Agent
+- Reference Builder
+- Gap Analysis Agent v1
+
+### Teilweise fertig
+- Qualität der Gap Analysis
+- Service-Matching gegen bestehende Leistungen
+- Review-Logik für unsichere Matches
+
+### Offen
+- Innovation Agent
+- Evaluator Agent
+- Keyword Agent
+- Feedback Loop
+- Orchestrator
+- Semantisches Retrieval für bessere Service-Zuordnung
+
+### Zentrale Erkenntnis für die Präsentation
+Der schwierigste Teil des Systems ist nicht mehr die reine Topic-Erkennung, sondern das korrekte Mapping von Bürgerproblemen auf bestehende Leistungen. Genau hier zeigt sich der Bedarf für eine Kombination aus strukturierter Referenzdatenbank, LLM-Reasoning, Validierungslogik und späterem Evaluator Agent.
