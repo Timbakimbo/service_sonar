@@ -235,3 +235,50 @@ Filter auf zwei Ebenen:
 - [ ] Keyword Agent + Feedback Loop
 - [ ] Orchestrator
 - [ ] Umbenennung: nicht-Agent Module aus `agents/` Ordner raus, neuer `modules/` Ordner
+
+---
+
+## Update 2026-06-29 - Offene Fragen nach Repo-Check
+
+### Pipeline und Orchestrierung
+
+- [x] Minimaler Orchestrator als Status-Runner vorhanden.
+- [ ] Entscheiden, ob der Orchestrator spaeter wirklich Module ausfuehren soll oder bewusst nur Demo-/Statuskoordination bleibt.
+- [ ] Wenn Full Run: Welche Stufen duerfen automatisch laufen, obwohl sie lange dauern oder APIs verbrauchen?
+- [ ] Fehlerstrategie definieren: weiterlaufen mit vorhandenen Artefakten oder hart stoppen?
+
+### Innovation Agent / Evaluator Agent
+
+- [ ] Innovation Agent ist noch nicht implementiert.
+- [ ] Evaluator Agent ist noch nicht implementiert.
+- [ ] Klare Trennung beibehalten:
+  - Gap Analysis: klassifiziert Bedarfsluecken/Prozessprobleme/Informationsluecken.
+  - Innovation Agent: generiert konkrete Service-Ideen.
+  - Evaluator Agent: prueft Relevanz, Redundanz, fachliche Plausibilitaet und Umsetzbarkeit.
+- [ ] Gap Analysis v2 sollte weiterhin als assistiver Zwischenstand kommuniziert werden, nicht als finale fachliche Entscheidung.
+
+### Daten und Output-Format
+
+- [ ] Pruefen, ob source-spezifische Felder langfristig in `metadata` verschoben werden sollen.
+- [ ] Unterschied `source: duckduckgo` in `sources.json` vs. `source: web` in `scraped_web.json` dokumentieren oder einheitlicher benennen.
+- [ ] FragDenStaat nach naechstem Lauf pruefen: Sind die 68 Duplikate verschwunden und URLs jetzt absolut normalisiert?
+- [ ] Bestehende generierte Daten als Demo-Fixtures behalten oder spaeter durch kleinere Testfixtures ersetzen?
+
+### Reddit
+
+- [ ] Public JSON Endpoints sind aktuell haeufig durch 403 blockiert.
+- [ ] Entscheiden, ob Reddit langfristig ueber offizielle API, Export/Fixture oder alternative Forenquellen angebunden wird.
+- [ ] Downstream klar kennzeichnen, wenn Reddit-Daten aus vorhandener Fixture statt frischem Scraping stammen.
+- [ ] Metriken nutzen, um Blockierungsrate pro Lauf sichtbar zu machen.
+
+### Metrics
+
+- [x] Web-, Reddit- und FragDenStaat-Metriken werden in `data/metrics.json` historisiert.
+- [ ] Entscheiden, ob `data/metrics.json` weiter eine gemeinsame Liste bleibt oder spaeter pro Run/Quelle getrennte Dateien sinnvoller sind.
+- [ ] Optional: kleines Metrics-Report-Skript fuer Praesentation bauen.
+
+### API Keys und lokale Demo
+
+- [x] `.env.example` mit `GEMINI_API_KEY` und `GROQ_API_KEY` vorhanden.
+- [x] Analysis Agent und Gap Analysis Agent stoppen ohne Key mit verstaendlicher Meldung.
+- [ ] Fuer Demo ohne Keys: vorhandene `analysis_output.json` und `gap_analysis_output_v2.json` als eingefrorene Beispielartefakte verwenden.
