@@ -176,15 +176,20 @@ SPECIFICITY_THRESHOLD = 3
 
 UMLAUT_MAP = str.maketrans({"ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss"})
 
-api_key = os.getenv("GROQ_API_KEY")
-if not api_key:
-    raise RuntimeError("GROQ_API_KEY fehlt in .env")
-
-client = Groq(api_key=api_key)
-
-
 def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
+
+
+def get_groq_client():
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        print(
+            "GROQ_API_KEY fehlt. Bitte lege eine .env-Datei an "
+            "(siehe .env.example) und setze GROQ_API_KEY, bevor du den "
+            "Gap Analysis Agent startest."
+        )
+        return None
+    return Groq(api_key=api_key)
 
 
 def load_json(path: Path) -> Any:
@@ -528,7 +533,7 @@ def apply_recommendation_quality_check(gaps: list[dict]) -> None:
             gap["needs_review"] = True
 
 
-def run_gap_analysis_pass1(analysis: dict, reference: dict) -> dict:
+def run_gap_analysis_pass1(client: Groq, analysis: dict, reference: dict) -> dict:
     """
     Pass 1: Ein Groq-Call für alle relevanten Topics. Liefert Klassifikation,
     customer_journey_phase, cluster_id, matching_services, begruendung,
@@ -675,7 +680,12 @@ Antworte NUR mit validem JSON in diesem Format:
     return parse_json_response(response.choices[0].message.content)
 
 
-def run_gap_analysis_pass2(cluster_id: str, gaps_in_cluster: list[dict], reference: dict) -> str:
+def run_gap_analysis_pass2(
+    client: Groq,
+    cluster_id: str,
+    gaps_in_cluster: list[dict],
+    reference: dict,
+) -> str:
     """
     Pass 2: Ein Groq-Call für EINEN Cluster. Liefert genau eine konkrete
     empfehlung_innovation, die alle Topics des Clusters adressiert.
@@ -748,9 +758,12 @@ Antworte NUR mit validem JSON in diesem Format:
     return str(parsed.get("empfehlung_innovation", "")).strip()
 
 
-def run() -> None:
+def run() -> int:
     print("Gap Analysis Agent v2 gestartet (2-Pass)...")
     print(f"Backend: Groq ({MODEL})")
+    client = get_groq_client()
+    if client is None:
+        return 1
 
     analysis = load_json(ANALYSIS_PATH)
     reference = load_json(REFERENCE_PATH)
@@ -764,15 +777,15 @@ def run() -> None:
 
     if not relevant_topics:
         print("  Keine relevanten Topics — Abbruch")
-        return
+        return 0
 
     if not services:
         print("  Keine Referenzleistungen — Abbruch")
-        return
+        return 0
 
     # Pass 1: Strukturierung.
     print("\nPass 1: Strukturierung (1 Groq-Call für alle Topics)...")
-    raw_result = run_gap_analysis_pass1(analysis, reference)
+    raw_result = run_gap_analysis_pass1(client, analysis, reference)
     result = validate_and_normalize_gaps(raw_result, reference, expected_topic_ids)
     gaps = result.get("gaps", [])
     print(f"  {len(gaps)} Topics klassifiziert")
@@ -800,7 +813,7 @@ def run() -> None:
         if not innovation_gaps:
             pass2_skipped += 1
             continue
-        empfehlung = run_gap_analysis_pass2(cluster_id, innovation_gaps, reference)
+        empfehlung = run_gap_analysis_pass2(client, cluster_id, innovation_gaps, reference)
         pass2_calls += 1
         for g in innovation_gaps:
             g["empfehlung_innovation"] = empfehlung
@@ -858,7 +871,8 @@ def run() -> None:
 
     save_json(OUTPUT_PATH_V2, output)
     print(f"\nOutput gespeichert → {OUTPUT_PATH_V2}")
+    return 0
 
 
 if __name__ == "__main__":
-    run()
+    raise SystemExit(run())

@@ -440,3 +440,160 @@ Der Gap Analysis Agent ist als erste Version implementiert und pipeline-fähig. 
 
 ### Zentrale Erkenntnis für die Präsentation
 Der schwierigste Teil des Systems ist nicht mehr die reine Topic-Erkennung, sondern das korrekte Mapping von Bürgerproblemen auf bestehende Leistungen. Genau hier zeigt sich der Bedarf für eine Kombination aus strukturierter Referenzdatenbank, LLM-Reasoning, Validierungslogik und späterem Evaluator Agent.
+
+## Testing Findings - Local Pipeline Run
+
+Test environment:
+- Fresh clone
+- Windows PowerShell
+- Python virtual environment `.venv`
+- Modules executed manually via `python -m ...`
+
+### Working components
+
+- `source_discovery_agent` runs successfully.
+  - Found 220 URLs.
+  - Filtered 26 URLs.
+  - Accepted 175 sources.
+  - Output: `data/raw/sources.json`.
+
+- `webscraping_agent` runs successfully.
+  - Processed 175 sources.
+  - Scraped 135 pages.
+  - Output: `data/raw/scraped_web.json`.
+  - Typical web scraping issues such as robots.txt skips, 403 and 404 errors are handled without crashing.
+
+- `fragdenstaat_scraper` runs successfully, but deduplication should be checked.
+  - Loaded 68 existing requests.
+  - Added 68 new requests.
+  - Output increased to 136 total requests.
+  - Possible issue: rerunning the scraper may duplicate existing requests.
+
+- `preprocessing` runs successfully.
+  - Loaded 135 web documents.
+  - Loaded 361 Reddit documents.
+  - Loaded 136 FragDenStaat documents.
+  - Preprocessed 632 documents.
+  - Output: `data/preprocessed/preprocessed.json`.
+
+### Issues / blockers
+
+- `orchestrator` currently produces no console output when started via:
+  `python -m agents.orchestrator`
+  This suggests that the orchestrator is either empty, incomplete or not connected to the pipeline execution yet.
+
+- `reddit_scraper` currently receives many `403 Client Error: Blocked` responses from Reddit public JSON endpoints.
+  Existing `scraped_reddit.json` with 361 documents is still used by preprocessing, but fresh Reddit scraping is unreliable.
+
+- `analysis_agent` requires `GEMINI_API_KEY`.
+  Without the key, it fails during client initialization.
+  Suggested improvement: add a clearer error message and graceful exit if the key is missing.
+
+- `gap_analysis_agent` imports `Groq`, but the package `groq` is missing from the current installed requirements.
+  Suggested fix: add `groq` to `requirements.txt`.
+  After installing `groq`, the next expected requirement is a valid `GROQ_API_KEY`.
+
+### Suggested next steps
+
+- Add `groq` to `requirements.txt`.
+- Improve missing API-key handling for Analysis Agent and Gap Analysis Agent.
+- Check and fix FragDenStaat deduplication.
+- Extend `save_metrics` to Reddit and FragDenStaat.
+- Add Reddit metrics for blocked requests / 403 errors.
+- Decide whether orchestrator should run the full pipeline or only check pipeline status.
+
+---
+
+## Update 2026-06-29 - Repository Verification and Fixes
+
+### Verified implementation state
+
+- `agents/orchestrator.py` was empty. It now provides a transparent pipeline status check instead of claiming full orchestration.
+- No `innovation_agent.py`, `service_innovation_agent.py` or `evaluator_agent.py` exists yet.
+- Gap Analysis v2 exists in `agents/gap_analysis_agent.py` and writes `data/gap_analysis/gap_analysis_output_v2.json`.
+- Gap Analysis v2 is an intermediate assistive analysis output, not a final fachliche Entscheidung.
+- `requirements.txt` already contains `groq==1.5.0`.
+- `.gitignore` already ignored `.venv/`, `.env`, `__pycache__/` and `*.pyc`. It now also ignores local `.env.*` variants except `.env.example` and local partial scrape scratch files.
+
+### Local testing results documented
+
+- `python -m agents.source_discovery_agent`
+  - Found 220 URLs.
+  - Filtered 26 URLs.
+  - Accepted 175 sources.
+  - Output: `data/raw/sources.json`.
+- `python -m agents.scraping_agents.webscraping_agent`
+  - Processed 175 sources.
+  - Scraped 135 pages.
+  - Output: `data/raw/scraped_web.json`.
+  - robots.txt skips, 403 and 404 responses did not crash the scraper.
+- `python -m agents.scraping_agents.reddit_scraper`
+  - Many Reddit public JSON requests returned `403 Client Error: Blocked`.
+  - The run was manually interrupted.
+  - Fresh Reddit scraping should currently be treated as unreliable.
+  - Existing `data/raw/scraped_reddit.json` with 361 posts remains useful for downstream preprocessing.
+- `python -m agents.scraping_agents.fragdenstaat_scraper`
+  - Loaded 68 existing requests.
+  - Added 68 new requests.
+  - Resulted in 136 total rows before the deduplication fix.
+- `python -m agents.preprocessing`
+  - Loaded 135 web documents.
+  - Loaded 361 Reddit documents.
+  - Loaded 136 FragDenStaat documents.
+  - Preprocessed 632 documents.
+  - Output: `data/preprocessed/preprocessed.json`.
+- `python -m agents.analysis_agent`
+  - Blocked without `GEMINI_API_KEY`.
+  - Now exits with an understandable message before expensive model work.
+- `python -m agents.gap_analysis_agent`
+  - Blocked without `GROQ_API_KEY`.
+  - Now exits with an understandable message instead of raising an import-time `RuntimeError`.
+
+### FragDenStaat deduplication
+
+Cause found:
+
+- Existing FragDenStaat output stored URLs as relative paths such as `/anfrage/.../`.
+- The scraper checked new API objects against absolute URLs such as `https://fragdenstaat.de/anfrage/.../`.
+- Because relative and absolute strings did not match, reruns treated old requests as new.
+
+Implemented fix:
+
+- FragDenStaat request URLs are normalized with `urljoin`.
+- Future records include `request_id` when available.
+- Existing and new records are deduplicated by all stable identifiers: request id and normalized URL.
+- The scraper reports duplicate counts and writes metrics.
+
+Current data note:
+
+- The existing `data/raw/scraped_fragdenstaat.json` still contains 136 rows with 68 duplicate URL rows until the scraper is rerun or the generated file is intentionally cleaned.
+
+### Metrics
+
+Metrics are now appended to `data/metrics.json` for all three scrapers:
+
+- Web: source, run label, timestamp, URL counts, file size, word statistics, top domains and domain categories.
+- Reddit: source, attempted subreddits/queries/requests, successful and failed requests, 403 block count, collected/saved posts, filter counts, word statistics, subreddit distribution and interrupted flag.
+- FragDenStaat: source, authorities checked, existing count before run, new count, total count after run, duplicate count, word statistics, authority distribution and API limitation note.
+
+### Reddit behavior
+
+- The Reddit scraper still uses public JSON endpoints and no credentials.
+- If all requests fail or a run is interrupted, the scraper preserves the existing `scraped_reddit.json` instead of overwriting it with an empty or partial blocked run.
+- It records 403 counts and prints a clear note when most requests are blocked.
+
+### Output format observations
+
+- Raw web, Reddit and FragDenStaat documents consistently include `source`, `url`, `title`, `text`, `date` and `scraped_at`.
+- Reddit adds `subreddit`, `score` and `num_comments`.
+- FragDenStaat adds `anfrage_text`, `antwort_text`, `status`, `refusal_reason`, `law`, `behoerde` and, on future runs, `request_id`.
+- Preprocessing preserves source-specific fields and adds `cleaned_text` and `preprocessed_text`.
+- There is no common `metadata` object yet. Source-specific fields are currently top-level.
+- `sources.json` uses `source: "duckduckgo"`, while scraped web output uses `source: "web"`. This is acceptable but should be documented as discovery-source vs. content-source.
+
+### Data and git hygiene
+
+- Existing generated JSON files in `data/` are used as prototype/demo fixtures and by downstream stages.
+- They should not be deleted blindly.
+- New local partial scrape outputs are ignored via `.gitignore`.
+- `.env` remains ignored; `.env.example` documents required variables without secrets.

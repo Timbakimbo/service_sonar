@@ -7,6 +7,8 @@ from datetime import datetime
 from urllib.robotparser import RobotFileParser
 from urllib.parse import urlparse
 
+from scripts.save_metrics import save_web_metrics
+
 INPUT_PATH = "data/raw/sources.json"
 OUTPUT_PATH = "data/raw/scraped_web.json"
 
@@ -15,6 +17,17 @@ HEADERS = {
 }
 
 DEFAULT_CRAWL_DELAY = 2  # Sekunden zwischen Requests
+MIN_WORDS = 100
+MAX_WORDS = 50000
+
+
+def is_valid_content(text: str) -> tuple[bool, str]:
+    word_count = len(text.split())
+    if word_count < MIN_WORDS:
+        return False, f"zu kurz ({word_count} Woerter)"
+    if word_count > MAX_WORDS:
+        return False, f"zu lang ({word_count} Woerter)"
+    return True, "ok"
 
 
 def get_robots_parser(base_url: str) -> RobotFileParser:
@@ -48,6 +61,10 @@ def scrape_url(url: str) -> dict | None:
         for tag in soup(["script", "style", "nav", "footer", "header"]):
             tag.decompose()
         text = soup.get_text(separator=" ", strip=True)
+        valid, reason = is_valid_content(text)
+        if not valid:
+            print(f"Gefiltert ({reason}): {url}")
+            return None
 
         return {
             "url": url,
@@ -100,6 +117,8 @@ def run():
         json.dump(results, f, ensure_ascii=False, indent=2)
 
     print(f"{len(results)} Seiten gescrapt → {OUTPUT_PATH}")
+    metrics = save_web_metrics("web_scraper_run")
+    print(f"Metrics gespeichert -> data/metrics.json ({metrics['urls_scraped']} Seiten)")
 
 
 if __name__ == "__main__":

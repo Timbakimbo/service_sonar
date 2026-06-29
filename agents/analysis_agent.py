@@ -1,23 +1,12 @@
 import json
 import os
-from bertopic import BERTopic
-from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance
-from sentence_transformers import SentenceTransformer
-from umap import UMAP
-from hdbscan import HDBSCAN
-from transformers import pipeline
-from google import genai
 from dotenv import load_dotenv
-from sklearn.feature_extraction.text import CountVectorizer
-from spacy.lang.de.stop_words import STOP_WORDS as GERMAN_STOP_WORDS
 
 load_dotenv()
 
 INPUT_PATH = "data/preprocessed/preprocessed.json"
 OUTPUT_PATH = "data/analysis/analysis_output.json"
 
-# Gemini Client (Reasoning Layer)
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 MODEL = "gemini-2.5-flash"
 
 # Kontext für die LLM-Interpretation
@@ -40,6 +29,14 @@ def run_bertopic(docs: list):
     mpnet-Embedding + HDBSCAN 'leaf' brechen den Mega-Cluster auf;
     KeyBERT+MMR liefern lesbare Topic-Labels für die LLM-Interpretation.
     """
+    from bertopic import BERTopic
+    from bertopic.representation import KeyBERTInspired, MaximalMarginalRelevance
+    from hdbscan import HDBSCAN
+    from sentence_transformers import SentenceTransformer
+    from sklearn.feature_extraction.text import CountVectorizer
+    from spacy.lang.de.stop_words import STOP_WORDS as GERMAN_STOP_WORDS
+    from umap import UMAP
+
     preprocessed_texts = [d.get("preprocessed_text", "") for d in docs]
 
     embedding_model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
@@ -100,6 +97,8 @@ def run_sentiment(docs: list) -> list:
     Direkt über transformers pipeline — versionsunabhängig.
     Läuft auf cleaned_text (Satzstruktur erhalten).
     """
+    from transformers import pipeline
+
     sentiment_pipeline = pipeline(
         "text-classification",
         model="oliverguhr/german-sentiment-bert",
@@ -112,7 +111,21 @@ def run_sentiment(docs: list) -> list:
     return [r["label"] for r in results]
 
 
-def interpret_topics_with_llm(topic_overview: list, topic_sentiments: dict) -> dict:
+def get_gemini_client():
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print(
+            "GEMINI_API_KEY fehlt. Bitte lege eine .env-Datei an "
+            "(siehe .env.example) und setze GEMINI_API_KEY, bevor du den "
+            "Analysis Agent startest."
+        )
+        return None
+    from google import genai
+
+    return genai.Client(api_key=api_key)
+
+
+def interpret_topics_with_llm(client, topic_overview: list, topic_sentiments: dict) -> dict:
     """
     REASONING LAYER: Gemini interpretiert die BERTopic Cluster.
     Entscheidet welche Topics relevant sind im Kontext Familie Bayern,
@@ -159,12 +172,16 @@ Antworte NUR mit validem JSON in diesem Format:
     return json.loads(text)
 
 
-def run():
+def run() -> int:
     """
     Einstiegspunkt — lädt Daten, führt BERTopic + Sentiment durch,
     interpretiert via Gemini, speichert kombinierten Output für Gap Analysis.
     """
     print("Analysis Agent gestartet...")
+    client = get_gemini_client()
+    if client is None:
+        return 1
+
     docs = load_data()
     print(f"  {len(docs)} Dokumente geladen")
 
@@ -184,7 +201,7 @@ def run():
 
     print("Gemini interpretiert Topics...")
     topic_overview = topic_info.to_dict(orient="records")
-    interpretation = interpret_topics_with_llm(topic_overview, topic_sentiments)
+    interpretation = interpret_topics_with_llm(client, topic_overview, topic_sentiments)
     print(f"  {len(interpretation.get('relevant_topics', []))} relevante Topics")
     print(f"  {len(interpretation.get('irrelevante_topics', []))} irrelevante Topics")
 
@@ -209,7 +226,8 @@ def run():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\nOutput gespeichert → {OUTPUT_PATH}")
+    return 0
 
 
 if __name__ == "__main__":
-    run()
+    raise SystemExit(run())
