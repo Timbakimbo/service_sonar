@@ -6,6 +6,7 @@ from io import StringIO
 from pathlib import Path
 
 from config.keywords import get_effective_keywords
+from agents.scraping_agents.reddit_scraper import SUBREDDITS, init_metrics
 from scripts.review_evaluator import collect_actions, review, save_decisions
 
 
@@ -27,6 +28,11 @@ EVALUATOR = {
 
 
 class HumanReviewTests(unittest.TestCase):
+    def test_reddit_metrics_use_runtime_keyword_count(self):
+        metrics = init_metrics(["eins", "zwei", "drei"])
+        self.assertEqual(metrics["attempted_queries"], 3)
+        self.assertEqual(metrics["attempted_subreddits"], len(SUBREDDITS))
+
     def test_collects_routed_actions(self):
         actions = collect_actions(EVALUATOR)
         self.assertEqual(len(actions), 5)

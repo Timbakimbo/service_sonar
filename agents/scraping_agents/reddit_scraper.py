@@ -28,10 +28,11 @@ MIN_WORDS = 20
 MAX_WORDS = 10000
 
 
-def init_metrics() -> dict:
+def init_metrics(keywords: list[str] | None = None) -> dict:
+    keywords = get_effective_keywords() if keywords is None else keywords
     return {
         "attempted_subreddits": len(SUBREDDITS),
-        "attempted_queries": len(KEYWORDS),
+        "attempted_queries": len(keywords),
         "attempted_requests": 0,
         "successful_requests": 0,
         "failed_requests": 0,
@@ -146,11 +147,13 @@ def run():
 
     results = []
     seen_urls = set()
-    metrics = init_metrics()
+    keywords = get_effective_keywords()
+    metrics = init_metrics(keywords)
+    print(f"  {len(keywords)} wirksame Keywords (Seeds + akzeptierte Human-Entscheidungen)")
 
     try:
         for subreddit in SUBREDDITS:
-            for keyword in get_effective_keywords():
+            for keyword in keywords:
                 print(f"r/{subreddit} -> '{keyword}'")
                 posts = search_subreddit(subreddit, keyword, metrics)
 
