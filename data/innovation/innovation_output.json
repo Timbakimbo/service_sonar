@@ -1,0 +1,466 @@
+{
+  "schema_version": "1.0-de",
+  "erstellt_am": "2026-06-27T18:11:40",
+  "modell": "llama-3.3-70b-versatile",
+  "max_tokens": 3000,
+  "input_cluster_count": 11,
+  "skipped_cluster_count": 1,
+  "generated_innovation_count": 10,
+  "review_count": 5,
+  "innovations": [
+    {
+      "innovation_id": "INN_001",
+      "cluster_id": "solo_2",
+      "addressierte_topics": [
+        "2"
+      ],
+      "betroffene_leistungen": [
+        "Bayerisches Familiengeld"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Familiengeld-Assistent",
+      "kurzbeschreibung": "Der Familiengeld-Assistent unterstützt Familien in Bayern bei der Antragstellung für das bayerische Familiengeld. Durch die digitale Vereinfachung des Antragsprozesses können Familien schneller und einfacher die notwendigen Leistungen erhalten.",
+      "konkrete_loesung": "Der Familiengeld-Assistent ist ein digitaler Assistent, der während der Antragstellung für das bayerische Familiengeld über den Online-Kanal zur Verfügung steht. Er ruft automatisch die notwendigen Daten wie Einkommensnachweise und Wohnsitzbestätigungen über die BayernID und ELSTER ab, um den Antragstellungsprozess zu vereinfachen und die Bearbeitungszeit zu reduzieren. Durch die Integration mit dem bestehenden System des Zentrums Bayern Familie und Soziales wird eine nahtlose Übermittlung der Antragsdaten ermöglicht.",
+      "adressierte_phasen": [
+        "antragstellung"
+      ],
+      "zielgruppen": [
+        "Familien in Bayern, die das bayerische Familiengeld beantragen"
+      ],
+      "moegliche_traeger": [
+        "ZBFS",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Bayerisches Familiengeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Der Familiengeld-Assistent bietet für Bürger den Vorteil einer schnelleren und einfacheren Antragstellung, während die Verwaltung durch die Automatisierung des Prozesses und die Reduzierung von Fehlern profitiert. Dies führt zu einer verbesserten Zufriedenheit und einer effizienteren Verwaltung.",
+      "umsetzungshuerden": [
+        "Integration mit bestehenden Systemen",
+        "Datensicherheit und Datenschutz"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_002",
+      "cluster_id": "solo_3",
+      "addressierte_topics": [
+        "3"
+      ],
+      "betroffene_leistungen": [
+        "Kindergeld",
+        "Kinderzuschlag"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Digitaler Antrag",
+      "kurzbeschreibung": "Vereinfachung der Antragstellung für Kindergeld und Kinderzuschlag durch digitale Lösungen. Die Antragstellung wird durch automatisierte Einkommensprüfung und digitale Datenübermittlung erleichtert.",
+      "konkrete_loesung": "Der digitale Antrag ermöglicht es den Eltern, ihre Anträge online zu stellen und die notwendigen Daten über BayernID und ELSTER-Schnittstelle zu übermitteln. Die Einkommensprüfung wird automatisiert durchgeführt, um die Prozessrisiken zu minimieren. Die Antragsteller können den Status ihrer Anträge online verfolgen und erhalten Benachrichtigungen über den Bearbeitungsstand.",
+      "adressierte_phasen": [
+        "antragstellung"
+      ],
+      "zielgruppen": [
+        "Eltern in Bayern, die Kindergeld oder Kinderzuschlag beantragen"
+      ],
+      "moegliche_traeger": [
+        "Familienkasse",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Kindergeld",
+        "Kinderzuschlag"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Die digitale Antragstellung vereinfacht den Prozess für die Eltern und reduziert die Bearbeitungszeit. Die automatisierte Einkommensprüfung minimiert die Prozessrisiken und erhöht die Genauigkeit. Die Verwaltung profitiert von einer effizienteren Bearbeitung und einer Verringerung der Fehlerquote.",
+      "umsetzungshuerden": [
+        "Integration der bestehenden Systeme",
+        "Sicherstellung des Datenschutzes"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_003",
+      "cluster_id": "solo_4",
+      "addressierte_topics": [
+        "4"
+      ],
+      "betroffene_leistungen": [
+        "Arbeitslosengeld"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Arbeitslosengeld Info",
+      "kurzbeschreibung": "Ein digitales Beratungstool, das Familien über ihre Ansprüche auf Arbeitslosengeld informiert. Es ermöglicht eine individuelle Beratung und vereinfacht den Antragsprozess.",
+      "konkrete_loesung": "Das Tool greift über die BayernID-Authentifizierung auf die Daten der Agentur für Arbeit zu und informiert Familien über ihre Ansprüche auf Arbeitslosengeld. Es integriert ELSTER für eine automatisierte Einkommensprüfung und verknüpft mit der Agentur für Arbeit für einen reibungslosen Antragsprozess. Familien können somit ihre Ansprüche überprüfen und den Antragsprozess online starten.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Familien mit Arbeitslosengeld-Anspruch"
+      ],
+      "moegliche_traeger": [
+        "Agentur für Arbeit",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Arbeitslosengeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Familien erhalten eine einfache und schnelle Möglichkeit, ihre Ansprüche auf Arbeitslosengeld zu überprüfen. Die Verwaltung profitiert von einer reduzierten Anzahl an Anträgen und einer verbesserten Bearbeitungszeit.",
+      "umsetzungshuerden": [
+        "Datenabgleich zwischen Agentur für Arbeit und ELSTER",
+        "Sicherstellung der Datenverfügbarkeit"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_004",
+      "cluster_id": "elterngeld_prozessproblem",
+      "addressierte_topics": [
+        "7",
+        "12",
+        "14",
+        "22"
+      ],
+      "betroffene_leistungen": [
+        "Elterngeld",
+        "ElterngeldPlus"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Elterngeld-Assistent",
+      "kurzbeschreibung": "Ein digitaler Assistent, der Familien bei der Antragstellung und Ermittlung des Elterngeldes unterstützt. Durch die Integration mit BayernID und ELSTER-Systemen können Väter und Mütter ihre Elternzeit und Elterngeldhöhe dynamisch planen.",
+      "konkrete_loesung": "Der Elterngeld-Assistent greift auf die Daten der Elterngeldstelle zu und unterstützt Familien bei der Antragstellung, indem er die korrekte Höhe des Elterngeldes (Basiselterngeld, ElterngeldPlus) ermittelt. Der Assistent ermöglicht eine übersichtliche und dynamische Planung der Elternzeit und des Elterngeldes, einschließlich der Berücksichtigung von Partnermonaten und der Auswirkungen auf die finanzielle Planung. Durch die digitale Antragstellung können Mehrfacheingaben vermieden werden, und die Bescheid-Berechnung kann live nachvollzogen werden.",
+      "adressierte_phasen": [
+        "antragstellung",
+        "bescheid_und_kommunikation"
+      ],
+      "zielgruppen": [
+        "Väter mit Partnermonats-Antrag",
+        "Mütter mit Elterngeld-Antrag"
+      ],
+      "moegliche_traeger": [
+        "Elterngeldstelle",
+        "Familienkasse"
+      ],
+      "anknuepfungspunkte": [
+        "Elterngeld",
+        "ElterngeldPlus"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Der Elterngeld-Assistent verbessert die finanzielle Sicherheit und Planung für Familien, indem er die korrekte Höhe des Elterngeldes ermittelt und die Antragstellung vereinfacht. Durch die digitale Antragstellung können Prozessrisiken wie Fristen und Einkommensprüfungen minimiert werden. Für die Verwaltung kann der Assistent die Effizienz und Transparenz des Antragsprozesses erhöhen.",
+      "umsetzungshuerden": [
+        "Datensicherheit und Datenschutz",
+        "Integration mit bestehenden Systemen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_005",
+      "cluster_id": "elterngeld_informationsluecke",
+      "addressierte_topics": [
+        "9",
+        "20"
+      ],
+      "betroffene_leistungen": [
+        "Elterngeld",
+        "ElterngeldPlus"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "ElterngeldPlaner",
+      "kurzbeschreibung": "Ein interaktives Online-Tool, das Eltern bei der Planung von Elternzeit und Elterngeld unterstützt. Es berücksichtigt individuelle Bedürfnisse und Umstände und gibt eine persönliche Empfehlung für die optimale Elterngeld- und Elternzeitgestaltung.",
+      "konkrete_loesung": "Das Tool führt Eltern durch einen Fragenkatalog, der ihre spezifischen Bedürfnisse und Umstände erfasst. Anschließend berechnet es die möglichen Elterngeldansprüche und gibt Empfehlungen für die optimalen Zeiträume der Elternzeit. Es integriert Daten aus BayernID und ELSTER-Schnittstellen, um die Einkommensdaten und die Anspruchsvoraussetzungen zu überprüfen. Eltern können so ihre Entscheidungen treffen, ohne sich durch komplexe Antragsprozesse und Unsicherheiten behindern zu lassen.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Mütter und Väter mit Elterngeldanspruch"
+      ],
+      "moegliche_traeger": [
+        "Elterngeldstelle",
+        "Jobcenter",
+        "Familienkasse"
+      ],
+      "anknuepfungspunkte": [
+        "Elterngeld",
+        "ElterngeldPlus"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Für Bürger: Reduzierung von Unsicherheiten und Verbesserung der Planungssicherheit bei der Elternzeit und Elterngeldgestaltung. Für die Verwaltung: Effizienzsteigerung durch automatisierte Überprüfung von Anspruchsvoraussetzungen und reduzierte Anzahl von Antragsfehlern.",
+      "umsetzungshuerden": [
+        "Datenschutz und Datensicherheit bei der Integration von BayernID und ELSTER-Schnittstellen",
+        "Abstimmung mit den verschiedenen Trägern und Behörden"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_006",
+      "cluster_id": "solo_10",
+      "addressierte_topics": [
+        "10"
+      ],
+      "betroffene_leistungen": [
+        "Kinderkrankengeld",
+        "Mutterschaftsgeld"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Gesundheits-Assistent",
+      "kurzbeschreibung": "Ein digitaler Assistent, der Familien bei gesundheitlichen Herausforderungen unterstützt. Er bietet Informationen und Leistungen wie Kinderkrankengeld und Mutterschaftsgeld an.",
+      "konkrete_loesung": "Der Gesundheits-Assistent wird über BayernID erreicht und ruft automatisch relevante Daten ab. Er bietet eine Verknüpfung mit bestehenden Leistungen wie dem Gesundheitsamt und der Krankenkasse. Der Assistent unterstützt Väter und Mütter bei der Suche nach Unterstützung für gesundheitliche Herausforderungen und Erkrankungen. Er hilft bei der Antragstellung für Kinderkrankengeld und Mutterschaftsgeld und bietet Informationen zu den abgedeckten Bedarfen und bekannten Prozessrisiken.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Väter und Mütter mit gesundheitlichen Herausforderungen"
+      ],
+      "moegliche_traeger": [
+        "Bayerisches Staatsministerium für Unterricht und Kultus",
+        "Kommune",
+        "Krankenkassen"
+      ],
+      "anknuepfungspunkte": [
+        "Kinderkrankengeld",
+        "Mutterschaftsgeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle",
+        "Gesundheitsamt",
+        "Krankenkasse"
+      ],
+      "erwarteter_nutzen": "Der Gesundheits-Assistent bietet einen einfachen Zugang zu Informationen und Leistungen. Er hilft bei der Antragstellung und reduziert die Prozessrisiken. Die Verwaltung kann durch den Assistenten die Antragsbearbeitung beschleunigen und die Kundenzufriedenheit steigern.",
+      "umsetzungshuerden": [
+        "Datenschutz und Datensicherheit",
+        "Integration mit bestehenden Systemen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_007",
+      "cluster_id": "solo_16",
+      "addressierte_topics": [
+        "16"
+      ],
+      "betroffene_leistungen": [
+        "Familienpatenschaften",
+        "Familienunterstützung durch die Stiftung Liebenau"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "FamilienSupport",
+      "kurzbeschreibung": "Ein interaktives Online-Beratungstool für umfassende Familienunterstützung und Beratung. Es ermittelt spezifische Bedürfnisse und bietet passgenaue Angebote an.",
+      "konkrete_loesung": "Das Tool ermöglicht es Familien, ihre Bedürfnisse online einzugeben und erhält daraufhin eine Liste passgenauer Angebote, wie z.B. Familienpatenschaften und Familienunterstützung durch die Stiftung Liebenau. Es integriert Daten aus BayernID und den Datenbanken der zuständigen Stellen, um den Verwaltungsaufwand zu reduzieren. Die Plattform ist über eine intuitive Web-Oberfläche und eine mobile App zugänglich.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Väter",
+        "Mütter",
+        "Alleinerziehende"
+      ],
+      "moegliche_traeger": [
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend",
+        "Land Bayern",
+        "Kommune"
+      ],
+      "anknuepfungspunkte": [
+        "Familienpatenschaften",
+        "Familienunterstützung durch die Stiftung Liebenau"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "Datenbanken der zuständigen Stellen"
+      ],
+      "erwarteter_nutzen": "Für Bürger: Einfachere Suche nach passgenauen Angeboten, reduzierter Verwaltungsaufwand. Für die Verwaltung: Effizientere Verwaltung von Familienleistungen, bessere Datenverknüpfung.",
+      "umsetzungshuerden": [
+        "Datenschutz und -sicherheit",
+        "Interoperabilität zwischen Systemen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_008",
+      "cluster_id": "solo_21",
+      "addressierte_topics": [
+        "21"
+      ],
+      "betroffene_leistungen": [
+        "Bayerisches Familiengeld",
+        "Sozialhilfe"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Familiengeld Navigator",
+      "kurzbeschreibung": "Ein digitaler Leitfaden für die Antragstellung und den Leistungsbezug von Bayerischem Familiengeld und Sozialhilfe. Der Navigator bietet eine personalisierte Unterstützung bei der Informationsuche und reduziert die Komplexität der Antragstellung.",
+      "konkrete_loesung": "Der Familiengeld Navigator greift über den BayernID-Login auf die Daten des Bayerischen Familiengeldes und der Sozialhilfe zu. Er bietet eine personalisierte Anleitung für die Antragstellung und den Leistungsbezug, indem er die individuellen Bedürfnisse und die aktuellen Leistungsansprüche der Familie berücksichtigt. Durch die Integration mit ELSTER und dem Datenabgleich mit der Elterngeldstelle können Mehrfacheingaben vermieden und die Bearbeitungszeit reduziert werden.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Familien mit Kindern, die Bayerisches Familiengeld und Sozialhilfe beziehen oder beantragen"
+      ],
+      "moegliche_traeger": [
+        "Land Bayern",
+        "Kommune"
+      ],
+      "removed_invalid_traeger": [
+        "Bayerisches Staatsministerium für Familie, Senioren, Frauen und Jugend"
+      ],
+      "anknuepfungspunkte": [
+        "Bayerisches Familiengeld",
+        "Sozialhilfe"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle",
+        "Datenabgleich mit der Elterngeldstelle"
+      ],
+      "erwarteter_nutzen": "Der Familiengeld Navigator bietet für Bürger eine einfache und personalisierte Unterstützung bei der Antragstellung und dem Leistungsbezug. Für die Verwaltung reduziert er die Bearbeitungszeit und minimiert Fehler durch automatisierte Prüfungen und Datenabgleiche.",
+      "umsetzungshuerden": [
+        "Technische Integration mit bestehenden Systemen",
+        "Datenschutz und Sicherheit bei der Verwendung von personenbezogenen Daten"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_009",
+      "cluster_id": "solo_23",
+      "addressierte_topics": [
+        "23"
+      ],
+      "betroffene_leistungen": [
+        "Stillberatung",
+        "Trageberatung"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "ElternGuide",
+      "kurzbeschreibung": "Eine digitale Plattform zur Unterstützung von Schwangeren und jungen Eltern. Sie bietet personalisierte Informationen und Beratungsangebote zu Stillen und Tragen.",
+      "konkrete_loesung": "Die Plattform ermöglicht es Schwangeren und jungen Eltern, über BayernID auf bestehende Daten zuzugreifen. Sie bietet personalisierte Informationen und Beratungsangebote zu Stillen und Tragen an, die über eine App und eine Hotline zugänglich sind. Die Plattform integriert die bestehenden Leistungen der Stillberatung und Trageberatung und ermöglicht eine nahtlose Verbindung zwischen den Dienstleistungen.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Schwangere",
+        "junge Eltern"
+      ],
+      "moegliche_traeger": [
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Stillberatung",
+        "Trageberatung"
+      ],
+      "integrationspunkte": [
+        "BayernID"
+      ],
+      "erwarteter_nutzen": "Die Plattform bietet Schwangeren und jungen Eltern eine zentrale Anlaufstelle für Informationen und Beratung. Sie unterstützt die Eltern bei der gesundheitlichen und emotionalen Situation und reduziert die Prozessrisiken durch fehlende Informationen. Für die Verwaltung bietet die Plattform eine Möglichkeit, die bestehenden Leistungen zu ergänzen und die Dienstleistungen nahtlos zu verbinden.",
+      "umsetzungshuerden": [
+        "Datenschutz und Datensicherheit",
+        "Integration mit bestehenden Systemen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_010",
+      "cluster_id": "solo_27",
+      "addressierte_topics": [
+        "27"
+      ],
+      "betroffene_leistungen": [
+        "Psychosoziale Beratung und Unterstützung für Familien",
+        "Familienberatungsdienste"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Mütter-Forum",
+      "kurzbeschreibung": "Ein Online-Unterstützungsforum für Mütter, um emotionale und soziale Belastungen zu reduzieren. Das Forum bietet eine sichere und anonyme Plattform für den Austausch und die Unterstützung.",
+      "konkrete_loesung": "Das Online-Unterstützungsforum wird über eine mobile App und eine Website zugänglich sein. Mütter können ihre Erfahrungen und Sorgen teilen, anonyme Beratung in Anspruch nehmen und Unterstützung von anderen Müttern und Fachkräften erhalten. Die Plattform wird über die bestehenden Leistungen 'Psychosoziale Beratung und Unterstützung für Familien' und 'Familienberatungsdienste' integriert, um eine umfassende Unterstützung zu gewährleisten.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Mütter mit emotionalen und sozialen Belastungen"
+      ],
+      "moegliche_traeger": [
+        "Jugendamt",
+        "Kommune",
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend"
+      ],
+      "anknuepfungspunkte": [
+        "Psychosoziale Beratung und Unterstützung für Familien",
+        "Familienberatungsdienste"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Das Online-Unterstützungsforum bietet Müttern eine einfache und sichere Möglichkeit, Unterstützung und Beratung zu erhalten. Dies kann zu einer Reduzierung emotionaler und sozialer Belastungen führen und die Lebensqualität der Mütter verbessern. Für die Verwaltung kann das Forum eine effiziente Möglichkeit sein, Unterstützung und Beratung anzubieten und die Customer-Journey-Phase 'information_suche' zu adressieren.",
+      "umsetzungshuerden": [
+        "Datenschutz und Sicherheit der Plattform",
+        "Finanzierung und Ressourcen für die Umsetzung und den Betrieb"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    }
+  ]
+}

@@ -1,0 +1,638 @@
+{
+  "schema_version": "1.0-de",
+  "erstellt_am": "2026-06-29T23:42:48",
+  "modell": "llama-3.3-70b-versatile",
+  "pass_statistik": {
+    "pass1_topics_evaluated": 28,
+    "pass2_gaps_evaluated": 13,
+    "pass2_gaps_skipped_out_of_scope": 2,
+    "pass3_innovations_evaluated": 10,
+    "pass4_aggregation_calls": 1
+  },
+  "source_stats_status": "partial",
+  "topic_evaluations": [
+    {
+      "topic_id": "0",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf Aufenthaltsrecht und Ablehnungsbescheide, was nicht direkt zu familienbezogenen Sozialleistungen in Bayern gehört.",
+      "evaluation_id": "TE_001"
+    },
+    {
+      "topic_id": "1",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich allgemein auf Coronavirus ohne spezifischen Bezug zu sozialen Dienstleistungen oder Problemen von Familien.",
+      "evaluation_id": "TE_002"
+    },
+    {
+      "topic_id": "2",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "familiengeld",
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf Probleme und negative Erfahrungen mit dem bayerischen Familiengeld, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_003"
+    },
+    {
+      "topic_id": "3",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "kindergeld",
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf Probleme mit Kindergeld, Kinderzuschlag oder Kinderstartgeld bei der Familienkasse in Bayern, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_004"
+    },
+    {
+      "topic_id": "4",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf Arbeitslosengeld und Beschäftigungssituationen, was nicht direkt zu familienbezogenen Sozialleistungen in Bayern gehört.",
+      "evaluation_id": "TE_005"
+    },
+    {
+      "topic_id": "5",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine rechtliche Angelegenheiten und Konflikte ohne spezifischen Bezug zu sozialen Dienstleistungen für Familien.",
+      "evaluation_id": "TE_006"
+    },
+    {
+      "topic_id": "6",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Politik und gesellschaftliche Themen ohne spezifischen Bezug zu sozialen Dienstleistungen oder Problemen von Familien.",
+      "evaluation_id": "TE_007"
+    },
+    {
+      "topic_id": "7",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Probleme mit Elternzeit und Elterngeldbescheid, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_008"
+    },
+    {
+      "topic_id": "8",
+      "in_scope": false,
+      "noise": true,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf technische Aspekte der Website des Zentrums Bayern Familie und Soziales ohne inhaltlichen Bezug zu sozialen Dienstleistungen.",
+      "evaluation_id": "TE_009"
+    },
+    {
+      "topic_id": "9",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf den Elterngeldantrag in Bayern und Beratung, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_010"
+    },
+    {
+      "topic_id": "10",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf gesundheitliche Herausforderungen und Erkrankungen, die Unterstützung durch das Gesundheitsamt erfordern, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_011"
+    },
+    {
+      "topic_id": "11",
+      "in_scope": false,
+      "noise": true,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf technische Aspekte von Webseiten (Cookies, Datenschutzerklärung) ohne inhaltlichen Bezug zu sozialen Dienstleistungen.",
+      "evaluation_id": "TE_012"
+    },
+    {
+      "topic_id": "12",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Schwierigkeiten beim Beantragen des Elterngeldes, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_013"
+    },
+    {
+      "topic_id": "13",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Informationen oder Nennungen von Behörden und breit gefassten Themen ohne spezifischen Bezug zu sozialen Dienstleistungen oder konkreten Problemen von Familien.",
+      "evaluation_id": "TE_014"
+    },
+    {
+      "topic_id": "14",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Schwierigkeiten bei der Ermittlung der korrekten Höhe des Elterngeldes, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_015"
+    },
+    {
+      "topic_id": "15",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Begriffe, die auf Kommunikation oder Geschehnisse hinweisen, aber keinen spezifischen inhaltlichen Bezug zu sozialen Dienstleistungen für Familien oder konkreten Problemen aufweisen.",
+      "evaluation_id": "TE_016"
+    },
+    {
+      "topic_id": "16",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf die Suche nach umfassender Familienunterstützung und Beratung, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_017"
+    },
+    {
+      "topic_id": "17",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine geografische und sprachbezogene Begriffe ohne spezifischen Bezug zu sozialen Dienstleistungen oder Problemen von Familien in Bayern.",
+      "evaluation_id": "TE_018"
+    },
+    {
+      "topic_id": "18",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Themen wie die Deutsche Bahn und hat keinen direkten Bezug zu sozialen Dienstleistungen für Familien.",
+      "evaluation_id": "TE_019"
+    },
+    {
+      "topic_id": "19",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Themen wie Verkehrsmittel und Fahrerlaubnis, die keinen direkten Bezug zu sozialen Dienstleistungen für Familien haben.",
+      "evaluation_id": "TE_020"
+    },
+    {
+      "topic_id": "20",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Herausforderungen bei der Planung von Elternzeit und Elterngeld in Bezug auf die Vollzeitbeschäftigung, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_021"
+    },
+    {
+      "topic_id": "21",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "familiengeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Fragen und Probleme bezüglich des bayerischen Familiengeldes im Kontext von Bundesleistungen, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Familiengeld-Themen redundant ist.",
+      "evaluation_id": "TE_022"
+    },
+    {
+      "topic_id": "22",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "begruendung": "Das Thema bezieht sich auf Schwierigkeiten von Vätern bei der Beantragung und Inanspruchnahme von Elterngeld und Elternzeit, was direkt zu familienbezogenen Sozialleistungen gehört und mit anderen Elterngeld-Themen redundant ist.",
+      "evaluation_id": "TE_023"
+    },
+    {
+      "topic_id": "23",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf Herausforderungen und Unterstützungsbedarf von schwangeren Frauen und jungen Eltern, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_024"
+    },
+    {
+      "topic_id": "24",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine geografische und demografische Begriffe, die keinen spezifischen inhaltlichen Bezug zu sozialen Dienstleistungen für Familien oder konkreten Problemen aufweisen.",
+      "evaluation_id": "TE_025"
+    },
+    {
+      "topic_id": "25",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine Themen wie Reisen und Buchungen, die keinen direkten Bezug zu sozialen Dienstleistungen für Familien haben.",
+      "evaluation_id": "TE_026"
+    },
+    {
+      "topic_id": "26",
+      "in_scope": false,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "remove",
+      "begruendung": "Das Thema bezieht sich auf allgemeine sprach- und länderbezogene Begriffe ohne spezifischen Bezug zu sozialen Dienstleistungen oder Problemen von Familien in Bayern.",
+      "evaluation_id": "TE_027"
+    },
+    {
+      "topic_id": "27",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "keep",
+      "begruendung": "Das Thema bezieht sich auf emotionalen Stress und die Suche nach Unterstützung und Möglichkeiten, Sorgen und negative Erfahrungen auszudrücken, was direkt zu familienbezogenen Sozialleistungen gehört.",
+      "evaluation_id": "TE_028"
+    }
+  ],
+  "gap_evaluations": [
+    {
+      "topic_id": "0",
+      "verdict": "skipped_due_to_topic_out_of_scope",
+      "begruendung": "Topic in Pass 1 als out-of-scope/remove bewertet.",
+      "evaluation_id": "GE_001"
+    },
+    {
+      "topic_id": "2",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Schwierigkeiten bei der Beantragung und dem Erhalt des bayerischen Familiengeldes betrifft.",
+      "evaluation_id": "GE_002"
+    },
+    {
+      "topic_id": "3",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Probleme und bürokratischen Hürden im Zusammenhang mit Kindergeld, Kinderzuschlag oder Kinderstartgeld betrifft.",
+      "evaluation_id": "GE_003"
+    },
+    {
+      "topic_id": "4",
+      "verdict": "skipped_due_to_topic_out_of_scope",
+      "begruendung": "Topic in Pass 1 als out-of-scope/remove bewertet.",
+      "evaluation_id": "GE_004"
+    },
+    {
+      "topic_id": "7",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Probleme oder Unklarheiten im Zusammenhang mit der Elternzeit und dem Erhalt des Elterngeldbescheids betrifft.",
+      "evaluation_id": "GE_005"
+    },
+    {
+      "topic_id": "9",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Informationen oder Beratung zum Elterngeldantrag in Bayern betrifft.",
+      "evaluation_id": "GE_006"
+    },
+    {
+      "topic_id": "10",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Informationen oder Beratung zu gesundheitlichen Herausforderungen und Erkrankungen betrifft.",
+      "evaluation_id": "GE_007"
+    },
+    {
+      "topic_id": "12",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Schwierigkeiten beim Beantragen des Elterngeldes betrifft.",
+      "evaluation_id": "GE_008"
+    },
+    {
+      "topic_id": "14",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Schwierigkeiten bei der Ermittlung der korrekten Höhe des Elterngeldes betrifft.",
+      "evaluation_id": "GE_009"
+    },
+    {
+      "topic_id": "16",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach umfassender Familienunterstützung und Beratung betrifft.",
+      "evaluation_id": "GE_010"
+    },
+    {
+      "topic_id": "20",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Informationen oder Beratung zur Planung von Elternzeit und Elterngeld betrifft.",
+      "evaluation_id": "GE_011"
+    },
+    {
+      "topic_id": "21",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Informationen oder Beratung zu Fragen und Problemen bezüglich des bayerischen Familiengeldes betrifft.",
+      "evaluation_id": "GE_012"
+    },
+    {
+      "topic_id": "22",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Prozessproblem ist plausibel, da das Kernproblem die Schwierigkeiten bei der Beantragung und Inanspruchnahme von Elterngeld und Elternzeit betrifft.",
+      "evaluation_id": "GE_013"
+    },
+    {
+      "topic_id": "23",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Informationen oder Beratung zu Schwangerschaft und Betreuung des Babys betrifft.",
+      "evaluation_id": "GE_014"
+    },
+    {
+      "topic_id": "27",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "begruendung": "Die Klassifizierung als Informationslücke ist plausibel, da das Kernproblem die Suche nach Möglichkeiten, Sorgen und negative Erfahrungen auszudrücken und Unterstützung zu finden, betrifft.",
+      "evaluation_id": "GE_015"
+    }
+  ],
+  "innovation_evaluations": [
+    {
+      "innovation_id": "INN_001",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_001"
+    },
+    {
+      "innovation_id": "INN_002",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_002"
+    },
+    {
+      "innovation_id": "INN_003",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": false,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "rework",
+      "rework_briefing": "Überprüfen Sie die Integrationspunkte, da ELSTER-Schnittstelle nicht sinnvoll für Arbeitslosengeld-Info ist.",
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne, aber die Integrationspunkte passen nicht zur Lösung.",
+      "evaluation_id": "IE_003"
+    },
+    {
+      "innovation_id": "INN_004",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_004"
+    },
+    {
+      "innovation_id": "INN_005",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_005"
+    },
+    {
+      "innovation_id": "INN_006",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": false,
+      "integrationspunkte_plausibel": false,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "rework",
+      "rework_briefing": "Überprüfen Sie den Träger und die Integrationspunkte, da sie nicht zur Domäne passen.",
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne, aber der Träger und die Integrationspunkte passen nicht zur Domäne.",
+      "evaluation_id": "IE_006"
+    },
+    {
+      "innovation_id": "INN_007",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_007"
+    },
+    {
+      "innovation_id": "INN_008",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_008"
+    },
+    {
+      "innovation_id": "INN_009",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne und der Träger ist für die Domäne zuständig.",
+      "evaluation_id": "IE_009"
+    },
+    {
+      "innovation_id": "INN_010",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": true,
+      "integrationspunkte_plausibel": false,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "informations_service",
+      "verdict": "rework",
+      "rework_briefing": "Überprüfen Sie die Integrationspunkte, da ELSTER-Schnittstelle nicht sinnvoll für Mütter-Forum ist.",
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne, aber die Integrationspunkte passen nicht zur Lösung.",
+      "evaluation_id": "IE_010"
+    }
+  ],
+  "priorisierung": [
+    {
+      "rang": 1,
+      "innovation_id": "INN_004",
+      "begruendung": "Die Innovation 'Elterngeld-Assistent' deckt mehrere Themen ab, darunter Probleme mit dem Elterngeldantrag, was ein zentrales Anliegen vieler Eltern ist."
+    },
+    {
+      "rang": 2,
+      "innovation_id": "INN_002",
+      "begruendung": "Die Innovation 'Digitaler Antrag' vereinfacht den Antragsprozess für Elterngeld, was eine häufige Herausforderung darstellt."
+    },
+    {
+      "rang": 3,
+      "innovation_id": "INN_001",
+      "begruendung": "Die Innovation 'Familiengeld-Assistent' unterstützt bei der Antragstellung für Familiengeld, was für viele Familien eine wichtige finanzielle Unterstützung darstellt."
+    },
+    {
+      "rang": 4,
+      "innovation_id": "INN_005",
+      "begruendung": "Die Innovation 'ElterngeldPlaner' hilft bei der Planung und Organisation von Elternzeit, was für Eltern eine wichtige Entscheidung darstellt."
+    },
+    {
+      "rang": 5,
+      "innovation_id": "INN_007",
+      "begruendung": "Die Innovation 'FamilienSupport' bietet umfassende Unterstützung für Familien, was ein breites Spektrum an Bedürfnissen abdeckt."
+    },
+    {
+      "rang": 6,
+      "innovation_id": "INN_008",
+      "begruendung": "Die Innovation 'Familiengeld Navigator' unterstützt bei der Navigation durch das Familiengeld-System, was für viele Eltern verwirrend sein kann."
+    },
+    {
+      "rang": 7,
+      "innovation_id": "INN_009",
+      "begruendung": "Die Innovation 'ElternGuide' bietet einen umfassenden Leitfaden für Eltern, was eine wichtige Ressource für viele Familien darstellt."
+    }
+  ],
+  "rework_warteschlange": [
+    {
+      "innovation_id": "INN_003",
+      "issue": "Überprüfen Sie die Integrationspunkte, da ELSTER-Schnittstelle nicht sinnvoll für Arbeitslosengeld-Info ist."
+    },
+    {
+      "innovation_id": "INN_006",
+      "issue": "Überprüfen Sie den Träger und die Integrationspunkte, da sie nicht zur Domäne passen."
+    },
+    {
+      "innovation_id": "INN_010",
+      "issue": "Überprüfen Sie die Integrationspunkte, da ELSTER-Schnittstelle nicht sinnvoll für Mütter-Forum ist."
+    }
+  ],
+  "konvergenz_status": {
+    "themenspektrum_vollstaendig": false,
+    "fehlende_themen": [
+      "Pflege",
+      "Sorgerecht/Umgangsrecht",
+      "Kita-Zuschuss",
+      "Fördermittel",
+      "Unterhalt"
+    ]
+  },
+  "keyword_feedback": {
+    "schwache_keywords": [
+      "ZBFS",
+      "Zentrum Bayern Familie & Soziales",
+      "Familienunterstützung Bayern Probleme"
+    ],
+    "neue_keywords_vorgeschlagen": [
+      "Elterngeldantrag",
+      "Familiengeldantrag",
+      "Kinderbetreuung",
+      "Pflegeunterstützung",
+      "Sorgerechtsberatung"
+    ]
+  },
+  "aggregierte_aktionen": {
+    "regenerieren": [
+      "INN_003",
+      "INN_006",
+      "INN_010"
+    ],
+    "reklassifizieren": [],
+    "topics_entfernen": [
+      "0",
+      "1",
+      "4",
+      "5",
+      "6",
+      "8",
+      "11",
+      "13",
+      "15",
+      "17",
+      "18",
+      "19",
+      "24",
+      "25",
+      "26"
+    ],
+    "konvergenz_zusammenfuehren": [
+      [
+        "INN_001",
+        "INN_002",
+        "INN_004",
+        "INN_008"
+      ],
+      [
+        "INN_003",
+        "INN_005",
+        "INN_006",
+        "INN_007",
+        "INN_009",
+        "INN_010"
+      ]
+    ]
+  },
+  "review_count": 0,
+  "review_reasons": []
+}
