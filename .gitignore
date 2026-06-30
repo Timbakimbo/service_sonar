@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -202,6 +204,11 @@ cython_debug/
 # .vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
+
+# Local/generated scrape scratch files. Curated prototype data in data/*.json is
+# intentionally not ignored because downstream demo stages depend on it.
+data/raw/*_partial.json
+data/tmp/
 
 # Ruff stuff:
 .ruff_cache/

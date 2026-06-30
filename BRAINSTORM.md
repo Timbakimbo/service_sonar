@@ -96,10 +96,14 @@ Bewusste Entscheidung: Agents nur wo Reasoning nötig ist, hardcoded wo Regeln a
 - r/Bayern privat und geblockt — aus Liste entfernt
 - Aktive Subreddits: r/germany, r/LegalAdviceGerman, r/Eltern, r/de
 
-### Orchestrierung
+### Orchestrierung — Entscheidung: KEIN zentraler Orchestrator
 - Plain Python, kein Framework
 - Jeder Agent/Modul = eigene Python-Datei, Single Responsibility
-- Orchestrator bleibt als Modul — koordiniert Reihenfolge und Feedback Loop
+- **Bewusst gegen einen zentralen Orchestrator entschieden.** Begründung: Inter-Agent-Kommunikation
+  läuft file-basiert über die JSON-Outputs jeder Stufe; Loop-Control übernimmt der Evaluator via
+  Action-Listen (`aggregierte_aktionen`) + Human-in-the-Loop. Ein zentraler Orchestrator würde
+  diesem Architektur-Konzept widersprechen.
+- Stufen werden vorerst manuell in Reihenfolge ausgeführt (siehe README „Local Run Sequence").
 
 ### Suchmaschine
 - DuckDuckGo (DDG) als primäre Quelle
@@ -212,6 +216,31 @@ Filter auf zwei Ebenen:
   - gesundheitliche Herausforderungen → Kinderkrankengeld / Mutterschaftsgeld
 - Erkenntnis: Der schwierigste Teil ist nicht mehr Topic-Erkennung, sondern korrektes Mapping von Bürgerproblemen auf bestehende Leistungen
 
+### Gap Analysis Agent v2 — Entscheidungen
+- **2-Pass-Architektur** statt 1-Call: Pass 1 strukturiert (Klassifikation, Phase, cluster_id, matching), Pass 2 generiert pro Cluster EINE konkrete Empfehlung. Trennung erzwingt Konkretheit, verhindert Boilerplate.
+- **Deterministisches Clustering statt LLM-Clustering**: LLM-Cluster-Labels sind run-instabil (Llama kodierte Facette statt Leistung in cluster_id, auch nach Prompt-Schärfung). Konsolidierung im Code über dominanten matching_service; restriktive Regel (gleicher Service + gleiche Klassifizierung + kein blockierender Review-Grund), sonst solo_<id>. LLM-Label bleibt als cluster_id_llm.
+- **Neue Felder**: customer_journey_phase (kontrolliertes Vokabular), cluster_id, cluster_zusammenfassung. schema_version 1.2-de, neuer Output-Pfad (alte Datei bleibt zum Vergleich).
+- **Generic-Detection** (lightweight, keine Dependency) flaggt Boilerplate-Empfehlungen via Phrasen + Spezifik-Heuristik; Leistungsnamen zählen NICHT als Spezifik.
+
+### Innovation Agent — Entscheidungen
+- 1 Call pro relevantem Cluster → genau EINE Innovation pro Cluster.
+- **Determinismus-Split**: Fakten (Topics, Leistungen, Phasen, Klassifizierung) setzt der Code, nur kreative Substanz kommt vom LLM — Grounding gegen Halluzination.
+- **innovation_typ Coerce statt Flag-only**: bei Mismatch zur klassifizierung wird auf ersten erlaubten Typ gesetzt, Original in innovation_typ_original, needs_review bleibt.
+- **Titel-Schranke: Zeichen statt Wörter** (20–80) — Wort-Untergrenze (min 5) flaggte 10/10 wegen deutscher Komposita-Titel. Empirisch korrigiert auf Zeichen-Cap.
+- **Träger-Whitelist**: Alias-Map (Vollname ↔ Abkürzung) + kuratierte öffentliche Träger. L-Bank (BW) ausgeschlossen — kein bayerischer Träger.
+
+### Evaluator Agent — Entscheidungen
+- **4-Pass-Kaskade**: Topics → Gaps (gated auf in_scope) → Innovationen (cross-pass) → Aggregation. Pässe abhängig, spätere nutzen frühere als Kontext.
+- **Determinismus-Split**: evaluation_ids, aggregierte_aktionen, Cross-Pass-Override, priorisierung-Vollständigkeit (deterministisch_angehaengt-Flag), Konvergenz-Normalisierung (Token-Sort) im Code. Plausibilität/Begründungen/Briefings im LLM.
+- **Pass 1 bewertet alle 28 Topics** (nicht nur die 15 relevanten) → kann Analysis-Agent-Entscheidung überstimmen (false-positives UND false-negatives).
+- **noise vs out-of-scope strikt getrennt**: noise=technisches Crawling-Artefakt; in_scope=false ohne noise=kohärentes Topic außerhalb Familienscope. Beide → remove, aber unterscheidbare Begründung.
+- **Plausibilitäts-Overrides** (Code): traeger_domain_plausibel=false oder integrationspunkte_plausibel=false bei accept → rework. Fangen NUR innere Inkonsistenz, nicht falsch-positive Flag-Werte.
+- **source_stats defensiv aus metrics.json**: list-of-runs (partial) / dict (complete) / missing — robust gegen spätere save_metrics-Erweiterung.
+
+### Modell-Strategie — Update nach Evaluator-Tuning
+- Prompt-Schärfung wirkt zuverlässig bei Konvergenz-Erkennung (Pattern-Labeling) und Noise/out-of-scope-Trennung mit Llama 3.3.
+- **Vorgemerkter Gemini-Fall**: Pass-3-Integrationspunkte-Plausibilität bei Grenzfällen (z.B. INN_009 ElternGuide — BayernID bei personalisierter vs. niedrigschwelliger Beratung). Llama setzt hier den Flag falsch-positiv; das ist eine Urteils-Schwäche, die Prompt-Text nicht löst und Code-Overrides nicht korrigieren können.
+
 ## Nächste Schritte
 - [x] Content Filter Source Discovery ✅
 - [x] Content Filter Web Scraper ✅
@@ -230,8 +259,11 @@ Filter auf zwei Ebenen:
 - [ ] Qualität des Service-Matchings verbessern
 - [ ] Semantische Service-Suche / Retrieval vor Gap Analysis prüfen
 - [ ] Echte-Lücke-Kriterien schärfen
-- [ ] Service Innovation Agent
-- [ ] Evaluator Agent
+- [x] Gap Analysis Agent v2 (2-Pass + deterministisches Clustering) ✅
+- [x] Service Innovation Agent ✅
+- [x] Evaluator Agent (4-Pass-Kaskade) ✅
+- [ ] save_metrics-Erweiterung (Reddit/FdS-Stats + Beispiel-Titles) — separater Task
+- [ ] Gemini-Test für Pass-3-Integrationspunkte-Plausibilität (Grenzfälle wie INN_009)
 - [ ] Keyword Agent + Feedback Loop
-- [ ] Orchestrator
+- [x] ~~Orchestrator~~ — bewusst verworfen (file-basiert + Evaluator-Action-Listen + Human-in-the-Loop)
 - [ ] Umbenennung: nicht-Agent Module aus `agents/` Ordner raus, neuer `modules/` Ordner

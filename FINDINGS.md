@@ -424,19 +424,148 @@ Der Gap Analysis Agent ist als erste Version implementiert und pipeline-fähig. 
 - Analysis Agent
 - Reference Builder
 - Gap Analysis Agent v1
+- Gap Analysis Agent v2 (2-Pass + deterministisches Clustering)
+- Innovation Agent
+- Evaluator Agent (4-Pass-Kaskade)
 
 ### Teilweise fertig
 - Qualität der Gap Analysis
 - Service-Matching gegen bestehende Leistungen
 - Review-Logik für unsichere Matches
+- Pipeline-Metriken (Web/Reddit/FragdenStaat) — Output-Form noch nicht „complete" für Evaluator
 
 ### Offen
-- Innovation Agent
-- Evaluator Agent
 - Keyword Agent
 - Feedback Loop
-- Orchestrator
 - Semantisches Retrieval für bessere Service-Zuordnung
+
+### Bewusst verworfen
+- Zentraler Orchestrator — Inter-Agent-Kommunikation file-basiert über JSON-Outputs,
+  Loop-Control via Evaluator-Action-Listen + Human-in-the-Loop
 
 ### Zentrale Erkenntnis für die Präsentation
 Der schwierigste Teil des Systems ist nicht mehr die reine Topic-Erkennung, sondern das korrekte Mapping von Bürgerproblemen auf bestehende Leistungen. Genau hier zeigt sich der Bedarf für eine Kombination aus strukturierter Referenzdatenbank, LLM-Reasoning, Validierungslogik und späterem Evaluator Agent.
+
+---
+
+## Gap Analysis Agent v2 — 2-Pass + deterministisches Clustering
+
+### Motivation (Schwächen v1)
+- `empfehlung_innovation` war Boilerplate (11/15 Gaps fast wortgleich "einfacher transparenter Antragsprozess")
+- Redundante Elterngeld-Topics (7/9/12/14/20/22) wurden als getrennte Gaps ohne Querverweis behandelt
+- `kernproblem` zu generisch — nannte nicht die Customer-Journey-Phase
+
+### Architektur-Umstellung 1-Call → 2-Pass
+| Pass | Aufgabe | Backend |
+|------|---------|---------|
+| Pass 1 | Klassifikation, customer_journey_phase, cluster_id, matching_services — 1 Call für alle Topics | Llama 3.3 70B |
+| Pass 2 | EINE konkrete Empfehlung pro relevantem Cluster — 1 Call pro Cluster | Llama 3.3 70B |
+
+Begründung: Der 1-Call-Ansatz überlastete das LLM (Klassifikation + Cluster + Phase + Empfehlung gleichzeitig). Pass 2 zwingt strukturell zu Konkretheit, weil eine Cluster-Empfehlung mehrere Topic-Facetten gleichzeitig adressieren muss.
+
+### Schlüssel-Erkenntnis: LLM-Clustering ist run-instabil
+Zwei Prompt-Iterationen scheiterten — Llama 3.3 kodierte die *Facette* in die `cluster_id` (`elterngeld_fuer_vaeter`, `elterngeld_hoehe`) statt auf Leistungsebene zu clustern, selbst nach explizitem Negativbeispiel im Prompt. **Fix: deterministische Konsolidierung** über den dominanten `matching_service` statt LLM-Clustering. Restriktive Bündelungs-Regel (gleicher Primär-Service UND gleiche Klassifizierung UND kein blockierender Review-Grund), sonst `solo_<topic_id>`. So bleibt z.B. T0 (Migration, fälschlich auf Familiengeld gematcht) sauber isoliert. Die LLM-cluster_id bleibt als `cluster_id_llm` zur Diagnose erhalten.
+
+**Methodisches Learning:** Wo das LLM eine *Konsistenz-* statt *Reasoning-Leistung* erbringen muss (stabile Labels über Runs), ist Determinismus im Code überlegen — analog zur Matching-Validierung in v1.
+
+### Ergebnis v2
+- Elterngeld-Topics korrekt zu `elterngeld_prozessproblem` (4) + `elterngeld_informationsluecke` (2) gebündelt
+- Empfehlungen konkret (BayernID/ELSTER/Stakeholder/Phase), Boilerplate via Generic-Detection geflaggt
+- Pass-2-Calls von 14 auf 11 reduziert durch Clustering
+- schema_version 1.2-de, neuer Output `gap_analysis_output_v2.json` (alte Datei unangetastet)
+
+---
+
+## Innovation Agent v1 — Cluster → konkrete Idee
+
+### Aufbau
+- Input: `gap_analysis_output_v2.json` (cluster-basiert) + Referenz
+- 1 Groq-Call pro relevantem Cluster → genau EINE Innovation, die alle Topics adressiert
+- Skip-Logik: bereits_abgedeckt/irrelevant-Cluster + Solos mit Scope-Review-Grund (z.B. solo_0 Migration)
+
+### Determinismus-Split (Grounding gegen Halluzination)
+- **Code-gesetzt:** addressierte_topics, betroffene_leistungen, cluster_id, klassifizierung, adressierte_phasen
+- **LLM:** Titel, konkrete Lösung, Träger, Integrationspunkte, Hürden, Aufwand, Priorität
+
+### Empirisches Learning: Titel-Schranke
+Erste Validierung nutzte Wort-Untergrenze (min 5 Wörter) → flaggte **10/10** Innovationen, weil deutsche Komposita-Titel ("Digitaler Elterngeld-Assistent") natürlicherweise 2–4 Wörter haben. **Fix: Zeichen-Schranke (20–80) statt Wortzählung.** Senkte Fehlalarme von 10/10 auf 5/10 (verbleibende sind echte Kurz-Titel wie "ElternGuide"). Train-of-thought: `split()` zählt Bindestrich-Komposita als 1 Wort — Wortgrenzen sind für deutsche Verwaltungssprache untauglich.
+
+### Träger-Whitelist
+Alias-Map (Vollname ↔ Abkürzung, "Zentrum Bayern Familie und Soziales" ↔ "ZBFS") + kuratierte öffentliche Träger. L-Bank (BW-Förderbank) bewusst ausgeschlossen — kein bayerischer Träger; LfA/BayernLabo/KfW fehlen im Datensatz.
+
+---
+
+## Evaluator Agent — 4-Pass-Kaskade (schließt den MAS-Kreislauf)
+
+### Architektur
+| Pass | Aufgabe |
+|------|---------|
+| Pass 1 | Topic-Evaluation (alle 28 Topics; in_scope/noise/redundancy/verdict) |
+| Pass 2 | Gap-Evaluation (nur in_scope-Topics; Rest deterministisch skipped) |
+| Pass 3 | Innovation-Evaluation (Domain-/Integrationspunkte-/Konvergenz-Plausibilität) |
+| Pass 4 | Aggregation: Priorisierung, Konvergenz-Status, Keyword-Feedback |
+
+Determinismus-Split: evaluation_ids, aggregierte_aktionen, Cross-Pass-Override (Gap remove/reclassify ⇒ Innovation rework), priorisierung-Vollständigkeit setzt der Code; Plausibilität/Begründungen/Briefings das LLM.
+
+### Cross-Pass-Konsistenz als Code-Garantie
+Pass 2 (Gap) ist die Wahrheit. Sagt das LLM in Pass 3 "accept", obwohl der zugrundeliegende Gap remove/reclassify ist, **überschreibt der Code** auf "rework" (gap_basis_fraglich). Zusätzlich Plausibilitäts-Overrides: `traeger_domain_plausibel=false` oder `integrationspunkte_plausibel=false` bei verdict=accept → Code-Override auf rework. Diese Overrides fangen *innere Inkonsistenz* (Flag=false aber accept).
+
+### Prompt-Schärfung v2 — was funktionierte, was nicht (ehrlich)
+Vier Schwächen im ersten Evaluator-Output adressiert (nur Prompts + 2 Code-Overrides, kein Modellwechsel):
+
+| Schwäche | Erwartung | Ergebnis |
+|----------|-----------|----------|
+| 1: Träger-Domain (INN_006 Kultusministerium für Gesundheit) | tdp=false + rework | ✅ **getroffen** |
+| 2: Integrationspunkte (BayernID/ELSTER bei Foren/Beratung) | INN_009 + INN_010 ipp=false | ⚠️ **teilweise** — INN_010 ✅, **INN_009 verfehlt** |
+| 3: Konvergenz INN_001+004+008 | gemeinsamer Pattern-Cluster | ✅ **getroffen** (sogar +INN_002) |
+| 4: Noise vs out-of-scope (T0/T1/T4) | noise=false, nur out-of-scope | ✅ **getroffen** |
+
+### Methodisches Learning: Prompt-Schärfung vs. Modell-Limit
+**Prompt-Schärfung wirkte** bei Konvergenz (Pattern- statt Domänen-Labeling) und der Noise/out-of-scope-Trennung — beides mit Llama 3.3 zuverlässig im Lauf. Das ist NICHT der Gemini-Fall.
+
+**INN_009 ist ein echter Teil-Miss (nicht beschönigt):** ElternGuide für Schwangere/junge Eltern hat nur BayernID; die Lösung sagt "über BayernID auf bestehende Daten zugreifen". Llama wertete das als legitimen personalisierten Datenzugriff, nicht als niedrigschwellige Beratung ohne Auth-Bedarf — laut Spec hätte ipp=false kommen müssen. Im Gegensatz zum Mütter-Forum (anonym, klar) ist das ein **Grenzfall im Urteil**, kein Inkonsistenz-Fall.
+
+**Kernerkenntnis für die Thesis:** Die deterministischen Overrides korrigieren nur *innere Inkonsistenz* (Flag=false aber accept). Sie können einen **falsch-positiven Flag-Wert** (LLM setzt fälschlich ipp=true) NICHT korrigieren — dafür müsste das Modell den Flag richtig setzen. INN_009 ist genau dieser Fall: ein Urteils-Schwäche-Problem bei Grenzfällen, kein Code-Problem. Hier — und nur hier — wäre ein stärkeres Reasoning-Modell (Gemini) der Hebel, nicht mehr Prompt-Text. **Vorgemerkter Gemini-Fall: Pass-3-Integrationspunkte-Plausibilität bei Grenzfällen.**
+
+### Verifiziert
+- Override-Pfade (b)/(c) isoliert getestet (Flag=false + accept → korrekt rework mit Briefing) — in diesem Lauf nicht gefeuert, weil das LLM selbst schon konsistent war
+- priorisierung deterministisch garantiert vollständig (fehlende accept-IDs werden mit `deterministisch_angehaengt: true` ergänzt)
+- Konvergenz-Bündelung über `normalize_konvergenz_label` (Token-Sort) run-stabil
+
+---
+
+## Pipeline-Metriken & Robustheit (Team-Integration, AlexIonkin)
+
+Beiträge aus dem Branch `test-and-metrics-updates`, integriert ohne den Orchestrator-Stub.
+Der Orchestrator wurde bewusst komplett verworfen (file-basierte Inter-Agent-Kommunikation +
+Evaluator-Action-Listen + Human-in-the-Loop statt zentraler Koordinator).
+
+### save_metrics erweitert (Web + Reddit + FragdenStaat)
+- `scripts/save_metrics.py` liefert jetzt vergleichbare Run-Metriken für alle drei Quellen
+  (`save_web_metrics`, `save_reddit_metrics`, `save_fragdenstaat_metrics`) statt nur Web.
+- Web/Reddit/FragdenStaat-Scraper rufen ihre Metrik-Funktion nach dem Lauf selbst auf.
+- **Offen (Folge-Task):** `metrics.json` bleibt eine Liste von Run-Records. Der Evaluator
+  (`build_source_stats`) liest daraus weiterhin nur den Web-Teil → `source_stats_status="partial"`.
+  Für `"complete"` muss die Output-Form (per-Source-Dict im jüngsten Record) noch an
+  `build_source_stats` angeglichen werden.
+
+### Robustheit & Hygiene
+- **Graceful API-Key-Handling:** `get_groq_client()` / `get_gemini_client()` brechen nicht mehr
+  beim Import hart ab, sondern geben eine Hilfemeldung und None zurück — Pipeline-Stufen ohne
+  Key laufen sauber durch statt zu crashen. Client wird durch die Pass-Funktionen gefädelt.
+- **FragdenStaat-Dedup-Fix:** relative und absolute URLs werden vor dem Abgleich normalisiert
+  (`urljoin`), sodass erneute Läufe bestehende Anfragen nicht mehr duplizieren.
+- **Reddit-Re-Run-Schutz:** Der bestehende Datensatz (361 Posts) war/ist verwertbar. Der Scraper
+  schützt ihn jetzt vor einem blockierten *erneuten* Lauf: bei ≥80 % 403er oder komplett
+  fehlgeschlagenen Requests wird `scraped_reddit.json` NICHT mit Leerdaten überschrieben, sondern
+  erhalten; ein Partial-Output landet separat unter `data/raw/scraped_reddit_partial.json`
+  (per `.gitignore` ausgeschlossen). Kein Beleg, dass Reddit generell unzuverlässig ist — der
+  Schutz greift nur, wenn ein konkreter Lauf tatsächlich blockiert wird.
+- `.env.example`, `groq==1.5.0` in `requirements.txt`, `.gitignore`-Policy für Scratch-/Partial-Files.
+
+### Lokaler Testlauf (Windows, frischer Clone)
+- Manuelle `python -m ...`-Ausführung aller hardcoded Stufen ohne API-Keys erfolgreich.
+- Source Discovery: 220 URLs gefunden, 26 gefiltert, 175 akzeptiert.
+- Web Scraper: 175 Quellen → 135 Seiten; robots.txt-Skips / 403 / 404 ohne Crash gehandhabt.
+- Preprocessing: 135 Web + 361 Reddit + 136 FragdenStaat = 632 Dokumente.
+- FragdenStaat-Dedup-Verdacht (68 + 68 = 136) war der Auslöser für den Normalisierungs-Fix oben.
