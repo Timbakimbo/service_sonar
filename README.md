@@ -4,6 +4,10 @@ Prototype for an agentic AI workflow around family-related social benefits in th
 
 The project collects public web, Reddit and FragDenStaat data, preprocesses text, runs topic/sentiment analysis, compares needs with existing services, and prepares later service innovation work.
 
+The pipeline is deliberately manual and has no orchestrator. For the authoritative German
+operating procedure—including inputs, outputs, success checks, and the human handoff after
+evaluation—see [`RUNBOOK.md`](RUNBOOK.md).
+
 ## Current Status
 
 Implemented and locally runnable without private API keys:
@@ -21,9 +25,17 @@ Implemented but API-key dependent:
 - Innovation Agent (`agents.innovation_agent`) requires `GROQ_API_KEY`
 - Evaluator Agent (`agents.evaluator_agent`) requires `GROQ_API_KEY`
 
+Implemented human feedback slice:
+
+- Evaluator recommendations can be accepted, rejected, or deferred via
+  `scripts/review_evaluator.py`.
+- Accepted keyword additions/removals are consumed by the next manually started Source
+  Discovery and Reddit run.
+
 Not implemented yet:
 
-- Keyword Agent and feedback loop
+- Automatic application of accepted topic, gap, innovation-rework, and merge decisions by
+  the respective domain agents. These decisions are recorded but remain a manual follow-up.
 
 Deliberately out of scope:
 
@@ -37,7 +49,7 @@ Gap Analysis v2 is an intermediate assistive analysis result. It is not a final 
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -52,6 +64,15 @@ Do not commit `.env`.
 
 ## Local Run Sequence
 
+Check the existing artifacts and the next manual step first:
+
+```bash
+python scripts/pipeline_status.py
+```
+
+The checker only reads and validates JSON files. It never runs agents, applies Evaluator
+actions, or stores pipeline state.
+
 ```bash
 python -m agents.source_discovery_agent
 python -m agents.scraping_agents.webscraping_agent
@@ -64,12 +85,24 @@ python -m agents.innovation_agent
 python -m agents.evaluator_agent
 ```
 
+The three scrapers may run independently, but preprocessing requires all three regular
+scraper outputs. After the Evaluator, stop and review `review_count`, `review_reasons`,
+`aggregierte_aktionen`, `rework_warteschlange`, and `keyword_feedback`. Open actions are a
+human decision gate, not an automatically executed feedback loop. See the
+[`RUNBOOK.md`](RUNBOOK.md#human-in-the-loop-nach-dem-evaluator) for the action matrix.
+
+Review recommendations interactively with `python scripts/review_evaluator.py`. Accepted
+keyword decisions are consumed by the next manually started Source Discovery and Reddit run;
+no stage is started automatically.
+
 ## Known Limitations
 
 - Reddit public JSON scraping produced a usable dataset (361 posts in the current corpus). Individual re-runs may hit 403 rate-limiting depending on IP/timing; the scraper guards against this by preserving the existing `data/raw/scraped_reddit.json` instead of overwriting it with an empty/blocked run, and writing a separate partial file.
 - FragDenStaat messages require OAuth; the scraper uses public request description/body and summary fields.
 - Web scraping can produce normal robots.txt skips, 403 and 404 responses.
-- Analysis and Gap Analysis require external LLM APIs.
+- Analysis, Gap Analysis, Innovation, and Evaluator require external LLM APIs.
+- The executable feedback path currently covers keywords; other accepted Evaluator actions
+  are recorded but not yet consumed by Gap Analysis or Innovation.
 - Existing generated JSON data is kept in the repo as prototype/demo data. New local scratch outputs should not be committed unless intentionally curated.
 
 ## Metrics

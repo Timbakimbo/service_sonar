@@ -1,7 +1,7 @@
 import json
 import os
 from ddgs import DDGS
-from config.keywords import KEYWORDS
+from config.keywords import get_effective_keywords
 
 # Output-Pfad für gefundene Sources
 OUTPUT_PATH = "data/raw/sources.json"
@@ -59,7 +59,9 @@ def discover_sources() -> tuple[list, dict]:
     seen_urls = set()
     stats = {"total_found": 0, "filtered": 0, "accepted": 0}
 
-    for keyword in KEYWORDS:
+    keywords = get_effective_keywords()
+    print(f"  {len(keywords)} wirksame Keywords (Seeds + akzeptierte Human-Entscheidungen)")
+    for keyword in keywords:
         print(f"Suche nach: {keyword}")
         results = search_ddg(keyword)
         stats["total_found"] += len(results)

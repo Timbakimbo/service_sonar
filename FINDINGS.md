@@ -432,11 +432,11 @@ Der Gap Analysis Agent ist als erste Version implementiert und pipeline-fähig. 
 - Qualität der Gap Analysis
 - Service-Matching gegen bestehende Leistungen
 - Review-Logik für unsichere Matches
-- Pipeline-Metriken (Web/Reddit/FragdenStaat) — Output-Form noch nicht „complete" für Evaluator
+- Pipeline-Metriken (Web/Reddit/FragdenStaat) — Evaluator liest per-Source; „complete" nach einmaligem Scraper-Re-Run
 
 ### Offen
-- Keyword Agent
-- Feedback Loop
+- Quantitative Bewertung des neuen Keyword-Feedback-Laufs
+- Verarbeitung akzeptierter Topic-/Gap-/Innovation-Aktionen durch die Fach-Agents
 - Semantisches Retrieval für bessere Service-Zuordnung
 
 ### Bewusst verworfen
@@ -444,7 +444,7 @@ Der Gap Analysis Agent ist als erste Version implementiert und pipeline-fähig. 
   Loop-Control via Evaluator-Action-Listen + Human-in-the-Loop
 
 ### Zentrale Erkenntnis für die Präsentation
-Der schwierigste Teil des Systems ist nicht mehr die reine Topic-Erkennung, sondern das korrekte Mapping von Bürgerproblemen auf bestehende Leistungen. Genau hier zeigt sich der Bedarf für eine Kombination aus strukturierter Referenzdatenbank, LLM-Reasoning, Validierungslogik und späterem Evaluator Agent.
+Der schwierigste Teil des Systems ist nicht mehr die reine Topic-Erkennung, sondern das korrekte Mapping von Bürgerproblemen auf bestehende Leistungen. Dafür kombiniert das System inzwischen strukturierte Referenzdaten, LLM-Reasoning, deterministische Validierung und eine vierstufige Evaluation mit menschlicher Freigabe.
 
 ---
 
@@ -544,10 +544,13 @@ Evaluator-Action-Listen + Human-in-the-Loop statt zentraler Koordinator).
 - `scripts/save_metrics.py` liefert jetzt vergleichbare Run-Metriken für alle drei Quellen
   (`save_web_metrics`, `save_reddit_metrics`, `save_fragdenstaat_metrics`) statt nur Web.
 - Web/Reddit/FragdenStaat-Scraper rufen ihre Metrik-Funktion nach dem Lauf selbst auf.
-- **Offen (Folge-Task):** `metrics.json` bleibt eine Liste von Run-Records. Der Evaluator
-  (`build_source_stats`) liest daraus weiterhin nur den Web-Teil → `source_stats_status="partial"`.
-  Für `"complete"` muss die Output-Form (per-Source-Dict im jüngsten Record) noch an
-  `build_source_stats` angeglichen werden.
+- **Evaluator-Kopplung (erledigt):** `metrics.json` ist eine Liste von Run-Records, jeder neue
+  Record getaggt mit `source` (web/reddit/fragdenstaat); Legacy-Web-Läufe haben kein `source`.
+  `build_source_stats` gruppiert die Liste jetzt nach Quelle (Legacy = web) und nimmt pro Quelle
+  den jüngsten Record → `source_stats_status="complete"`, sobald alle drei Quellen vorliegen,
+  sonst `partial`. **Verbleibend (Daten, kein Code):** Die drei Scraper müssen einmal mit dem
+  erweiterten `save_metrics` laufen, damit Reddit/FragdenStaat-Records in `metrics.json` landen
+  (aktuell nur Legacy-Web → `partial`).
 
 ### Robustheit & Hygiene
 - **Graceful API-Key-Handling:** `get_groq_client()` / `get_gemini_client()` brechen nicht mehr
@@ -569,3 +572,64 @@ Evaluator-Action-Listen + Human-in-the-Loop statt zentraler Koordinator).
 - Web Scraper: 175 Quellen → 135 Seiten; robots.txt-Skips / 403 / 404 ohne Crash gehandhabt.
 - Preprocessing: 135 Web + 361 Reddit + 136 FragdenStaat = 632 Dokumente.
 - FragdenStaat-Dedup-Verdacht (68 + 68 = 136) war der Auslöser für den Normalisierungs-Fix oben.
+
+---
+
+## Manueller End-to-End-Workflow (ohne Orchestrator)
+
+### Implementiert
+- `RUNBOOK.md` ist die operative Anleitung mit Pipeline-Graph, Stage-Verträgen,
+  Erfolgskriterien, Fehlerfällen und Human-in-the-Loop-Aktionsmatrix.
+- Das README verweist als kurzer Einstieg auf das Runbook und den Status-Check.
+- `scripts/pipeline_status.py` validiert read-only alle Stage-Artefakte oder eine einzelne Stage.
+  Es prüft JSON-Lesbarkeit, Top-Level-Struktur, Pflichtfelder und nichtleere Kerndaten.
+- Statusausgabe unterscheidet `READY`, `BLOCKED`, `OUTPUT VALID` und `OUTPUT INVALID` und nennt
+  den nächsten manuellen Befehl. Es werden keine Agents gestartet und keine State-Files geschrieben.
+- Evaluator-Reviews, aggregierte Aktionen und Keyword-Vorschläge werden als
+  `HUMAN DECISION REQUIRED` sichtbar gemacht.
+- 13 isolierte Tests decken Artefaktvalidierung, Human Gate, Review-Persistenz und Keyword-Anwendung ab.
+
+### Prüfung am vorhandenen Datenstand
+- Alle neun Stage-Outputs sind technisch valide.
+- Der Evaluator-Output hat `review_count=0`, aber bewusst offene Human-Aktionen:
+  - 3 Innovationen regenerieren (`INN_003`, `INN_006`, `INN_010`)
+  - 15 Topics entfernen
+  - 2 Konvergenzgruppen fachlich zusammenführen
+- Keyword-Feedback wird als konkreter Human-Output erzeugt:
+  - schwach: `ZBFS`, `Zentrum Bayern Familie & Soziales`,
+    `Familienunterstützung Bayern Probleme`
+  - vorgeschlagen: `Elterngeldantrag`, `Familiengeldantrag`, `Kinderbetreuung`,
+    `Pflegeunterstützung`, `Sorgerechtsberatung`
+- Konvergenz ist noch nicht erreicht; als fehlend werden Pflege, Sorgerecht/Umgangsrecht,
+  Kita-Zuschuss, Fördermittel und Unterhalt genannt.
+- `source_stats_status` ist weiterhin `partial`, bis alle drei Scraper mit der erweiterten
+  Metrik-Erfassung erneut gelaufen sind.
+
+### Zentrale Grenze des aktuellen MAS
+Der Evaluator **liefert** Keyword- und Rework-Feedback, ändert die Seed-Konfiguration aber
+nicht selbst. Akzeptierte Keyword-Entscheidungen werden inzwischen zur Laufzeit angewendet.
+Noch nicht gelöst ist die reproduzierbare
+Rückgabe einer bestätigten menschlichen Entscheidung an Gap-/Innovation-Agent: Die Agents lesen
+die Evaluator-Aktionslisten nicht als optionalen manuellen Input. Ein erneuter Lauf mit identischen
+Inputs setzt das Feedback daher nicht um.
+
+Für den nächsten E2E-Test müssen getrennt geprüft werden:
+1. technischer Vorwärtslauf aller Stages,
+2. verständlicher und vollständiger Human-Output des Evaluators,
+3. manuelle Keyword-Entscheidung über `review_evaluator.py`,
+4. neuer Lauf ab Source Discovery und Nachweis, ob sich Quellen/Topics verbessern,
+5. weiterhin offene Rework-Schnittstelle für bestätigte Reclassify-/Regenerate-Entscheidungen.
+
+### Human-Review und erster ausführbarer Feedback-Slice
+- `scripts/review_evaluator.py` zeigt Evaluator-Aktionen im Terminal und erfasst pro Aktion
+  `accepted`, `rejected` oder `deferred` plus optionale menschliche Notiz.
+- Entscheidungen werden file-basiert in `data/evaluation/human_decisions.json` gespeichert;
+  bereichsweise spätere Reviews überschreiben frühere Bereiche nicht.
+- Der Pipeline-Status zählt akzeptierte und abgelehnte Aktionen nicht mehr als offenen Human Gate;
+  vertagte Empfehlungen bleiben offen.
+- Source Discovery und Reddit verwenden beim nächsten manuellen Lauf die Seed-Keywords plus
+  akzeptierte Ergänzungen minus akzeptierte Entfernungen. Damit ist der Keyword-Feedback-Pfad
+  Evaluator → Mensch → JSON → neuer manueller Datenlauf technisch geschlossen.
+- Topic-Remove, Gap-Reclassify, Innovation-Rework und Merge werden strukturiert erfasst und an
+  einen Ziel-Agent geroutet, aber noch nicht von Gap-/Innovation-Agent verarbeitet. Diese Grenze
+  bleibt bewusst sichtbar.

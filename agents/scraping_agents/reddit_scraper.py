@@ -5,7 +5,7 @@ from datetime import datetime
 
 import requests
 
-from config.keywords import KEYWORDS
+from config.keywords import get_effective_keywords
 from scripts.save_metrics import save_reddit_metrics
 
 OUTPUT_PATH = "data/raw/scraped_reddit.json"
@@ -150,7 +150,7 @@ def run():
 
     try:
         for subreddit in SUBREDDITS:
-            for keyword in KEYWORDS:
+            for keyword in get_effective_keywords():
                 print(f"r/{subreddit} -> '{keyword}'")
                 posts = search_subreddit(subreddit, keyword, metrics)
 

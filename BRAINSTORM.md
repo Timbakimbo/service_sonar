@@ -9,7 +9,8 @@
 - [ ] Behörden-Boilerplate Topics (8, 18) als irrelevant markieren
 
 ### Quellen-Strategie
-- [ ] Keywords mit Forum-Signalwörtern erweitern — wird später vom Keyword Agent übernommen
+- [x] Evaluator schlägt schwache/neue Keywords vor; Mensch entscheidet im Terminal-Review
+- [ ] Qualität der akzeptierten Keyword-Änderungen im nächsten vollständigen Lauf messen
 - [ ] Min 1 Wort in Web Scraper durchgekommen — Content Filter noch nicht wasserdicht
 
 ### Redundanz & Relevanzsignal
@@ -21,9 +22,12 @@
 - [ ] Genaue Gewichtung erst nach erstem vollständigem Durchlauf entscheidbar
 
 ### Feedback Loop
-- [ ] Keyword Agent: wie misst er ob ein Keyword "schwach" ist?
+- [x] Evaluator liefert qualitative schwache/neue Keywords
+- [x] Human Review speichert accept/reject/defer file-basiert
+- [x] Discovery und Reddit wenden akzeptierte Keyword-Entscheidungen im nächsten manuellen Lauf an
+- [ ] Quantitativ messen, ob akzeptierte Keywords Relevanz und Themenabdeckung verbessern
 - [ ] Bereits gescrapter Content bleibt — kein Re-Scraping für alte Keywords
-- [ ] Keyword Agent erst nach erstem vollständigem BERTopic Durchlauf sinnvoll
+- [ ] Rework-/Reclassify-/Merge-Entscheidungen als optionale Inputs der Fach-Agents umsetzen
 
 ### Datenbank
 - [ ] Phase 1: JSON reicht für Prototyp
@@ -57,9 +61,9 @@ Bewusste Entscheidung: Agents nur wo Reasoning nötig ist, hardcoded wo Regeln a
 **Echter Agent (LLM Reasoning Layer):**
 - Analysis Agent → Gemini 2.5 Flash
 - Gap Analysis Agent → Groq (`llama-3.3-70b-versatile`)
-- Innovation Agent → noch offen (Claude Haiku / DeepSeek / Groq möglich)
-- Evaluator Agent → noch offen
-- Keyword Agent → kostenloses Modell geplant
+- Innovation Agent → Groq (`llama-3.3-70b-versatile`)
+- Evaluator Agent → Groq (`llama-3.3-70b-versatile`), 4-Pass-Kaskade
+- Keyword-Feedback → Evaluator-Urteil + menschliche Freigabe, kein separater Agent nötig
 
 ### Modell-Strategie
 - Analysis Agent → Gemini 2.5 Flash
@@ -237,6 +241,28 @@ Filter auf zwei Ebenen:
 - **Plausibilitäts-Overrides** (Code): traeger_domain_plausibel=false oder integrationspunkte_plausibel=false bei accept → rework. Fangen NUR innere Inkonsistenz, nicht falsch-positive Flag-Werte.
 - **source_stats defensiv aus metrics.json**: list-of-runs (partial) / dict (complete) / missing — robust gegen spätere save_metrics-Erweiterung.
 
+### Manueller End-to-End-Betrieb — Entscheidungen
+- **RUNBOOK als operative Single Source of Truth**: `README.md` bleibt Quickstart; `RUNBOOK.md`
+  dokumentiert Reihenfolge, Inputs, Outputs, Erfolgskriterien, Fehlerbilder und Human-Handoff.
+- **Read-only Status statt Runner**: `scripts/pipeline_status.py` liest ausschließlich bestehende
+  JSON-Artefakte. Status: `READY`, `BLOCKED`, `OUTPUT VALID`, `OUTPUT INVALID`; optional pro Stage
+  oder als JSON. Das Script startet keine Agents und persistiert keinen Zustand.
+- **Human Gate explizit sichtbar**: Reviews, `aggregierte_aktionen` und Keyword-Feedback führen zu
+  `HUMAN DECISION REQUIRED`, nicht zu automatischer Weiterleitung oder Re-Generation.
+- **JSON-Dateien bleiben die Wahrheit**: keine Run-State-Datei, Datenbank, Queue oder versteckte
+  Fortschrittslogik. Vorhandene Demo-Outputs können strukturell valide sein, ohne aus dem aktuellen
+  Lauf zu stammen; das wird ausdrücklich dokumentiert.
+- **Fachliches Rework ist aktuell beratend**: Gap-/Innovation-Agent konsumieren Remove-,
+  Reclassify-, Rework- und Merge-Entscheidungen noch nicht. Der Mensch muss Ursache und
+  Wiederanlaufpunkt bestimmen; generierte JSON-Dateien sollen nicht dauerhaft manuell gepatcht werden.
+- **Human-Review als Terminal-UI**: `scripts/review_evaluator.py` erfasst accept/reject/defer in
+  `data/evaluation/human_decisions.json`. Mehrere bereichsweise Reviews werden zusammengeführt.
+- **Erster geschlossener Feedback-Slice**: Source Discovery und Reddit lesen akzeptierte
+  Keyword-Add/Remove-Entscheidungen beim nächsten manuellen Lauf. Seeds bleiben unverändert;
+  kein automatischer Start und kein Auto-Loop.
+- **Technische vs. fachliche Validität getrennt**: Der Checker prüft JSON-Typ, Pflichtfelder und
+  nichtleere Kerndaten. Fachliche Plausibilität bleibt menschliche Aufgabe.
+
 ### Modell-Strategie — Update nach Evaluator-Tuning
 - Prompt-Schärfung wirkt zuverlässig bei Konvergenz-Erkennung (Pattern-Labeling) und Noise/out-of-scope-Trennung mit Llama 3.3.
 - **Vorgemerkter Gemini-Fall**: Pass-3-Integrationspunkte-Plausibilität bei Grenzfällen (z.B. INN_009 ElternGuide — BayernID bei personalisierter vs. niedrigschwelliger Beratung). Llama setzt hier den Flag falsch-positiv; das ist eine Urteils-Schwäche, die Prompt-Text nicht löst und Code-Overrides nicht korrigieren können.
@@ -262,8 +288,17 @@ Filter auf zwei Ebenen:
 - [x] Gap Analysis Agent v2 (2-Pass + deterministisches Clustering) ✅
 - [x] Service Innovation Agent ✅
 - [x] Evaluator Agent (4-Pass-Kaskade) ✅
+- [x] Deutsches End-to-End-RUNBOOK + README-Quickstart ✅
+- [x] Read-only Pipeline-Status und strukturelle Stage-Validierung ✅
+- [x] Human-in-the-Loop-Aktionsmatrix nach dem Evaluator ✅
+- [x] Terminal-Review mit accept/reject/defer und persistierten Human Decisions ✅
+- [x] Akzeptierte Keyword-Entscheidungen in Discovery und Reddit wirksam machen ✅
+- [ ] Vollständigen manuellen E2E-Testlauf anhand des RUNBOOK durchführen und protokollieren
+- [ ] Entscheiden, wie bestätigtes Evaluator-Feedback reproduzierbar als manueller Agent-Input dient
+      (ohne Auto-Loop und ohne Orchestrator)
 - [ ] save_metrics-Erweiterung (Reddit/FdS-Stats + Beispiel-Titles) — separater Task
 - [ ] Gemini-Test für Pass-3-Integrationspunkte-Plausibilität (Grenzfälle wie INN_009)
-- [ ] Keyword Agent + Feedback Loop
+- [x] Keyword-Feedback-Loop als Human-in-the-Loop-Vertical-Slice ✅
+- [ ] Fachagenten konsumieren akzeptierte Topic-/Gap-/Innovation-Aktionen
 - [x] ~~Orchestrator~~ — bewusst verworfen (file-basiert + Evaluator-Action-Listen + Human-in-the-Loop)
 - [ ] Umbenennung: nicht-Agent Module aus `agents/` Ordner raus, neuer `modules/` Ordner

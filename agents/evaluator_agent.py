@@ -134,14 +134,21 @@ def build_source_stats(metrics_path: Path) -> tuple[dict, str]:
     if isinstance(data, list):
         if not data:
             return {}, "missing"
-        latest = data[-1]
-        web = {
-            k: latest.get(k)
-            for k in ("urls_found", "urls_scraped", "filter_rate_pct", "median_words",
-                      "top_domains", "categories")
-        }
-        web["beispiel_titles"] = []  # in metrics.json (noch) nicht vorhanden
-        return {"web": web}, "partial"  # reddit/fragdenstaat fehlen
+        # save_metrics haengt pro Quelle einen eigenen Record an (Feld "source").
+        # Legacy-Records (alte Web-Laeufe) haben kein "source" -> als web behandeln.
+        # Pro Quelle den jeweils juengsten Record nehmen (Liste ist chronologisch).
+        latest_by_source: dict[str, dict] = {}
+        for rec in data:
+            if not isinstance(rec, dict):
+                continue
+            src = rec.get("source", "web")
+            if src in ("web", "reddit", "fragdenstaat"):
+                latest_by_source[src] = rec
+        if not latest_by_source:
+            return {}, "missing"
+        present = [s for s in ("web", "reddit", "fragdenstaat") if s in latest_by_source]
+        status = "complete" if len(present) == 3 else "partial"
+        return latest_by_source, status
     if isinstance(data, dict):
         present = [k for k in ("web", "reddit", "fragdenstaat") if k in data]
         status = "complete" if len(present) >= 3 else ("partial" if present else "missing")
