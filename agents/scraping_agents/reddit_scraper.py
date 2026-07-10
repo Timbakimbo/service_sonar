@@ -26,6 +26,11 @@ HEADERS = {
 CRAWL_DELAY = 2
 MIN_WORDS = 20
 MAX_WORDS = 10000
+BLOCKED_DIAGNOSTIC_REQUESTS = 10
+
+
+class EarlyAbort(Exception):
+    """Controlled stop when Reddit blocks the diagnostic run."""
 
 
 def init_metrics(keywords: list[str] | None = None) -> dict:
@@ -46,6 +51,9 @@ def init_metrics(keywords: list[str] | None = None) -> dict:
         "partial_posts_collected": 0,
         "partial_output_path": "",
         "preserve_reason": "",
+        "blocked_run": False,
+        "fresh_data_collected": False,
+        "early_abort_reason": "",
     }
 
 
@@ -164,15 +172,30 @@ def run():
                     seen_urls.add(parsed["url"])
                     results.append(parsed)
 
+                if (
+                    metrics["attempted_requests"] >= BLOCKED_DIAGNOSTIC_REQUESTS
+                    and metrics["successful_requests"] == 0
+                    and metrics["blocked_403_count"] == metrics["attempted_requests"]
+                ):
+                    metrics["early_abort_reason"] = "all_initial_requests_blocked_403"
+                    print(
+                        "Reddit Diagnose-Abbruch: erste Requests wurden komplett mit 403 blockiert. "
+                        "Bestehender Corpus wird erhalten."
+                    )
+                    raise EarlyAbort
+
                 time.sleep(CRAWL_DELAY)
     except KeyboardInterrupt:
         metrics["interrupted"] = True
         print("\nReddit Scraper manuell unterbrochen.")
+    except EarlyAbort:
+        print("\nReddit Scraper kontrolliert abgebrochen.")
 
     mostly_blocked = (
         metrics["attempted_requests"] > 0
         and metrics["blocked_403_count"] / metrics["attempted_requests"] >= 0.8
     )
+    metrics["blocked_run"] = bool(mostly_blocked or metrics["early_abort_reason"])
 
     if should_preserve_existing_file(metrics, mostly_blocked):
         metrics["existing_data_preserved"] = True
@@ -193,6 +216,7 @@ def run():
         with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
         metrics["saved_posts"] = len(results)
+        metrics["fresh_data_collected"] = bool(results)
         print(f"{len(results)} Posts gescrapt -> {OUTPUT_PATH}")
 
     if mostly_blocked:

@@ -70,6 +70,7 @@ EVALUATION = Artifact(
     "topic_evaluations",
 )
 HUMAN_DECISIONS_PATH = "data/evaluation/human_decisions.json"
+METRICS_PATH = "data/metrics.json"
 
 STAGES = (
     Stage("source-discovery", "python -m agents.source_discovery_agent", (), SOURCES),
@@ -108,9 +109,52 @@ def validate_artifact(root: Path, artifact: Artifact) -> tuple[bool, str]:
     return True, "valide"
 
 
+def latest_source_metrics(root: Path, source: str) -> dict[str, Any]:
+    path = root / METRICS_PATH
+    if not path.is_file():
+        return {}
+    try:
+        with path.open(encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if isinstance(data, list):
+        latest: dict[str, Any] = {}
+        for item in data:
+            if isinstance(item, dict) and item.get("source", "web") == source:
+                latest = item
+        return latest
+    if isinstance(data, dict):
+        item = data.get(source, {})
+        return item if isinstance(item, dict) else {}
+    return {}
+
+
+def reddit_quality_status(root: Path) -> tuple[str | None, str | None]:
+    metrics = latest_source_metrics(root, "reddit")
+    if not metrics:
+        return None, None
+    attempted = int(metrics.get("attempted_requests") or 0)
+    blocked = int(metrics.get("blocked_403_count") or 0)
+    successful = int(metrics.get("successful_requests") or 0)
+    if metrics.get("blocked_run") or (attempted and (successful == 0 or blocked / attempted >= 0.8)):
+        return "OUTPUT VALID / BLOCKED", (
+            f"letzter Reddit-Run blockiert/stale "
+            f"({blocked}/{attempted} 403, successful={successful}, "
+            f"existing_preserved={bool(metrics.get('existing_data_preserved'))})"
+        )
+    if metrics.get("existing_data_preserved") and not metrics.get("fresh_data_collected", True):
+        return "OUTPUT VALID / STALE", "bestehender Reddit-Corpus wurde wiederverwendet"
+    return None, None
+
+
 def stage_status(root: Path, stage: Stage) -> tuple[str, str]:
     output_ok, output_detail = validate_artifact(root, stage.output)
     if (root / stage.output.path).exists():
+        if output_ok and stage.name == "reddit-scraper":
+            quality_status, quality_detail = reddit_quality_status(root)
+            if quality_status:
+                return quality_status, quality_detail or output_detail
         return ("OUTPUT VALID", output_detail) if output_ok else ("OUTPUT INVALID", output_detail)
 
     bad_inputs = []
@@ -143,6 +187,26 @@ def evaluator_gate(root: Path) -> tuple[bool, list[str]]:
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     reasons = []
+    actions_list = data.get("aktionen", [])
+    if "aktionen" in data and isinstance(actions_list, list):
+        review_count = data.get("review_count", 0)
+        if isinstance(review_count, int) and review_count > 0:
+            reasons.append(f"{review_count} Review-Fall/Fälle")
+        auto_count = sum(1 for item in actions_list if item.get("autonomy") == "auto_apply")
+        suggestion_count = sum(1 for item in actions_list if item.get("autonomy") == "suggestion_only")
+        human_count = sum(
+            1 for item in actions_list
+            if item.get("autonomy", "human_required") == "human_required"
+            and (str(item.get("action_type", "")), str(item.get("target", ""))) not in decided
+        )
+        if human_count:
+            reasons.append(f"human_required_actions: {human_count}")
+        if auto_count:
+            reasons.append(f"auto_apply_actions: {auto_count}")
+        if suggestion_count:
+            reasons.append(f"suggestion_only: {suggestion_count}")
+        return bool(reasons), reasons
+
     review_count = data.get("review_count", 0)
     if isinstance(review_count, int) and review_count > 0:
         reasons.append(f"{review_count} Review-Fall/Fälle")
@@ -196,10 +260,10 @@ def run(root: Path, selected_stage: str | None = None, as_json: bool = False) ->
         elif human_gate and selected_stage in (None, "evaluator"):
             print("\nHUMAN DECISION REQUIRED: " + "; ".join(gate_reasons))
             print("Vorgehen: evaluator_output.json prüfen und den Human-in-the-Loop-Abschnitt im RUNBOOK lesen.")
-        elif all(item["status"] == "OUTPUT VALID" for item in results):
+        elif all(item["status"].startswith("OUTPUT VALID") for item in results):
             print("\nAlle geprüften Stage-Outputs sind technisch valide.")
 
-    return 0 if all(item["status"] == "OUTPUT VALID" for item in results) else 1
+    return 0 if all(item["status"].startswith("OUTPUT VALID") for item in results) else 1
 
 
 def main() -> int:

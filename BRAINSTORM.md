@@ -252,16 +252,37 @@ Filter auf zwei Ebenen:
 - **JSON-Dateien bleiben die Wahrheit**: keine Run-State-Datei, Datenbank, Queue oder versteckte
   Fortschrittslogik. Vorhandene Demo-Outputs können strukturell valide sein, ohne aus dem aktuellen
   Lauf zu stammen; das wird ausdrücklich dokumentiert.
-- **Fachliches Rework ist aktuell beratend**: Gap-/Innovation-Agent konsumieren Remove-,
-  Reclassify-, Rework- und Merge-Entscheidungen noch nicht. Der Mensch muss Ursache und
-  Wiederanlaufpunkt bestimmen; generierte JSON-Dateien sollen nicht dauerhaft manuell gepatcht werden.
+- **Evaluator-Rechte-Matrix statt HIL für alles**: Aktionen werden in `auto_apply`,
+  `human_required` und `suggestion_only` getrennt. Low-risk-Topic-Removals und sichere
+  Gap-Reklassifikationen dürfen automatisch in den nächsten manuellen Stage-Lauf eingehen;
+  Keywords und Innovationen bleiben Human-Gate.
 - **Human-Review als Terminal-UI**: `scripts/review_evaluator.py` erfasst accept/reject/defer in
   `data/evaluation/human_decisions.json`. Mehrere bereichsweise Reviews werden zusammengeführt.
-- **Erster geschlossener Feedback-Slice**: Source Discovery und Reddit lesen akzeptierte
-  Keyword-Add/Remove-Entscheidungen beim nächsten manuellen Lauf. Seeds bleiben unverändert;
-  kein automatischer Start und kein Auto-Loop.
+- **Geschlossener Feedback-Slice erweitert**: Source Discovery und Reddit lesen akzeptierte
+  Keyword-Add/Remove-Entscheidungen; Gap Analysis liest Topic-Remove und Gap-Reclassify;
+  Innovation liest Rework-Briefings und Merge-Gruppen. Seeds bleiben unverändert; kein
+  automatischer Start und kein Auto-Loop.
 - **Technische vs. fachliche Validität getrennt**: Der Checker prüft JSON-Typ, Pflichtfelder und
   nichtleere Kerndaten. Fachliche Plausibilität bleibt menschliche Aufgabe.
+
+### E2E-Testlauf 30.06.2026 — neue Entscheidungen
+- **Vorwärtslauf verifiziert**: 25 wirksame Keywords → 207 akzeptierte Quellen → 575 Dokumente
+  → 26 Topics → 17 relevante Topics → 9 Gap-Cluster → 9 Innovationen → Evaluator ohne Pass-Fehler.
+- **Evaluator-Ergebnis**: 5 Innovationen akzeptiert, 4 Rework; zusätzlich 3 Reclassify-,
+  9 Topic-Remove- und 2 Merge-Vorschläge.
+- **Human-Review funktioniert**: Keyword-, Topic- und Merge-Entscheidungen wurden im Terminal
+  akzeptiert oder vertagt und in `human_decisions.json` gespeichert.
+- **Keyword-Learning**: `ZBFS` als Removal akzeptiert, nachdem der Web-Run fachfremde Treffer zu
+  „zeroing barrier functions“ erzeugte. Generische neue Keywords wie `Kinderbetreuung` erzeugen
+  ebenfalls Noise; Vorschläge brauchen Bayern-/Problemkontext, nicht nur Human-Freigabe.
+- **Robustheit verifiziert**: Reddit lieferte 55/55-mal 403; der bestehende 361-Post-Datensatz
+  blieb erhalten. FragDenStaat deduplizierte 68 bestehende Anfragen. `source_stats=complete`.
+- **Rechte-Matrix implementiert**: Der Evaluator schreibt normalisierte `aktionen` mit
+  Autonomie-Stufe, Confidence und Risiko. `review_evaluator.py` zeigt standardmäßig nur
+  `human_required`; Auto-/Suggestion-Actions sind optional inspizierbar.
+- **Reddit-Blocked sichtbar**: 403-Runs werden nicht mehr nur als valider alter Corpus
+  getarnt. Metrics und `pipeline_status.py` unterscheiden `OUTPUT VALID`, `STALE` und
+  `BLOCKED`.
 
 ### Modell-Strategie — Update nach Evaluator-Tuning
 - Prompt-Schärfung wirkt zuverlässig bei Konvergenz-Erkennung (Pattern-Labeling) und Noise/out-of-scope-Trennung mit Llama 3.3.
@@ -293,12 +314,14 @@ Filter auf zwei Ebenen:
 - [x] Human-in-the-Loop-Aktionsmatrix nach dem Evaluator ✅
 - [x] Terminal-Review mit accept/reject/defer und persistierten Human Decisions ✅
 - [x] Akzeptierte Keyword-Entscheidungen in Discovery und Reddit wirksam machen ✅
-- [ ] Vollständigen manuellen E2E-Testlauf anhand des RUNBOOK durchführen und protokollieren
-- [ ] Entscheiden, wie bestätigtes Evaluator-Feedback reproduzierbar als manueller Agent-Input dient
-      (ohne Auto-Loop und ohne Orchestrator)
-- [ ] save_metrics-Erweiterung (Reddit/FdS-Stats + Beispiel-Titles) — separater Task
+- [x] Vollständigen manuellen E2E-Testlauf anhand des RUNBOOK durchführen und protokollieren ✅
+- [x] Entscheiden, wie bestätigtes Evaluator-Feedback reproduzierbar als manueller Agent-Input dient
+      (ohne Auto-Loop und ohne Orchestrator) ✅
+- [x] Per-Source-Metriken bis `source_stats=complete` im Evaluator verifiziert ✅
 - [ ] Gemini-Test für Pass-3-Integrationspunkte-Plausibilität (Grenzfälle wie INN_009)
 - [x] Keyword-Feedback-Loop als Human-in-the-Loop-Vertical-Slice ✅
-- [ ] Fachagenten konsumieren akzeptierte Topic-/Gap-/Innovation-Aktionen
+- [x] Fachagenten konsumieren akzeptierte/Auto-Apply Topic-/Gap-/Innovation-Aktionen ✅
+- [x] Evaluator-Rechte-Matrix (`auto_apply`, `human_required`, `suggestion_only`) ✅
+- [x] Reddit Blocked/Stale in Metrics und Status sichtbar machen ✅
 - [x] ~~Orchestrator~~ — bewusst verworfen (file-basiert + Evaluator-Action-Listen + Human-in-the-Loop)
 - [ ] Umbenennung: nicht-Agent Module aus `agents/` Ordner raus, neuer `modules/` Ordner

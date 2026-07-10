@@ -6,6 +6,7 @@ from io import StringIO
 from pathlib import Path
 
 from config.keywords import get_effective_keywords
+from agents.human_feedback import auto_apply_actions
 from agents.scraping_agents.reddit_scraper import SUBREDDITS, init_metrics
 from scripts.review_evaluator import collect_actions, review, save_decisions
 
@@ -38,6 +39,40 @@ class HumanReviewTests(unittest.TestCase):
         self.assertEqual(len(actions), 5)
         self.assertEqual(actions[0]["target_agent"], "source-discovery/reddit-scraper")
         self.assertEqual(actions[2]["recommendation"], "Träger korrigieren")
+
+    def test_collect_actions_defaults_to_human_required_normalized_actions(self):
+        evaluator = {"aktionen": [
+            {"action_type": "topic_remove", "target": "15", "autonomy": "auto_apply"},
+            {"action_type": "keyword_add", "target": "Kita", "autonomy": "human_required"},
+            {"action_type": "source_quality_warning", "target": "reddit", "autonomy": "suggestion_only"},
+        ]}
+        actions = collect_actions(evaluator)
+        self.assertEqual(len(actions), 1)
+        self.assertEqual(actions[0]["target"], "Kita")
+
+    def test_collect_actions_can_include_auto_and_suggestions(self):
+        evaluator = {"aktionen": [
+            {"action_type": "topic_remove", "target": "15", "autonomy": "auto_apply"},
+            {"action_type": "keyword_add", "target": "Kita", "autonomy": "human_required"},
+            {"action_type": "source_quality_warning", "target": "reddit", "autonomy": "suggestion_only"},
+        ]}
+        actions = collect_actions(evaluator, include_auto=True, include_suggestions=True)
+        self.assertEqual([a["target"] for a in actions], ["15", "Kita", "reddit"])
+
+    def test_auto_apply_actions_skip_human_rejected_items(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            evaluator_path = root / "evaluator.json"
+            decisions_path = root / "human_decisions.json"
+            evaluator_path.write_text(json.dumps({"aktionen": [
+                {"action_type": "topic_remove", "target": "15", "autonomy": "auto_apply"},
+                {"action_type": "topic_remove", "target": "22", "autonomy": "auto_apply"},
+            ]}), encoding="utf-8")
+            decisions_path.write_text(json.dumps({"decisions": [
+                {"action_type": "topic_remove", "target": "15", "decision": "rejected"}
+            ]}), encoding="utf-8")
+            actions = auto_apply_actions(evaluator_path, decisions_path)
+        self.assertEqual([action["target"] for action in actions], ["22"])
 
     def test_review_records_accept_reject_and_defer(self):
         answers = iter(["y", "", "n", "zu allgemein", "s", "", "y", "", "n", ""])

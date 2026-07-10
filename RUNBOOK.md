@@ -44,8 +44,10 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Für Analysis wird `GEMINI_API_KEY`, für Gap Analysis, Innovation und Evaluator
-`GROQ_API_KEY` benötigt. Source Discovery und Scraper benötigen Netzwerkzugriff.
+Für Analysis wird `GEMINI_API_KEY`, für Gap Analysis und Innovation `GROQ_API_KEY`
+benötigt. Der Evaluator nutzt standardmäßig Groq, kann aber über
+`EVALUATOR_BACKEND=openai` mit `OPENAI_API_KEY` laufen. Source Discovery und Scraper
+benötigen Netzwerkzugriff.
 
 Vorhandene JSON-Dateien sind kuratierte Demo-Artefakte. Der Status-Checker kann ihre
 Struktur prüfen, aber nicht behaupten, dass sie im aktuellen Arbeitslauf entstanden sind.
@@ -65,6 +67,8 @@ python scripts/pipeline_status.py --json
 | `READY` | Alle Inputs sind valide, der Output fehlt; Stage kann manuell starten. |
 | `BLOCKED` | Mindestens ein Input fehlt oder ist strukturell ungültig. |
 | `OUTPUT VALID` | Output ist lesbares, nichtleeres JSON mit den erwarteten Pflichtfeldern. |
+| `OUTPUT VALID / BLOCKED` | Output ist strukturell valide, aber der letzte Lauf war operativ blockiert, z.B. Reddit 403. |
+| `OUTPUT VALID / STALE` | Output ist strukturell valide, aber es wurden keine frischen Daten erzeugt. |
 | `OUTPUT INVALID` | Output existiert, verletzt aber den technischen Vertrag. |
 
 Exit-Code `0` bedeutet, dass alle ausgewählten Outputs technisch valide sind. Exit-Code
@@ -98,15 +102,26 @@ unplausiblen Aussagen kann trotzdem strukturell valide sein.
 ## Human-in-the-Loop nach dem Evaluator
 
 Nach einem validen Evaluator-Output immer `review_count`, `review_reasons`,
-`aggregierte_aktionen`, `rework_warteschlange`, `keyword_feedback`, `priorisierung` und
-`konvergenz_status` lesen. Sind Reviews oder Aktionen offen, zeigt der Status-Checker
-`HUMAN DECISION REQUIRED`. Das ist ein beabsichtigter Übergabepunkt, kein Pipeline-Fehler.
+`aktionen`, `aggregierte_aktionen`, `rework_warteschlange`, `keyword_feedback`,
+`priorisierung` und `konvergenz_status` lesen. Sind Human-Aktionen offen, zeigt der
+Status-Checker `HUMAN DECISION REQUIRED`. Das ist ein beabsichtigter Übergabepunkt, kein
+Pipeline-Fehler.
+
+Der Evaluator unterscheidet drei Rechte-Stufen:
+
+| Stufe | Bedeutung | Beispiele |
+|---|---|---|
+| `auto_apply` | Low-risk-Korrektur wird beim nächsten manuellen Ziel-Agent-Lauf berücksichtigt. | technisches Noise-Topic entfernen, sichere Gap-Reklassifikation |
+| `human_required` | Mensch muss akzeptieren, ablehnen oder vertagen. | Keywords ändern, Innovation reworken, Innovationen mergen |
+| `suggestion_only` | Nur Hinweis für Entwickler/Team, nie automatische Anwendung. | Scraper-/Code-/Prompt-Verbesserung |
 
 Das Terminal-Review kann für alle Aktionen oder gezielt für einen Bereich gestartet werden:
 
 ```bash
 python scripts/review_evaluator.py
 python scripts/review_evaluator.py --section keywords
+python scripts/review_evaluator.py --only-open
+python scripts/review_evaluator.py --include-auto --include-suggestions
 ```
 
 Für jede Empfehlung wird `akzeptiert`, `abgelehnt` oder `vertagt` erfasst. Das Ergebnis liegt
@@ -115,9 +130,9 @@ aktualisieren bestehende Entscheidungen. Es wird keine Stage automatisch gestart
 
 | Evaluator-Signal | Menschliche Entscheidung | Betroffene Wiederholung |
 |---|---|---|
-| `regenerieren` | Rework-Briefing prüfen und entscheiden, ob Gap-Basis, Träger, Integrationspunkt oder Idee geändert werden muss. | Ursache im Gap-/Referenz-Input oder in der Agent-Logik korrigieren; danach Innovation und Evaluator erneut starten. |
-| `reklassifizieren` | Vorgeschlagene Klassifikation gegen Topic, Evidenz und Referenz bestätigen oder ablehnen. | Klassifikationsursache im Gap-Input bzw. Gap Agent korrigieren; danach Gap Analysis, Innovation und Evaluator erneut starten. |
-| `topics_entfernen` | Bestätigen, dass es sich um Noise oder Out-of-Scope-Inhalt handelt. | Filter-/Analyseursache korrigieren; ab der betroffenen früheren Stage neu laufen lassen. |
+| `regenerieren` | Rework-Briefing prüfen und entscheiden, ob Gap-Basis, Träger, Integrationspunkt oder Idee geändert werden muss. | Nach Akzeptanz liest Innovation das Briefing beim nächsten manuellen Lauf. |
+| `reklassifizieren` | Bei riskanten Fällen bestätigen; sichere Reclassify-Actions können `auto_apply` sein. | Gap Analysis liest Auto-/Accepted-Reklassifikationen beim nächsten manuellen Lauf. |
+| `topics_entfernen` | Nur bei riskanten Fällen prüfen; technische/out-of-scope Topics können `auto_apply` sein. | Gap Analysis ignoriert Auto-/Accepted-Topic-Removals beim nächsten manuellen Lauf. |
 | `konvergenz_zusammenfuehren` | Ähnliche Ideen vergleichen und eine führende Lösung oder klare Abgrenzung wählen. | Innovationslogik/-input anpassen; Innovation und Evaluator erneut starten. |
 | `schwache_keywords` | Nicht automatisch löschen; anhand Quellen und Topics prüfen, ob das Keyword überwiegend Noise liefert. | Bei bestätigter Änderung neuer Lauf ab Source Discovery. |
 | `neue_keywords_vorgeschlagen` | Nutzen, Scope und erwartbare Quellen prüfen; nur bewusst in `config/keywords.py` übernehmen. | Neuer Lauf ab Source Discovery. |
@@ -126,13 +141,9 @@ Akzeptierte Keyword-Ergänzungen und -Entfernungen werden beim nächsten manuell
 Source-Discovery- und Reddit-Lauf angewendet. Die Seed-Liste bleibt unverändert und die
 menschliche Entscheidung ist im JSON nachvollziehbar.
 
-Die übrigen Listen sind aktuell **beratende Outputs**. Gap- und Innovation-Agent lesen
-Rework-, Remove-, Reclassify- und Merge-Entscheidungen noch nicht ein. Ein bloßes erneutes Ausführen
-mit unveränderten Inputs löst eine Aktion deshalb nicht zuverlässig. Änderungen an
-generierten JSON-Dateien sind keine dauerhafte Lösung: Sie sind nicht reproduzierbar und
-werden beim nächsten Lauf überschrieben. Stattdessen wird die Ursache in Konfiguration,
-Referenz, Input oder Agent-Logik korrigiert und die kleinste betroffene Teilpipeline
-manuell neu ausgeführt.
+Gap- und Innovation-Agent lesen die relevanten Auto-/Accepted-Aktionen ein. Ein bloßes
+erneutes Ausführen startet trotzdem keine Folgestage automatisch: Der Mensch wählt weiterhin
+den Wiederanlaufpunkt und startet die kleinste betroffene Teilpipeline manuell.
 
 Der Mensch übernimmt damit explizit Aufgaben, die ein Orchestrator automatisieren würde:
 Routing, Freigabe, Auswahl des Wiederanlaufpunkts, Retry-Entscheidung, Keyword-Änderung und
@@ -142,7 +153,9 @@ Abbruch bei fehlender Konvergenz.
 
 - **API-Key fehlt:** `.env` prüfen; nur die LLM-Stages benötigen Keys.
 - **Web 403/404 oder robots.txt-Skip:** Einzelne Skips sind normal; Output-Größe und Logs prüfen.
-- **Reddit 403:** Ein Partial-Output ist kein erfolgreicher vollständiger Lauf.
+- **Reddit 403:** Ein Partial-Output ist kein erfolgreicher vollständiger Lauf. Bei vollständig
+  blockierten Diagnose-Runs bleibt der bestehende Corpus erhalten und der Status zeigt
+  `OUTPUT VALID / BLOCKED`.
 - **Leerer Output:** Stage gilt als fehlgeschlagen, auch bei syntaktisch korrektem JSON.
 - **Metrics partial/missing:** Evaluator läuft defensiv weiter; `source_stats_status` prüfen.
 - **Review-Zähler größer null:** Kein technischer Abbruch, aber fachliche Freigabe erforderlich.

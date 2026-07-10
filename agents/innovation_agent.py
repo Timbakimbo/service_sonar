@@ -29,6 +29,8 @@ from typing import Any
 from dotenv import load_dotenv
 from groq import Groq
 
+from agents.human_feedback import innovation_merge_groups, innovation_rework_briefings
+
 load_dotenv()
 
 GAP_V2_PATH = Path("data/gap_analysis/gap_analysis_output_v2.json")
@@ -283,6 +285,17 @@ def build_innovation_prompt(cluster_id: str, agg: dict) -> str:
     for e in agg["gap_empfehlungen"]:
         gap_empf_block += f"\n- {e}"
 
+    rework_block = ""
+    if agg.get("rework_feedback"):
+        feedback = agg["rework_feedback"]
+        rework_block = f"""
+
+=== AKZEPTIERTES EVALUATOR-REWORK ===
+Diese Innovation wurde im vorherigen Evaluator-Lauf für Rework markiert. Berücksichtige diese
+Anweisung explizit und vermeide denselben Fehler:
+- {feedback.get('recommendation') or feedback.get('reason') or feedback.get('human_note') or ''}
+"""
+
     services_block = ""
     for name, ctx in agg["service_kontext"].items():
         services_block += f"\n- LEISTUNGSNAME: {name}"
@@ -331,6 +344,7 @@ Adressierte Customer-Journey-Phasen: {agg['adressierte_phasen']}
 Topics in diesem Cluster:{topics_block}
 
 Bisherige Gap-Empfehlungen (als Inspiration, nicht wörtlich übernehmen):{gap_empf_block}
+{rework_block}
 
 === BETROFFENE LEISTUNGEN (Anknüpfungspunkte + Kontext) ==={services_block}
 
@@ -486,6 +500,7 @@ def run() -> None:
     innovations: list[dict] = []
     skipped = 0
     inn_counter = 1
+    rework_by_innovation_id = innovation_rework_briefings()
 
     for cluster_id, cluster_gaps in clusters.items():
         skip, reason = should_skip_cluster(cluster_gaps)
@@ -495,10 +510,21 @@ def run() -> None:
             continue
 
         agg = aggregate_cluster(cluster_gaps, reference)
+        predicted_innovation_id = f"INN_{inn_counter:03d}"
+        if predicted_innovation_id in rework_by_innovation_id:
+            agg["rework_feedback"] = rework_by_innovation_id[predicted_innovation_id]
         try:
             raw = run_innovation(cluster_id, agg)
             inn = validate_innovation(raw, cluster_id, agg, valid_service_names)
-            inn["innovation_id"] = f"INN_{inn_counter:03d}"
+            inn["innovation_id"] = predicted_innovation_id
+            if predicted_innovation_id in rework_by_innovation_id:
+                feedback = rework_by_innovation_id[predicted_innovation_id]
+                inn["human_rework_applied"] = feedback.get("decision") == "accepted"
+                inn["auto_rework_applied"] = feedback.get("autonomy") == "auto_apply"
+                inn["rework_action_id"] = feedback.get("action_id", "")
+                inn["rework_briefing_used"] = (
+                    feedback.get("recommendation") or feedback.get("reason") or feedback.get("human_note") or ""
+                )
             inn_counter += 1
             innovations.append(order_innovation(inn))
             flag = " [needs_review]" if inn["needs_review"] else ""
@@ -506,6 +532,22 @@ def run() -> None:
         except Exception as exc:  # pro-Cluster-Robustheit
             print(f"  FEHLER bei Cluster '{cluster_id}': {exc} — übersprungen")
             continue
+
+    merge_groups = innovation_merge_groups()
+    if merge_groups:
+        by_id = {item.get("innovation_id"): item for item in innovations}
+        for group in merge_groups:
+            targets = [str(item) for item in group.get("targets", [])]
+            for iid in targets:
+                if iid not in by_id:
+                    continue
+                by_id[iid].setdefault("merge_recommendations", []).append({
+                    "merge_group": group.get("target", ""),
+                    "targets": targets,
+                    "recommendation": group.get("recommendation", ""),
+                    "human_accepted": group.get("decision") == "accepted",
+                    "auto_applied_by_evaluator": group.get("autonomy") == "auto_apply",
+                })
 
     review_count = sum(1 for i in innovations if i.get("needs_review"))
 

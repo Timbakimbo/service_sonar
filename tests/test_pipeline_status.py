@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from scripts.pipeline_status import EVALUATION, SOURCES, evaluator_gate, run, validate_artifact
+from scripts.pipeline_status import EVALUATION, REDDIT, SOURCES, evaluator_gate, run, validate_artifact
 
 
 def write_json(root: Path, relative_path: str, value) -> None:
@@ -108,6 +108,46 @@ class PipelineStatusTests(unittest.TestCase):
             write_json(root, EVALUATION.path, evaluator)
             write_json(root, "data/evaluation/human_decisions.json", decisions)
             self.assertEqual(evaluator_gate(root), (False, []))
+
+    def test_normalized_actions_report_human_auto_and_suggestion_counts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            evaluator = {
+                "schema_version": "1.0-de",
+                "topic_evaluations": [{"topic_id": "1"}],
+                "gap_evaluations": [],
+                "innovation_evaluations": [],
+                "aggregierte_aktionen": {},
+                "review_count": 0,
+                "review_reasons": [],
+                "aktionen": [
+                    {"action_type": "topic_remove", "target": "15", "autonomy": "auto_apply"},
+                    {"action_type": "keyword_add", "target": "Kita", "autonomy": "human_required"},
+                    {"action_type": "source_quality_warning", "target": "reddit", "autonomy": "suggestion_only"},
+                ],
+            }
+            write_json(root, EVALUATION.path, evaluator)
+            active, reasons = evaluator_gate(root)
+        self.assertTrue(active)
+        self.assertIn("human_required_actions: 1", reasons)
+        self.assertIn("auto_apply_actions: 1", reasons)
+        self.assertIn("suggestion_only: 1", reasons)
+
+    def test_reddit_blocked_metrics_are_visible_in_status(self):
+        with tempfile.TemporaryDirectory() as directory, redirect_stdout(StringIO()) as output:
+            root = Path(directory)
+            write_json(root, REDDIT.path, [{"url": "https://reddit.test", "text": "old corpus"}])
+            write_json(root, "data/metrics.json", [{
+                "source": "reddit",
+                "attempted_requests": 10,
+                "successful_requests": 0,
+                "blocked_403_count": 10,
+                "existing_data_preserved": True,
+                "blocked_run": True,
+            }])
+            exit_code = run(root, "reddit-scraper")
+        self.assertEqual(exit_code, 0)
+        self.assertIn("OUTPUT VALID / BLOCKED", output.getvalue())
 
 
 if __name__ == "__main__":

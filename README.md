@@ -23,19 +23,19 @@ Implemented but API-key dependent:
 - Analysis Agent (`agents.analysis_agent`) requires `GEMINI_API_KEY`
 - Gap Analysis Agent v2 (`agents.gap_analysis_agent`) requires `GROQ_API_KEY`
 - Innovation Agent (`agents.innovation_agent`) requires `GROQ_API_KEY`
-- Evaluator Agent (`agents.evaluator_agent`) requires `GROQ_API_KEY`
+- Evaluator Agent (`agents.evaluator_agent`) requires `GROQ_API_KEY` by default, or
+  `OPENAI_API_KEY` with `EVALUATOR_BACKEND=openai`
 
-Implemented human feedback slice:
+Implemented feedback loop:
 
-- Evaluator recommendations can be accepted, rejected, or deferred via
+- Evaluator recommendations are normalized as `auto_apply`, `human_required`, or
+  `suggestion_only` actions.
+- Human-required recommendations can be accepted, rejected, or deferred via
   `scripts/review_evaluator.py`.
 - Accepted keyword additions/removals are consumed by the next manually started Source
   Discovery and Reddit run.
-
-Not implemented yet:
-
-- Automatic application of accepted topic, gap, innovation-rework, and merge decisions by
-  the respective domain agents. These decisions are recorded but remain a manual follow-up.
+- Low-risk auto actions and accepted human decisions are consumed by the next manually
+  started Gap Analysis and Innovation runs where applicable.
 
 Deliberately out of scope:
 
@@ -58,6 +58,10 @@ Copy `.env.example` to `.env` if you want to run API-key-dependent agents:
 ```bash
 GEMINI_API_KEY=
 GROQ_API_KEY=
+OPENAI_API_KEY=
+EVALUATOR_BACKEND=groq
+OPENAI_EVALUATOR_MODEL=gpt-4.1-mini
+GROQ_EVALUATOR_MODEL=llama-3.3-70b-versatile
 ```
 
 Do not commit `.env`.
@@ -91,18 +95,17 @@ scraper outputs. After the Evaluator, stop and review `review_count`, `review_re
 human decision gate, not an automatically executed feedback loop. See the
 [`RUNBOOK.md`](RUNBOOK.md#human-in-the-loop-nach-dem-evaluator) for the action matrix.
 
-Review recommendations interactively with `python scripts/review_evaluator.py`. Accepted
-keyword decisions are consumed by the next manually started Source Discovery and Reddit run;
-no stage is started automatically.
+Review recommendations interactively with `python scripts/review_evaluator.py`. By default,
+the review UI shows only `human_required` actions; use `--include-auto` or
+`--include-suggestions` for inspection. No stage is started automatically.
 
 ## Known Limitations
 
-- Reddit public JSON scraping produced a usable dataset (361 posts in the current corpus). Individual re-runs may hit 403 rate-limiting depending on IP/timing; the scraper guards against this by preserving the existing `data/raw/scraped_reddit.json` instead of overwriting it with an empty/blocked run, and writing a separate partial file.
+- Reddit public JSON scraping produced a usable dataset (361 posts in the current corpus). Individual re-runs may hit 403 rate-limiting depending on IP/timing; the scraper now aborts early on fully blocked diagnostic runs, preserves the existing `data/raw/scraped_reddit.json`, and records blocked/stale metrics for `pipeline_status.py`.
 - FragDenStaat messages require OAuth; the scraper uses public request description/body and summary fields.
 - Web scraping can produce normal robots.txt skips, 403 and 404 responses.
 - Analysis, Gap Analysis, Innovation, and Evaluator require external LLM APIs.
-- The executable feedback path currently covers keywords; other accepted Evaluator actions
-  are recorded but not yet consumed by Gap Analysis or Innovation.
+- Evaluator feedback is intentionally bounded: low-risk topic/gap corrections may be auto-applied; keywords and innovation changes still require human approval; code/scraper changes remain suggestions only.
 - Existing generated JSON data is kept in the repo as prototype/demo data. New local scratch outputs should not be committed unless intentionally curated.
 
 ## Metrics

@@ -1,8 +1,7 @@
 """Interactive human review of Evaluator recommendations.
 
-The script records decisions only. It never starts agents or applies non-keyword
-changes. Accepted keyword decisions are consumed on the next manually started
-Source Discovery or Reddit run.
+The script records human decisions only. It never starts agents. Auto-apply
+actions are consumed directly by target agents on the next manual run.
 """
 
 from __future__ import annotations
@@ -30,7 +29,61 @@ def load_json(path: Path) -> dict:
     return data
 
 
-def collect_actions(evaluator: dict, section: str = "all") -> list[dict]:
+def action_key(item: dict) -> tuple[str, str]:
+    return str(item.get("action_type", "")), str(item.get("target", ""))
+
+
+def load_decision_keys(path: Path) -> set[tuple[str, str]]:
+    if not path.is_file():
+        return set()
+    try:
+        data = load_json(path)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return set()
+    return {
+        action_key(item)
+        for item in data.get("decisions", [])
+        if item.get("decision") in ("accepted", "rejected")
+    }
+
+
+def section_matches(action: dict, section: str) -> bool:
+    if section == "all":
+        return True
+    return {
+        "keywords": {"keyword_add", "keyword_remove"},
+        "rework": {"innovation_rework"},
+        "topics": {"topic_remove"},
+        "reclassify": {"gap_reclassify"},
+        "merge": {"innovation_merge"},
+    }.get(section, set()).__contains__(action.get("action_type"))
+
+
+def collect_actions(
+    evaluator: dict,
+    section: str = "all",
+    include_auto: bool = False,
+    include_suggestions: bool = False,
+    only_open: bool = False,
+    decisions_path: Path = OUTPUT_PATH,
+) -> list[dict]:
+    normalized = evaluator.get("aktionen", [])
+    if isinstance(normalized, list) and normalized:
+        actions = []
+        decided = load_decision_keys(decisions_path) if only_open else set()
+        for action in normalized:
+            autonomy = action.get("autonomy", "human_required")
+            if autonomy == "auto_apply" and not include_auto:
+                continue
+            if autonomy == "suggestion_only" and not include_suggestions:
+                continue
+            if not section_matches(action, section):
+                continue
+            if only_open and action_key(action) in decided:
+                continue
+            actions.append(action)
+        return actions
+
     actions: list[dict] = []
     aggregate = evaluator.get("aggregierte_aktionen", {})
 
@@ -95,11 +148,18 @@ def collect_actions(evaluator: dict, section: str = "all") -> list[dict]:
                 "targets": innovation_ids,
                 "recommendation": "Konvergente Innovationen fachlich zusammenführen",
             })
+    if only_open:
+        decided = load_decision_keys(decisions_path)
+        actions = [action for action in actions if action_key(action) not in decided]
     return actions
 
 
 def ask_decision(action: dict, input_fn: Callable[[str], str] = input) -> tuple[str, str]:
     print(f"\n[{action['action_type']}] {action['target']}")
+    if action.get("autonomy"):
+        print("Autonomie: " + str(action.get("autonomy")))
+    if action.get("risk"):
+        print("Risiko: " + str(action.get("risk")))
     if action.get("targets"):
         print("Betroffen: " + ", ".join(action["targets"]))
     print("Empfehlung: " + str(action.get("recommendation", "")))
@@ -121,8 +181,23 @@ def ask_decision(action: dict, input_fn: Callable[[str], str] = input) -> tuple[
     return decision, note
 
 
-def review(evaluator: dict, section: str, input_fn: Callable[[str], str] = input) -> list[dict]:
-    actions = collect_actions(evaluator, section)
+def review(
+    evaluator: dict,
+    section: str,
+    input_fn: Callable[[str], str] = input,
+    include_auto: bool = False,
+    include_suggestions: bool = False,
+    only_open: bool = False,
+    decisions_path: Path = OUTPUT_PATH,
+) -> list[dict]:
+    actions = collect_actions(
+        evaluator,
+        section,
+        include_auto=include_auto,
+        include_suggestions=include_suggestions,
+        only_open=only_open,
+        decisions_path=decisions_path,
+    )
     if not actions:
         print("Keine Aktionen in diesem Bereich.")
         return []
@@ -174,11 +249,21 @@ def main() -> int:
     parser.add_argument("--section", choices=SECTION_CHOICES, default="all")
     parser.add_argument("--input", type=Path, default=EVALUATOR_PATH)
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    parser.add_argument("--include-auto", action="store_true", help="Auto-Apply-Aktionen ebenfalls anzeigen")
+    parser.add_argument("--include-suggestions", action="store_true", help="Suggestion-only-Aktionen ebenfalls anzeigen")
+    parser.add_argument("--only-open", action="store_true", help="Bereits akzeptierte/abgelehnte Aktionen ausblenden")
     args = parser.parse_args()
 
     try:
         evaluator = load_json(args.input)
-        decisions = review(evaluator, args.section)
+        decisions = review(
+            evaluator,
+            args.section,
+            include_auto=args.include_auto,
+            include_suggestions=args.include_suggestions,
+            only_open=args.only_open,
+            decisions_path=args.output,
+        )
         save_decisions(args.output, args.input, args.section, decisions)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"FEHLER: {exc}")

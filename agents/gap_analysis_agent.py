@@ -45,6 +45,8 @@ from typing import Any
 from dotenv import load_dotenv
 from groq import Groq
 
+from agents.human_feedback import gap_reclassifications, topic_removals
+
 load_dotenv()
 
 ANALYSIS_PATH = Path("data/analysis/analysis_output.json")
@@ -213,7 +215,11 @@ def build_topics_block(analysis: dict) -> str:
     Kernproblem und Sentiment-Verteilung.
     """
     interpretation = analysis.get("llm_interpretation", {})
-    relevant_topics = interpretation.get("relevant_topics", [])
+    removed_topics = topic_removals()
+    relevant_topics = [
+        rt for rt in interpretation.get("relevant_topics", [])
+        if str(rt.get("topic_id")) not in removed_topics
+    ]
     topic_overview = {str(t.get("Topic")): t for t in analysis.get("topic_overview", [])}
     topic_sentiments = {str(k): v for k, v in analysis.get("topic_sentiments", {}).items()}
 
@@ -768,7 +774,14 @@ def run() -> int:
     analysis = load_json(ANALYSIS_PATH)
     reference = load_json(REFERENCE_PATH)
 
-    relevant_topics = analysis.get("llm_interpretation", {}).get("relevant_topics", [])
+    removed_topics = topic_removals()
+    if removed_topics:
+        print(f"  {len(removed_topics)} Topic-Removal Feedback-Aktion(en) aktiv: {sorted(removed_topics)}")
+
+    relevant_topics = [
+        rt for rt in analysis.get("llm_interpretation", {}).get("relevant_topics", [])
+        if str(rt.get("topic_id")) not in removed_topics
+    ]
     services = reference.get("services", [])
     expected_topic_ids = {str(rt.get("topic_id")) for rt in relevant_topics}
 
@@ -788,6 +801,28 @@ def run() -> int:
     raw_result = run_gap_analysis_pass1(client, analysis, reference)
     result = validate_and_normalize_gaps(raw_result, reference, expected_topic_ids)
     gaps = result.get("gaps", [])
+
+    reclassifications = gap_reclassifications()
+    if reclassifications:
+        applied = 0
+        for gap in gaps:
+            action = reclassifications.get(str(gap.get("topic_id", "")))
+            if not action:
+                continue
+            proposed = str(action.get("proposed_value", "")).strip()
+            if proposed not in VALID_CLASSIFICATIONS:
+                continue
+            original = gap.get("klassifizierung")
+            if original != proposed:
+                gap["klassifizierung_original"] = original
+                gap["klassifizierung"] = proposed
+            gap["human_override"] = action.get("decision") == "accepted"
+            gap["auto_applied_by_evaluator"] = action.get("autonomy") == "auto_apply"
+            gap["evaluator_action_id"] = action.get("action_id", "")
+            gap["human_override_reason"] = action.get("recommendation") or action.get("reason", "")
+            applied += 1
+        print(f"  {applied} Gap-Reklassifikation(en) aus Feedback angewendet")
+
     print(f"  {len(gaps)} Topics klassifiziert")
 
     if len(gaps) != len(relevant_topics):

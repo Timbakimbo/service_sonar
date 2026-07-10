@@ -10,7 +10,7 @@ Schließt den Reasoning-Kreislauf des MAS.
   Pass 4 — Aggregation + System-Feedback
 
 Output: data/evaluation/evaluator_output.json (schema_version "1.0-de").
-Backend: Groq (Llama 3.3 70B), 1 Call pro Pass.
+Backend: konfigurierbar via EVALUATOR_BACKEND=groq|openai.
 
 Determinismus-Split: evaluation_ids, aggregierte_aktionen (mit normalisierten Konvergenz-Labels),
 rework_warteschlange, Cross-Pass-Override (Gap remove/reclassify ⇒ Innovation rework),
@@ -40,7 +40,14 @@ REFERENCE_PATH = Path("data/reference/existing_services.json")
 METRICS_PATH = Path("data/metrics.json")
 OUTPUT_PATH = Path("data/evaluation/evaluator_output.json")
 
-MODEL = "llama-3.3-70b-versatile"
+DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
+BACKEND = os.getenv("EVALUATOR_BACKEND", "groq").strip().lower()
+MODEL = (
+    os.getenv("OPENAI_EVALUATOR_MODEL", DEFAULT_OPENAI_MODEL)
+    if BACKEND == "openai"
+    else os.getenv("GROQ_EVALUATOR_MODEL", DEFAULT_GROQ_MODEL)
+)
 SCHEMA_VERSION = "1.0-de"
 MAX_TOKENS_PASS1 = 4000
 MAX_TOKENS_PASS2 = 4000
@@ -51,11 +58,26 @@ VALID_CLASSIFICATIONS = {
     "echte_luecke", "prozessproblem", "informationsluecke", "bereits_abgedeckt", "irrelevant",
 }
 
-api_key = os.getenv("GROQ_API_KEY")
-if not api_key:
-    raise RuntimeError("GROQ_API_KEY fehlt in .env")
+client: Any | None = None
 
-client = Groq(api_key=api_key)
+
+def get_llm_client() -> Any:
+    if BACKEND == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY fehlt in .env")
+        try:
+            from openai import OpenAI  # noqa: WPS433
+        except ImportError as exc:
+            raise RuntimeError("openai Paket fehlt. Bitte requirements installieren.") from exc
+        return OpenAI(api_key=api_key)
+
+    if BACKEND != "groq":
+        raise RuntimeError("EVALUATOR_BACKEND muss 'groq' oder 'openai' sein")
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY fehlt in .env")
+    return Groq(api_key=api_key)
 
 
 # --------------------------------------------------------------------------- helpers
@@ -114,7 +136,10 @@ def load_keywords() -> list[str]:
         return []
 
 
-def call_groq(prompt: str, max_tokens: int, temperature: float = 0.2) -> dict:
+def call_llm(prompt: str, max_tokens: int, temperature: float = 0.2) -> dict:
+    global client
+    if client is None:
+        client = get_llm_client()
     response = client.chat.completions.create(
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
@@ -248,7 +273,7 @@ Antworte NUR mit validem JSON:
 {{ "topic_evaluations": [ {{ "topic_id":"14","in_scope":true,"noise":false,
   "redundancy_cluster":"elterngeld","verdict":"merge","begruendung":"..." }} ] }}
 """
-    return call_groq(prompt, MAX_TOKENS_PASS1, temperature=0.2)
+    return call_llm(prompt, MAX_TOKENS_PASS1, temperature=0.2)
 
 
 def run_pass2_gaps(inputs: dict, pass1: dict) -> dict:
@@ -293,7 +318,7 @@ Antworte NUR mit validem JSON:
   "matching_plausibel":false,"empfehlung_qualitaet":"vage","verdict":"reclassify",
   "vorgeschlagene_klassifikation":"informationsluecke","begruendung":"..." }} ] }}
 """
-    return call_groq(prompt, MAX_TOKENS_PASS2, temperature=0.2)
+    return call_llm(prompt, MAX_TOKENS_PASS2, temperature=0.2)
 
 
 def run_pass3_innovations(inputs: dict, pass1: dict, pass2: dict) -> dict:
@@ -358,7 +383,7 @@ Antworte NUR mit validem JSON:
   "konvergenz_cluster":"digitaler_antragsassistent_bayernid_elster","verdict":"rework",
   "rework_briefing":"...","begruendung":"..." }} ] }}
 """
-    return call_groq(prompt, MAX_TOKENS_PASS3, temperature=0.2)
+    return call_llm(prompt, MAX_TOKENS_PASS3, temperature=0.2)
 
 
 def run_pass4_aggregation(inputs: dict, pass1: dict, pass2: dict, pass3: dict) -> dict:
@@ -417,7 +442,7 @@ Antworte NUR mit validem JSON:
   "konvergenz_status":{{"themenspektrum_vollstaendig":false,"fehlende_themen":["pflege","sorgerecht"]}},
   "keyword_feedback":{{"schwache_keywords":["..."],"neue_keywords_vorgeschlagen":["..."]}} }}
 """
-    return call_groq(prompt, MAX_TOKENS_PASS4, temperature=0.4)
+    return call_llm(prompt, MAX_TOKENS_PASS4, temperature=0.4)
 
 
 # --------------------------------------------------------------------------- deterministic aggregation
@@ -437,6 +462,139 @@ def build_aggregierte_aktionen(pass1_evals: list, pass2_evals: list, pass3_evals
         "topics_entfernen": dedupe(topics_entfernen),
         "konvergenz_zusammenfuehren": zusammenfuehren,
     }
+
+
+def classify_topic_remove_autonomy(evaluation: dict) -> tuple[str, float, str]:
+    if evaluation.get("noise") is True:
+        return "auto_apply", 0.95, "low"
+    if evaluation.get("in_scope") is False and evaluation.get("verdict") == "remove":
+        return "auto_apply", 0.85, "low"
+    return "human_required", 0.7, "medium"
+
+
+def build_source_quality_warnings(source_stats: dict) -> list[dict]:
+    warnings: list[dict] = []
+    reddit = source_stats.get("reddit", {}) if isinstance(source_stats, dict) else {}
+    attempted = int(reddit.get("attempted_requests") or 0)
+    blocked = int(reddit.get("blocked_403_count") or 0)
+    successful = int(reddit.get("successful_requests") or 0)
+    if attempted and (successful == 0 or blocked / attempted >= 0.8):
+        warnings.append({
+            "source": "reddit",
+            "status": "blocked_or_stale",
+            "attempted_requests": attempted,
+            "blocked_403_count": blocked,
+            "successful_requests": successful,
+            "existing_data_preserved": bool(reddit.get("existing_data_preserved")),
+            "reason": "Letzter Reddit-Run lieferte keine frischen Daten und wurde überwiegend/komplett mit 403 blockiert.",
+        })
+    return warnings
+
+
+def build_actions(output: dict, inputs: dict) -> list[dict]:
+    actions: list[dict] = []
+
+    def add(action: dict) -> None:
+        action["action_id"] = f"EA_{len(actions) + 1:03d}"
+        actions.append(action)
+
+    for topic in output.get("topic_evaluations", []):
+        if topic.get("verdict") != "remove":
+            continue
+        autonomy, confidence, risk = classify_topic_remove_autonomy(topic)
+        add({
+            "action_type": "topic_remove",
+            "target_agent": "gap-analysis",
+            "target": str(topic.get("topic_id", "")),
+            "autonomy": autonomy,
+            "confidence": confidence,
+            "risk": risk,
+            "recommendation": topic.get("begruendung", "Topic entfernen"),
+            "reason": topic.get("begruendung", ""),
+        })
+
+    for gap in output.get("gap_evaluations", []):
+        if gap.get("verdict") != "reclassify":
+            continue
+        proposed = gap.get("vorgeschlagene_klassifikation")
+        auto_safe = proposed in VALID_CLASSIFICATIONS and proposed != "echte_luecke"
+        add({
+            "action_type": "gap_reclassify",
+            "target_agent": "gap-analysis",
+            "target": str(gap.get("topic_id", "")),
+            "proposed_value": proposed,
+            "autonomy": "auto_apply" if auto_safe else "human_required",
+            "confidence": 0.85 if auto_safe else 0.65,
+            "risk": "low" if auto_safe else "high",
+            "recommendation": gap.get("begruendung", "Gap reklassifizieren"),
+            "reason": gap.get("begruendung", ""),
+        })
+
+    by_id = {item.get("innovation_id"): item for item in output.get("innovation_evaluations", [])}
+    for innovation_id in output.get("aggregierte_aktionen", {}).get("regenerieren", []):
+        evaluation = by_id.get(innovation_id, {})
+        add({
+            "action_type": "innovation_rework",
+            "target_agent": "innovation",
+            "target": innovation_id,
+            "autonomy": "human_required",
+            "confidence": 0.75,
+            "risk": "medium",
+            "recommendation": evaluation.get("rework_briefing") or evaluation.get("begruendung", ""),
+            "reason": evaluation.get("begruendung", ""),
+        })
+
+    for index, innovation_ids in enumerate(output.get("aggregierte_aktionen", {}).get("konvergenz_zusammenfuehren", []), 1):
+        add({
+            "action_type": "innovation_merge",
+            "target_agent": "innovation",
+            "target": f"merge_group_{index}",
+            "targets": innovation_ids,
+            "autonomy": "human_required",
+            "confidence": 0.75,
+            "risk": "medium",
+            "recommendation": "Konvergente Innovationen fachlich zusammenführen",
+            "reason": "Mehrere Innovationen folgen demselben Lösungsmuster.",
+        })
+
+    feedback = output.get("keyword_feedback", {})
+    for keyword in feedback.get("neue_keywords_vorgeschlagen", []) or []:
+        add({
+            "action_type": "keyword_add",
+            "target_agent": "source-discovery/reddit-scraper",
+            "target": keyword,
+            "autonomy": "human_required",
+            "confidence": 0.7,
+            "risk": "medium",
+            "recommendation": f"Keyword hinzufügen: {keyword}",
+            "reason": "Keyword verändert die Datengrundlage und benötigt deshalb menschliche Freigabe.",
+        })
+    for keyword in feedback.get("schwache_keywords", []) or []:
+        add({
+            "action_type": "keyword_remove",
+            "target_agent": "source-discovery/reddit-scraper",
+            "target": keyword,
+            "autonomy": "human_required",
+            "confidence": 0.7,
+            "risk": "medium",
+            "recommendation": f"Schwaches Keyword entfernen: {keyword}",
+            "reason": "Keyword-Entfernung kann Quellen abschneiden und benötigt deshalb menschliche Freigabe.",
+        })
+
+    for warning in build_source_quality_warnings(inputs.get("source_stats", {})):
+        add({
+            "action_type": "source_quality_warning",
+            "target_agent": "source-discovery/reddit-scraper",
+            "target": warning["source"],
+            "autonomy": "suggestion_only",
+            "confidence": 1.0,
+            "risk": "engineering",
+            "recommendation": warning["reason"],
+            "reason": warning["reason"],
+            "details": warning,
+        })
+
+    return actions
 
 
 def build_rework_warteschlange(pass3_evals: list) -> list:
@@ -553,7 +711,7 @@ def validate_evaluator_output(out: dict, inputs: dict, pass_failures: list) -> d
 # --------------------------------------------------------------------------- orchestration
 def run() -> None:
     print("Evaluator Agent gestartet (4-Pass)...")
-    print(f"Backend: Groq ({MODEL})")
+    print(f"Backend: {BACKEND} ({MODEL})")
 
     inputs = load_evaluator_inputs()
     print(f"  {len(inputs['topic_overview'])} Topics | {len(inputs['gaps'])} Gaps | "
@@ -606,6 +764,7 @@ def run() -> None:
     output = {
         "schema_version": SCHEMA_VERSION,
         "erstellt_am": now_iso(),
+        "modell_backend": BACKEND,
         "modell": MODEL,
         "pass_statistik": pass_statistik,
         "source_stats_status": inputs["source_stats_status"],
@@ -617,9 +776,11 @@ def run() -> None:
         "konvergenz_status": out["konvergenz_status"],
         "keyword_feedback": out["keyword_feedback"],
         "aggregierte_aktionen": aggregierte_aktionen,
+        "source_quality_warnings": build_source_quality_warnings(inputs["source_stats"]),
         "review_count": out["review_count"],
         "review_reasons": out["review_reasons"],
     }
+    output["aktionen"] = build_actions(output, inputs)
 
     save_json(OUTPUT_PATH, output)
     print(f"\n  Pass-Failures: {pass_failures or 'keine'} | Review: {out['review_count']}")

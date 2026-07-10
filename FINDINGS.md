@@ -587,7 +587,8 @@ Evaluator-Action-Listen + Human-in-the-Loop statt zentraler Koordinator).
   den nächsten manuellen Befehl. Es werden keine Agents gestartet und keine State-Files geschrieben.
 - Evaluator-Reviews, aggregierte Aktionen und Keyword-Vorschläge werden als
   `HUMAN DECISION REQUIRED` sichtbar gemacht.
-- 13 isolierte Tests decken Artefaktvalidierung, Human Gate, Review-Persistenz und Keyword-Anwendung ab.
+- 14 isolierte Tests decken Artefaktvalidierung, Human Gate, Review-Persistenz,
+  Keyword-Anwendung und Reddit-Runtime-Metriken ab.
 
 ### Prüfung am vorhandenen Datenstand
 - Alle neun Stage-Outputs sind technisch valide.
@@ -605,20 +606,24 @@ Evaluator-Action-Listen + Human-in-the-Loop statt zentraler Koordinator).
 - `source_stats_status` ist weiterhin `partial`, bis alle drei Scraper mit der erweiterten
   Metrik-Erfassung erneut gelaufen sind.
 
-### Zentrale Grenze des aktuellen MAS
-Der Evaluator **liefert** Keyword- und Rework-Feedback, ändert die Seed-Konfiguration aber
-nicht selbst. Akzeptierte Keyword-Entscheidungen werden inzwischen zur Laufzeit angewendet.
-Noch nicht gelöst ist die reproduzierbare
-Rückgabe einer bestätigten menschlichen Entscheidung an Gap-/Innovation-Agent: Die Agents lesen
-die Evaluator-Aktionslisten nicht als optionalen manuellen Input. Ein erneuter Lauf mit identischen
-Inputs setzt das Feedback daher nicht um.
+### Evaluator-Rechte-Matrix und erweiterter Feedbackloop
+Der Evaluator ist jetzt als Supervisor-Agent mit begrenzten Rechten modelliert. Seine Aktionen
+werden in drei Stufen getrennt:
 
-Für den nächsten E2E-Test müssen getrennt geprüft werden:
-1. technischer Vorwärtslauf aller Stages,
-2. verständlicher und vollständiger Human-Output des Evaluators,
-3. manuelle Keyword-Entscheidung über `review_evaluator.py`,
-4. neuer Lauf ab Source Discovery und Nachweis, ob sich Quellen/Topics verbessern,
-5. weiterhin offene Rework-Schnittstelle für bestätigte Reclassify-/Regenerate-Entscheidungen.
+| Stufe | Wirkung |
+|---|---|
+| `auto_apply` | Low-risk-Korrektur wird beim nächsten manuellen Ziel-Agent-Lauf berücksichtigt. |
+| `human_required` | Mensch muss akzeptieren, ablehnen oder vertagen. |
+| `suggestion_only` | Nur Team-/Engineering-Hinweis, nie automatische Anwendung. |
+
+Damit muss nicht jede Kleinigkeit durch HIL, aber riskante Entscheidungen bleiben kontrolliert:
+Keywords und Innovationen benötigen Freigabe; technische Noise-Removals und sichere
+Gap-Reklassifikationen dürfen automatisch wirken.
+
+Der Feedback-Pfad ist über `agents/human_feedback.py` erweitert:
+Source Discovery und Reddit lesen akzeptierte Keyword-Entscheidungen; Gap Analysis liest
+Topic-Remove und Gap-Reclassify; Innovation liest Rework-Briefings und Merge-Gruppen. Eine Stage
+wird weiterhin nie automatisch gestartet — der Mensch wählt den Wiederanlaufpunkt.
 
 ### Human-Review und erster ausführbarer Feedback-Slice
 - `scripts/review_evaluator.py` zeigt Evaluator-Aktionen im Terminal und erfasst pro Aktion
@@ -630,6 +635,56 @@ Für den nächsten E2E-Test müssen getrennt geprüft werden:
 - Source Discovery und Reddit verwenden beim nächsten manuellen Lauf die Seed-Keywords plus
   akzeptierte Ergänzungen minus akzeptierte Entfernungen. Damit ist der Keyword-Feedback-Pfad
   Evaluator → Mensch → JSON → neuer manueller Datenlauf technisch geschlossen.
-- Topic-Remove, Gap-Reclassify, Innovation-Rework und Merge werden strukturiert erfasst und an
-  einen Ziel-Agent geroutet, aber noch nicht von Gap-/Innovation-Agent verarbeitet. Diese Grenze
-  bleibt bewusst sichtbar.
+- Topic-Remove, Gap-Reclassify, Innovation-Rework und Merge werden strukturiert erfasst,
+  geroutet und von Gap-/Innovation-Agent beim nächsten manuellen Lauf verarbeitet. Automatisch
+  angewendete Korrekturen werden im Output sichtbar markiert.
+
+---
+
+## Vollständiger E2E-Testlauf — 30.06.2026
+
+### Funnel
+| Stufe | Ergebnis |
+|---|---:|
+| Wirksame Keywords | 25 |
+| Gefundene / akzeptierte Quellen | 250 / 207 |
+| Web / Reddit / FragDenStaat | 146 / 361 / 68 |
+| Preprocessing-Dokumente | 575 |
+| Topics gesamt / relevant | 26 / 17 |
+| Gap-Cluster | 9 |
+| Innovationen | 9 |
+| Evaluator accept / rework | 5 / 4 |
+
+Alle Stage-Outputs waren technisch valide. Gap Analysis bildete aus 17 relevanten Topics neun
+Cluster (8 Prozessprobleme, 9 Informationslücken, keine echte Lücke) und lief ohne Review-Fall.
+Innovation erzeugte neun Ideen; `INN_006 Familiengeld-Assistent` wurde bereits dort als
+`needs_review` markiert. Der Evaluator beendete alle vier Pässe ohne Fehler und meldete
+`source_stats=complete`.
+
+### Evaluator und menschliche Entscheidungen
+Der Evaluator erzeugte 4 Rework-, 3 Reclassify-, 9 Topic-Remove- und 2 Merge-Aktionen. Im
+Terminal-Review wurden unter anderem `Pflegestellen`, `Kita-Finanzierung` und
+`Familienförderung` als neue Keywords sowie die Entfernung von `ZBFS` akzeptiert. Drei
+Noise-Topic-Entfernungen und beide Merge-Gruppen wurden ebenfalls akzeptiert; weitere fachliche
+Aktionen wurden vertagt.
+
+Damit ist belegt, dass ein Mensch verständlichen, aktionsbezogenen Output erhält und Entscheidungen
+persistieren kann. Die ehemals offene Rückkopplung zu Gap-/Innovation-Agent wurde anschließend
+geschlossen: Auto-Apply- und akzeptierte Human-Aktionen dienen nun als reproduzierbarer manueller
+Input für den nächsten Stage-Lauf.
+
+### Empirische Learnings
+- `ZBFS` erzeugte fachfremde wissenschaftliche Treffer zu „zeroing barrier functions“. Die
+  Evaluator-Empfehlung zum Entfernen wurde durch den Web-Run empirisch bestätigt.
+- Generische Vorschläge wie `Kinderbetreuung` erhöhten die Quellenbreite, brachten aber auch
+  schweizerische Angebote und Stellenanzeigen. Keyword-Vorschläge benötigen künftig expliziten
+  Bayern- und Problemkontext.
+- 207 akzeptierte Discovery-URLs führten weiterhin zu 146 verwertbaren Webseiten. Die neuen
+  Keywords veränderten damit vor allem die Zusammensetzung, nicht die Größe des 575er-Korpus.
+- Reddit blockierte 55 von 55 Public-JSON-Requests mit 403. Der Schutzpfad erhielt nach manueller
+  Unterbrechung den bestehenden Datensatz mit 361 Posts und protokollierte den Lauf korrekt.
+  Anschließend wurde der Scraper um Diagnose-Abbruch und blocked/stale-Metriken ergänzt; der
+  Status-Checker unterscheidet dadurch technische JSON-Validität von frischer Datenqualität.
+- FragDenStaat fand keine neuen Anfragen und übersprang alle 68 bestehenden Einträge ohne Duplikate.
+- Keine `echte_luecke` trotz breiterem Themenspektrum bleibt ein Signal, die Kriterien und das
+  Service-Matching weiter zu prüfen.
