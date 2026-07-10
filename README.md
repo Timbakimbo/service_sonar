@@ -21,7 +21,8 @@ Implemented and locally runnable without private API keys:
 Implemented but API-key dependent:
 
 - Analysis Agent (`agents.analysis_agent`) requires `GEMINI_API_KEY`
-- Gap Analysis Agent v2 (`agents.gap_analysis_agent`) requires `GROQ_API_KEY`
+- Gap Analysis Agent v2 (`agents.gap_analysis_agent`) requires `GROQ_API_KEY` by default,
+  or `OPENAI_API_KEY` with `GAP_BACKEND=openai`
 - Innovation Agent (`agents.innovation_agent`) requires `GROQ_API_KEY`
 - Evaluator Agent (`agents.evaluator_agent`) requires `GROQ_API_KEY` by default, or
   `OPENAI_API_KEY` with `EVALUATOR_BACKEND=openai`
@@ -62,6 +63,9 @@ OPENAI_API_KEY=
 EVALUATOR_BACKEND=groq
 OPENAI_EVALUATOR_MODEL=gpt-4.1-mini
 GROQ_EVALUATOR_MODEL=llama-3.3-70b-versatile
+GAP_BACKEND=groq
+OPENAI_GAP_MODEL=gpt-4.1-mini
+GROQ_GAP_MODEL=llama-3.3-70b-versatile
 ```
 
 Do not commit `.env`.

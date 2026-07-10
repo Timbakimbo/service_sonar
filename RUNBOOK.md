@@ -44,10 +44,10 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Für Analysis wird `GEMINI_API_KEY`, für Gap Analysis und Innovation `GROQ_API_KEY`
-benötigt. Der Evaluator nutzt standardmäßig Groq, kann aber über
-`EVALUATOR_BACKEND=openai` mit `OPENAI_API_KEY` laufen. Source Discovery und Scraper
-benötigen Netzwerkzugriff.
+Für Analysis wird `GEMINI_API_KEY`, für Gap Analysis und Innovation standardmäßig
+`GROQ_API_KEY` benötigt. Gap Analysis und Evaluator können gezielt über
+`GAP_BACKEND=openai` bzw. `EVALUATOR_BACKEND=openai` mit `OPENAI_API_KEY` laufen.
+Source Discovery und Scraper benötigen Netzwerkzugriff.
 
 Vorhandene JSON-Dateien sind kuratierte Demo-Artefakte. Der Status-Checker kann ihre
 Struktur prüfen, aber nicht behaupten, dass sie im aktuellen Arbeitslauf entstanden sind.

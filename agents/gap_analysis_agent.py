@@ -22,7 +22,7 @@ Output:
 - data/gap_analysis/gap_analysis_output_v2.json (schema 1.2-de)
   Die alte Datei gap_analysis_output.json bleibt unverändert erhalten.
 
-Backend: Groq (Llama 3.3 70B).
+Backend: konfigurierbar via GAP_BACKEND=groq|openai.
 
 Wichtige Robustheitsmaßnahmen:
 - Topic-IDs werden konsistent als Strings behandelt.
@@ -54,7 +54,14 @@ REFERENCE_PATH = Path("data/reference/existing_services.json")
 OUTPUT_PATH = Path("data/gap_analysis/gap_analysis_output.json")          # alt, bleibt unangetastet
 OUTPUT_PATH_V2 = Path("data/gap_analysis/gap_analysis_output_v2.json")    # neu
 
-MODEL = "llama-3.3-70b-versatile"
+DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
+BACKEND = os.getenv("GAP_BACKEND", "groq").strip().lower()
+MODEL = (
+    os.getenv("OPENAI_GAP_MODEL", DEFAULT_OPENAI_MODEL)
+    if BACKEND == "openai"
+    else os.getenv("GROQ_GAP_MODEL", DEFAULT_GROQ_MODEL)
+)
 MAX_TOKENS = 6000          # Pass 1 (alle Topics)
 MAX_TOKENS_PASS2 = 2500    # Pass 2 (eine Empfehlung pro Cluster, Puffer gegen Truncation)
 SCHEMA_VERSION = "1.2-de"
@@ -182,7 +189,22 @@ def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
-def get_groq_client():
+def get_llm_client():
+    if BACKEND == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            print("OPENAI_API_KEY fehlt in .env")
+            return None
+        try:
+            from openai import OpenAI  # noqa: WPS433
+        except ImportError:
+            print("openai Paket fehlt. Bitte `pip install -r requirements.txt` ausführen.")
+            return None
+        return OpenAI(api_key=api_key)
+
+    if BACKEND != "groq":
+        print("GAP_BACKEND muss 'groq' oder 'openai' sein")
+        return None
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         print(
@@ -192,6 +214,17 @@ def get_groq_client():
         )
         return None
     return Groq(api_key=api_key)
+
+
+def call_llm(client: Any, prompt: str, max_tokens: int, temperature: float) -> dict:
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+    return parse_json_response(response.choices[0].message.content)
 
 
 def load_json(path: Path) -> Any:
@@ -356,6 +389,8 @@ def consolidate_clusters(gaps: list[dict]) -> None:
     """
     groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for gap in gaps:
+        if gap.get("force_solo_cluster"):
+            continue
         reasons = {r for r in str(gap.get("review_reason", "")).split(";") if r}
         matches = gap.get("matching_services", [])
         primary = matches[0] if matches else ""
@@ -539,7 +574,62 @@ def apply_recommendation_quality_check(gaps: list[dict]) -> None:
             gap["needs_review"] = True
 
 
-def run_gap_analysis_pass1(client: Groq, analysis: dict, reference: dict) -> dict:
+def feedback_questions_matching(action: dict) -> bool:
+    """Heuristic: Evaluator feedback says the service matching itself is implausible."""
+    text = " ".join([
+        str(action.get("recommendation", "")),
+        str(action.get("reason", "")),
+        str(action.get("human_note", "")),
+    ]).lower()
+    return any(marker in text for marker in (
+        "matching",
+        "matching-dienste",
+        "passen nicht",
+        "passt nicht",
+        "nicht passend",
+        "semantisch nicht",
+        "fraglich",
+        "unplausibel",
+    ))
+
+
+def apply_gap_feedback(gaps: list[dict], reclassifications: dict[str, dict]) -> int:
+    """Apply accepted/auto reclassify feedback and prevent bad matches from driving clusters."""
+    applied = 0
+    for gap in gaps:
+        action = reclassifications.get(str(gap.get("topic_id", "")))
+        if not action:
+            continue
+        proposed = str(action.get("proposed_value", "")).strip()
+        if proposed not in VALID_CLASSIFICATIONS:
+            continue
+
+        original = gap.get("klassifizierung")
+        if original != proposed:
+            gap["klassifizierung_original"] = original
+            gap["klassifizierung"] = proposed
+
+        gap["human_override"] = action.get("decision") == "accepted"
+        gap["auto_applied_by_evaluator"] = action.get("autonomy") == "auto_apply"
+        gap["evaluator_action_id"] = action.get("action_id", "")
+        gap["human_override_reason"] = action.get("recommendation") or action.get("reason", "")
+
+        if feedback_questions_matching(action):
+            previous_matches = list(gap.get("matching_services", []))
+            if previous_matches:
+                gap["matching_services_original"] = previous_matches
+                gap["matching_services"] = []
+            gap["force_solo_cluster"] = True
+            existing = [r for r in str(gap.get("review_reason", "")).split(";") if r]
+            if "evaluator_matching_unplausibel" not in existing:
+                existing.append("evaluator_matching_unplausibel")
+            gap["review_reason"] = ";".join(existing)
+
+        applied += 1
+    return applied
+
+
+def run_gap_analysis_pass1(client: Any, analysis: dict, reference: dict) -> dict:
     """
     Pass 1: Ein Groq-Call für alle relevanten Topics. Liefert Klassifikation,
     customer_journey_phase, cluster_id, matching_services, begruendung,
@@ -676,18 +766,11 @@ Antworte NUR mit validem JSON in diesem Format:
 }}
 """
 
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-        temperature=0.2,
-        max_tokens=MAX_TOKENS,
-    )
-    return parse_json_response(response.choices[0].message.content)
+    return call_llm(client, prompt, MAX_TOKENS, temperature=0.2)
 
 
 def run_gap_analysis_pass2(
-    client: Groq,
+    client: Any,
     cluster_id: str,
     gaps_in_cluster: list[dict],
     reference: dict,
@@ -753,21 +836,14 @@ Antworte NUR mit validem JSON in diesem Format:
 }}
 """
 
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-        temperature=0.3,
-        max_tokens=MAX_TOKENS_PASS2,
-    )
-    parsed = parse_json_response(response.choices[0].message.content)
+    parsed = call_llm(client, prompt, MAX_TOKENS_PASS2, temperature=0.3)
     return str(parsed.get("empfehlung_innovation", "")).strip()
 
 
 def run() -> int:
     print("Gap Analysis Agent v2 gestartet (2-Pass)...")
-    print(f"Backend: Groq ({MODEL})")
-    client = get_groq_client()
+    print(f"Backend: {BACKEND} ({MODEL})")
+    client = get_llm_client()
     if client is None:
         return 1
 
@@ -804,23 +880,7 @@ def run() -> int:
 
     reclassifications = gap_reclassifications()
     if reclassifications:
-        applied = 0
-        for gap in gaps:
-            action = reclassifications.get(str(gap.get("topic_id", "")))
-            if not action:
-                continue
-            proposed = str(action.get("proposed_value", "")).strip()
-            if proposed not in VALID_CLASSIFICATIONS:
-                continue
-            original = gap.get("klassifizierung")
-            if original != proposed:
-                gap["klassifizierung_original"] = original
-                gap["klassifizierung"] = proposed
-            gap["human_override"] = action.get("decision") == "accepted"
-            gap["auto_applied_by_evaluator"] = action.get("autonomy") == "auto_apply"
-            gap["evaluator_action_id"] = action.get("action_id", "")
-            gap["human_override_reason"] = action.get("recommendation") or action.get("reason", "")
-            applied += 1
+        applied = apply_gap_feedback(gaps, reclassifications)
         print(f"  {applied} Gap-Reklassifikation(en) aus Feedback angewendet")
 
     print(f"  {len(gaps)} Topics klassifiziert")
