@@ -346,6 +346,26 @@ def normalize_cluster_id(raw: Any, topic_id: str) -> str:
     return s or f"solo_{topic_id}"
 
 
+def canonicalize_topic_id(raw: Any, expected_topic_ids: set[str]) -> tuple[str, str]:
+    """Map an LLM topic reference to one unambiguous current Analysis topic ID."""
+    raw_topic_id = str(raw or "").strip()
+    canonical_ids = {str(topic_id).strip() for topic_id in expected_topic_ids}
+
+    if raw_topic_id in canonical_ids:
+        return raw_topic_id, "exact"
+
+    prefix_matches = {
+        topic_id
+        for topic_id in canonical_ids
+        if topic_id and raw_topic_id.startswith(f"{topic_id}_")
+    }
+    if len(prefix_matches) == 1:
+        return next(iter(prefix_matches)), "prefixed"
+    if len(prefix_matches) > 1:
+        return raw_topic_id, "ambiguous"
+    return raw_topic_id, "unknown"
+
+
 def detect_generic_recommendation(text: str) -> bool:
     """
     Lightweight Generic-Detection ohne externe Dependency.
@@ -446,7 +466,10 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
     normalized_gaps = []
     for raw_gap in result.get("gaps", []):
         gap = dict(raw_gap)
-        gap["topic_id"] = str(gap.get("topic_id", "")).strip()
+        raw_topic_id = str(gap.get("topic_id", "")).strip()
+        gap["topic_id"], topic_id_status = canonicalize_topic_id(
+            raw_topic_id, expected_topic_ids
+        )
 
         cls = str(gap.get("klassifizierung", "")).strip()
         if cls not in VALID_CLASSIFICATIONS:
@@ -503,7 +526,9 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
 
         needs_review_reasons = []
 
-        if gap["topic_id"] not in expected_topic_ids:
+        if topic_id_status == "ambiguous":
+            needs_review_reasons.extend(["unerwartete_topic_id", "mehrdeutige_topic_id"])
+        elif gap["topic_id"] not in expected_topic_ids:
             needs_review_reasons.append("unerwartete_topic_id")
 
         # Diese Klassen setzen logisch meistens voraus, dass mindestens eine echte Leistung matcht.
@@ -534,7 +559,12 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
             gap["customer_journey_phase"] = phase
 
         # LLM-cluster_id nur zur Diagnose behalten; consolidate_clusters() ist maßgeblich.
-        gap["cluster_id_llm"] = normalize_cluster_id(gap.get("cluster_id"), gap["topic_id"])
+        # Falls das LLM die semantische Clusterbezeichnung fälschlich in topic_id geliefert
+        # hat und keine cluster_id mitsendet, bleibt sie hier diagnostisch erhalten.
+        raw_cluster_id = gap.get("cluster_id")
+        if not str(raw_cluster_id or "").strip() and raw_topic_id != gap["topic_id"]:
+            raw_cluster_id = raw_topic_id
+        gap["cluster_id_llm"] = normalize_cluster_id(raw_cluster_id, gap["topic_id"])
 
         if needs_review_reasons:
             gap["needs_review"] = True

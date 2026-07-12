@@ -4,7 +4,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agents.gap_analysis_agent import apply_gap_feedback, build_topics_block, consolidate_clusters
+from agents.gap_analysis_agent import (
+    apply_gap_feedback,
+    build_topics_block,
+    consolidate_clusters,
+    validate_and_normalize_gaps,
+)
 
 
 class GapFeedbackTests(unittest.TestCase):
@@ -74,6 +79,7 @@ class GapFeedbackTests(unittest.TestCase):
                             {**rejected_auto, "decision": "rejected"},
                             {**deferred_human, "decision": "deferred"},
                             {**stale_human, "evaluator_run_id": "ER_old", "decision": "accepted"},
+                            {"action_type": "topic_remove", "target": "5", "decision": "accepted"},
                         ],
                     }),
                     encoding="utf-8",
@@ -88,6 +94,66 @@ class GapFeedbackTests(unittest.TestCase):
         self.assertIn("--- Topic 3 ---", filtered)
         self.assertIn("--- Topic 4 ---", filtered)
         self.assertIn("--- Topic 5 ---", filtered)
+
+    def test_prefixed_and_exact_topic_ids_become_canonical(self):
+        result = validate_and_normalize_gaps(
+            {"gaps": [
+                {"topic_id": "1_label_words", "cluster_id": "Leistung Übermittlung Ämter",
+                 "klassifizierung": "echte_luecke"},
+                {"topic_id": "2", "cluster_id": "zweiter_cluster",
+                 "klassifizierung": "echte_luecke"},
+            ]},
+            {"services": []},
+            {"1", "2"},
+        )
+
+        first, second = result["gaps"]
+        self.assertEqual(first["topic_id"], "1")
+        self.assertEqual(second["topic_id"], "2")
+        self.assertEqual(first["cluster_id_llm"], "leistung_uebermittlung_aemter")
+        self.assertNotIn("unerwartete_topic_id", first["review_reason"])
+        self.assertNotIn("unerwartete_topic_id", second["review_reason"])
+
+    def test_multiple_prefixed_gaps_keep_distinct_canonical_ids(self):
+        result = validate_and_normalize_gaps(
+            {"gaps": [
+                {"topic_id": "1_aktenauskunft_unterstützung_behörde_gesetzlich",
+                 "klassifizierung": "echte_luecke"},
+                {"topic_id": "2_antrag bearbeiten_übermitteln_anwalt_einreichen",
+                 "klassifizierung": "echte_luecke"},
+                {"topic_id": "5_kümmern_weinen_kennenlernen_mutter",
+                 "klassifizierung": "echte_luecke"},
+            ]},
+            {"services": []},
+            {"1", "2", "5"},
+        )
+
+        self.assertEqual([gap["topic_id"] for gap in result["gaps"]], ["1", "2", "5"])
+        self.assertEqual(
+            [gap["cluster_id_llm"] for gap in result["gaps"]],
+            [
+                "1_aktenauskunft_unterstuetzung_behoerde_gesetzlich",
+                "2_antrag_bearbeiten_uebermitteln_anwalt_einreichen",
+                "5_kuemmern_weinen_kennenlernen_mutter",
+            ],
+        )
+
+    def test_unknown_and_ambiguous_topic_prefixes_are_not_guessed(self):
+        result = validate_and_normalize_gaps(
+            {"gaps": [
+                {"topic_id": "99_unknown", "klassifizierung": "echte_luecke"},
+                {"topic_id": "1_label_words", "klassifizierung": "echte_luecke"},
+            ]},
+            {"services": []},
+            {"1", "1_label", "2"},
+        )
+
+        unknown, ambiguous = result["gaps"]
+        self.assertEqual(unknown["topic_id"], "99_unknown")
+        self.assertIn("unerwartete_topic_id", unknown["review_reason"])
+        self.assertEqual(ambiguous["topic_id"], "1_label_words")
+        self.assertIn("unerwartete_topic_id", ambiguous["review_reason"])
+        self.assertIn("mehrdeutige_topic_id", ambiguous["review_reason"])
 
     def test_reclassify_with_bad_matching_clears_match_and_forces_solo_cluster(self):
         gaps = [

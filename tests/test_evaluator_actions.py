@@ -1,9 +1,38 @@
 import unittest
+from unittest.mock import patch
 
-from agents.evaluator_agent import build_actions, ensure_priorisierung_vollstaendig
+from agents.evaluator_agent import build_actions, ensure_priorisierung_vollstaendig, run_pass2_gaps
 
 
 class EvaluatorActionTests(unittest.TestCase):
+    def test_pass2_scope_join_accepts_string_and_integer_like_canonical_ids(self):
+        inputs = {
+            "gaps": [
+                {"topic_id": 1, "kernproblem": "eins", "klassifizierung": "prozessproblem"},
+                {"topic_id": "3", "kernproblem": "drei", "klassifizierung": "echte_luecke"},
+                {"topic_id": "2", "kernproblem": "zwei", "klassifizierung": "irrelevant"},
+            ],
+            "reference": {"services": []},
+        }
+        pass1 = {"topic_evaluations": [
+            {"topic_id": "1", "in_scope": True, "verdict": "keep"},
+            {"topic_id": 3, "in_scope": True, "verdict": "keep"},
+            {"topic_id": 2, "in_scope": False, "verdict": "remove"},
+        ]}
+        mocked_result = {"gap_evaluations": [
+            {"topic_id": "1", "verdict": "accept"},
+            {"topic_id": "3", "verdict": "accept"},
+        ]}
+
+        with patch("agents.evaluator_agent.call_llm", return_value=mocked_result) as llm:
+            result = run_pass2_gaps(inputs, pass1)
+
+        prompt = llm.call_args.args[0]
+        self.assertEqual(result, mocked_result)
+        self.assertIn("--- Gap Topic 1 ---", prompt)
+        self.assertIn("--- Gap Topic 3 ---", prompt)
+        self.assertNotIn("--- Gap Topic 2 ---", prompt)
+
     def make_actions(self, topics=None, gaps=None, input_gaps=None):
         output = {
             "evaluator_run_id": "ER_current",
