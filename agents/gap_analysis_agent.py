@@ -45,7 +45,11 @@ from typing import Any
 from dotenv import load_dotenv
 from groq import Groq
 
-from agents.human_feedback import gap_reclassifications, topic_removals
+from agents.human_feedback import (
+    gap_reclassifications,
+    report_stale_decisions,
+    topic_removal_actions,
+)
 
 load_dotenv()
 
@@ -605,13 +609,17 @@ def apply_gap_feedback(gaps: list[dict], reclassifications: dict[str, dict]) -> 
             continue
 
         original = gap.get("klassifizierung")
+        gap["original_value"] = action.get("original_value", original)
         if original != proposed:
             gap["klassifizierung_original"] = original
             gap["klassifizierung"] = proposed
 
         gap["human_override"] = action.get("decision") == "accepted"
         gap["auto_applied_by_evaluator"] = action.get("autonomy") == "auto_apply"
+        gap["evaluator_run_id"] = action.get("evaluator_run_id", "")
         gap["evaluator_action_id"] = action.get("action_id", "")
+        gap["application_status"] = "applied" if original != proposed else "confirmed_no_change"
+        gap["conflict_reason"] = ""
         gap["human_override_reason"] = action.get("recommendation") or action.get("reason", "")
 
         if feedback_questions_matching(action):
@@ -624,6 +632,7 @@ def apply_gap_feedback(gaps: list[dict], reclassifications: dict[str, dict]) -> 
             if "evaluator_matching_unplausibel" not in existing:
                 existing.append("evaluator_matching_unplausibel")
             gap["review_reason"] = ";".join(existing)
+            gap["conflict_reason"] = "evaluator_matching_unplausibel"
 
         applied += 1
     return applied
@@ -850,7 +859,9 @@ def run() -> int:
     analysis = load_json(ANALYSIS_PATH)
     reference = load_json(REFERENCE_PATH)
 
-    removed_topics = topic_removals()
+    report_stale_decisions()
+    removal_actions = topic_removal_actions()
+    removed_topics = {str(action.get("topic_id") or action.get("target")) for action in removal_actions}
     if removed_topics:
         print(f"  {len(removed_topics)} Topic-Removal Feedback-Aktion(en) aktiv: {sorted(removed_topics)}")
 
@@ -961,6 +972,21 @@ def run() -> int:
         "pass_statistik": pass_statistik,
         "review_count": review_count,
         "invalid_matches_removed": invalid_matches_removed,
+        "feedback_audit": {
+            "topic_removals": [
+                {
+                    "topic_id": str(action.get("topic_id") or action.get("target")),
+                    "evaluator_run_id": action.get("evaluator_run_id", ""),
+                    "evaluator_action_id": action.get("action_id", ""),
+                    "original_value": action.get("original_value"),
+                    "auto_applied_by_evaluator": action.get("autonomy") == "auto_apply",
+                    "human_override": action.get("decision") == "accepted",
+                    "application_status": "applied_topic_excluded",
+                    "conflict_reason": "",
+                }
+                for action in removal_actions
+            ]
+        },
         "gaps": gaps,
     }
 

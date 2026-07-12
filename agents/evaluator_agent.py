@@ -23,6 +23,8 @@ Robustheit: per-Pass try/except, Markdown-Fence-Stripping, response_format json_
 import json
 import os
 import re
+import hashlib
+import uuid
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -57,6 +59,7 @@ MAX_TOKENS_PASS4 = 6000
 VALID_CLASSIFICATIONS = {
     "echte_luecke", "prozessproblem", "informationsluecke", "bereits_abgedeckt", "irrelevant",
 }
+HIGH_CONFIDENCE_THRESHOLD = 0.85
 
 client: Any | None = None
 
@@ -83,6 +86,15 @@ def get_llm_client() -> Any:
 # --------------------------------------------------------------------------- helpers
 def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
+
+
+def new_evaluator_run_id() -> str:
+    return f"ER_{datetime.now().strftime('%Y%m%dT%H%M%S')}_{uuid.uuid4().hex[:10]}"
+
+
+def stable_action_id(action_type: str, stable_target: str) -> str:
+    digest = hashlib.sha256(f"{action_type}|{stable_target}".encode("utf-8")).hexdigest()[:16]
+    return f"EA_{action_type}_{digest}"
 
 
 def load_json(path: Path) -> Any:
@@ -247,6 +259,8 @@ Bewerte pro Topic:
 - noise (bool): NUR technisches Crawling-Artefakt OHNE inhaltliche Kohärenz.
 - redundancy_cluster (string|null): snake_case-Wurzelthema, das mehrere Topics teilen (z.B. "elterngeld"); null wenn allein.
 - verdict: "keep" (relevant, eigenständig) | "remove" (Noise/out-of-scope) | "merge" (redundant).
+- unambiguous (bool): ist das Urteil fachlich eindeutig genug für eine begrenzte Auto-Korrektur?
+- confidence (0.0-1.0): tatsächliche Sicherheit des Urteils; nicht pauschal setzen.
 - begruendung: 1-2 konkrete Sätze; bei remove MUSS klar werden, ob Noise oder out-of-scope.
 
 NOISE vs. OUT-OF-SCOPE — strikt trennen:
@@ -271,6 +285,7 @@ Regeln:
 
 Antworte NUR mit validem JSON:
 {{ "topic_evaluations": [ {{ "topic_id":"14","in_scope":true,"noise":false,
+  "unambiguous":true,"confidence":0.9,
   "redundancy_cluster":"elterngeld","verdict":"merge","begruendung":"..." }} ] }}
 """
     return call_llm(prompt, MAX_TOKENS_PASS1, temperature=0.2)
@@ -307,6 +322,8 @@ Bewerte pro Gap:
 - empfehlung_qualitaet: "gut" | "vage" | "boilerplate".
 - verdict: "accept" | "reclassify" | "remove".
 - vorgeschlagene_klassifikation: nur bei reclassify, aus {sorted(VALID_CLASSIFICATIONS)}.
+- unambiguous (bool): ist die Reklassifikation fachlich eindeutig?
+- confidence (0.0-1.0): tatsächliche Sicherheit; nicht pauschal setzen.
 - begruendung: 1-2 Sätze.
 
 === TOPIC-BEWERTUNGEN ==={scope_block}
@@ -316,7 +333,8 @@ Bewerte pro Gap:
 Antworte NUR mit validem JSON:
 {{ "gap_evaluations": [ {{ "topic_id":"10","klassifikation_plausibel":false,
   "matching_plausibel":false,"empfehlung_qualitaet":"vage","verdict":"reclassify",
-  "vorgeschlagene_klassifikation":"informationsluecke","begruendung":"..." }} ] }}
+  "vorgeschlagene_klassifikation":"informationsluecke","unambiguous":true,
+  "confidence":0.9,"begruendung":"..." }} ] }}
 """
     return call_llm(prompt, MAX_TOKENS_PASS2, temperature=0.2)
 
@@ -464,12 +482,28 @@ def build_aggregierte_aktionen(pass1_evals: list, pass2_evals: list, pass3_evals
     }
 
 
-def classify_topic_remove_autonomy(evaluation: dict) -> tuple[str, float, str]:
+def confidence_value(evaluation: dict) -> float | None:
+    try:
+        value = float(evaluation.get("confidence"))
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, min(1.0, value))
+
+
+def classify_topic_remove_autonomy(evaluation: dict) -> tuple[str, float | None, str]:
+    confidence = confidence_value(evaluation)
     if evaluation.get("noise") is True:
-        return "auto_apply", 0.95, "low"
-    if evaluation.get("in_scope") is False and evaluation.get("verdict") == "remove":
-        return "auto_apply", 0.85, "low"
-    return "human_required", 0.7, "medium"
+        return "auto_apply", confidence, "low"
+    auto_safe = (
+        evaluation.get("verdict") == "remove"
+        and evaluation.get("in_scope") is False
+        and evaluation.get("unambiguous") is True
+        and confidence is not None
+        and confidence >= HIGH_CONFIDENCE_THRESHOLD
+    )
+    if auto_safe:
+        return "auto_apply", confidence, "low"
+    return "human_required", confidence, "medium"
 
 
 def build_source_quality_warnings(source_stats: dict) -> list[dict]:
@@ -493,22 +527,28 @@ def build_source_quality_warnings(source_stats: dict) -> list[dict]:
 
 def build_actions(output: dict, inputs: dict) -> list[dict]:
     actions: list[dict] = []
+    evaluator_run_id = str(output.get("evaluator_run_id", "unbound"))
+    gaps_by_topic = {str(g.get("topic_id")): g for g in inputs.get("gaps", [])}
+    innovations_by_id = {
+        str(item.get("innovation_id")): item for item in inputs.get("innovations", [])
+    }
 
     def add(action: dict) -> None:
-        action["action_id"] = f"EA_{len(actions) + 1:03d}"
+        stable_target = str(action["stable_target"])
+        action["evaluator_run_id"] = evaluator_run_id
+        action["action_id"] = stable_action_id(action["action_type"], stable_target)
         actions.append(action)
 
     for topic in output.get("topic_evaluations", []):
         if topic.get("verdict") != "remove":
             continue
         autonomy, confidence, risk = classify_topic_remove_autonomy(topic)
+        topic_id = str(topic.get("topic_id", ""))
         add({
-            "action_type": "topic_remove",
-            "target_agent": "gap-analysis",
-            "target": str(topic.get("topic_id", "")),
-            "autonomy": autonomy,
-            "confidence": confidence,
-            "risk": risk,
+            "action_type": "topic_remove", "target_agent": "gap-analysis",
+            "target": topic_id, "topic_id": topic_id, "stable_target": f"topic:{topic_id}",
+            "autonomy": autonomy, "confidence": confidence, "risk": risk,
+            "original_value": "in_scope",
             "recommendation": topic.get("begruendung", "Topic entfernen"),
             "reason": topic.get("begruendung", ""),
         })
@@ -516,82 +556,99 @@ def build_actions(output: dict, inputs: dict) -> list[dict]:
     for gap in output.get("gap_evaluations", []):
         if gap.get("verdict") != "reclassify":
             continue
+        topic_id = str(gap.get("topic_id", ""))
+        original_gap = gaps_by_topic.get(topic_id, {})
+        cluster_id = str(original_gap.get("cluster_id") or f"solo_{topic_id}")
         proposed = gap.get("vorgeschlagene_klassifikation")
-        auto_safe = proposed in VALID_CLASSIFICATIONS and proposed != "echte_luecke"
+        confidence = confidence_value(gap)
+        auto_safe = (
+            proposed in VALID_CLASSIFICATIONS and proposed != "echte_luecke"
+            and gap.get("unambiguous") is True
+            and confidence is not None and confidence >= HIGH_CONFIDENCE_THRESHOLD
+        )
         add({
-            "action_type": "gap_reclassify",
-            "target_agent": "gap-analysis",
-            "target": str(gap.get("topic_id", "")),
+            "action_type": "gap_reclassify", "target_agent": "gap-analysis",
+            "target": topic_id, "topic_id": topic_id, "cluster_id": cluster_id,
+            "stable_target": f"gap:{cluster_id}:topic:{topic_id}",
             "proposed_value": proposed,
             "autonomy": "auto_apply" if auto_safe else "human_required",
-            "confidence": 0.85 if auto_safe else 0.65,
-            "risk": "low" if auto_safe else "high",
+            "confidence": confidence, "risk": "low" if auto_safe else "high",
+            "original_value": original_gap.get("klassifizierung"),
             "recommendation": gap.get("begruendung", "Gap reklassifizieren"),
             "reason": gap.get("begruendung", ""),
+        })
+
+    gap_evaluations = {str(item.get("topic_id")): item for item in output.get("gap_evaluations", [])}
+    for topic_id, original_gap in gaps_by_topic.items():
+        if original_gap.get("klassifizierung") != "echte_luecke":
+            continue
+        cluster_id = str(original_gap.get("cluster_id") or f"solo_{topic_id}")
+        evaluation = gap_evaluations.get(topic_id, {})
+        reason = evaluation.get("begruendung") or original_gap.get("begruendung") or (
+            "Neue Behauptung einer echten Luecke muss fachlich geprueft werden."
+        )
+        add({
+            "action_type": "real_gap_review", "target_agent": "gap-analysis",
+            "target": cluster_id, "topic_id": topic_id, "cluster_id": cluster_id,
+            "stable_target": f"gap:{cluster_id}:topic:{topic_id}",
+            "autonomy": "human_required", "confidence": confidence_value(evaluation), "risk": "high",
+            "original_value": "echte_luecke", "recommendation": reason, "reason": reason,
+            "evaluator_verdict": evaluation.get("verdict", "not_evaluated"),
         })
 
     by_id = {item.get("innovation_id"): item for item in output.get("innovation_evaluations", [])}
     for innovation_id in output.get("aggregierte_aktionen", {}).get("regenerieren", []):
         evaluation = by_id.get(innovation_id, {})
+        innovation = innovations_by_id.get(str(innovation_id), {})
+        cluster_id = str(innovation.get("cluster_id") or "missing_cluster")
         add({
-            "action_type": "innovation_rework",
-            "target_agent": "innovation",
-            "target": innovation_id,
-            "autonomy": "human_required",
-            "confidence": 0.75,
-            "risk": "medium",
+            "action_type": "innovation_rework", "target_agent": "innovation",
+            "target": cluster_id, "cluster_id": cluster_id, "display_target": innovation_id,
+            "innovation_id": innovation_id, "stable_target": f"cluster:{cluster_id}",
+            "autonomy": "human_required", "confidence": confidence_value(evaluation), "risk": "medium",
+            "original_value": innovation.get("titel", ""),
             "recommendation": evaluation.get("rework_briefing") or evaluation.get("begruendung", ""),
             "reason": evaluation.get("begruendung", ""),
         })
 
-    for index, innovation_ids in enumerate(output.get("aggregierte_aktionen", {}).get("konvergenz_zusammenfuehren", []), 1):
+    for innovation_ids in output.get("aggregierte_aktionen", {}).get("konvergenz_zusammenfuehren", []):
+        cluster_ids = sorted({
+            str(innovations_by_id.get(str(iid), {}).get("cluster_id", ""))
+            for iid in innovation_ids if innovations_by_id.get(str(iid), {}).get("cluster_id")
+        })
+        if len(cluster_ids) < 2:
+            continue
+        stable_target = "clusters:" + "|".join(cluster_ids)
         add({
-            "action_type": "innovation_merge",
-            "target_agent": "innovation",
-            "target": f"merge_group_{index}",
-            "targets": innovation_ids,
-            "autonomy": "human_required",
-            "confidence": 0.75,
-            "risk": "medium",
+            "action_type": "innovation_merge", "target_agent": "innovation",
+            "target": stable_target, "stable_target": stable_target, "targets": cluster_ids,
+            "display_targets": innovation_ids, "autonomy": "human_required",
+            "confidence": None, "risk": "medium", "original_value": cluster_ids,
             "recommendation": "Konvergente Innovationen fachlich zusammenführen",
             "reason": "Mehrere Innovationen folgen demselben Lösungsmuster.",
         })
 
     feedback = output.get("keyword_feedback", {})
-    for keyword in feedback.get("neue_keywords_vorgeschlagen", []) or []:
-        add({
-            "action_type": "keyword_add",
-            "target_agent": "source-discovery/reddit-scraper",
-            "target": keyword,
-            "autonomy": "human_required",
-            "confidence": 0.7,
-            "risk": "medium",
-            "recommendation": f"Keyword hinzufügen: {keyword}",
-            "reason": "Keyword verändert die Datengrundlage und benötigt deshalb menschliche Freigabe.",
-        })
-    for keyword in feedback.get("schwache_keywords", []) or []:
-        add({
-            "action_type": "keyword_remove",
-            "target_agent": "source-discovery/reddit-scraper",
-            "target": keyword,
-            "autonomy": "human_required",
-            "confidence": 0.7,
-            "risk": "medium",
-            "recommendation": f"Schwaches Keyword entfernen: {keyword}",
-            "reason": "Keyword-Entfernung kann Quellen abschneiden und benötigt deshalb menschliche Freigabe.",
-        })
+    for action_type, field, label in (
+        ("keyword_add", "neue_keywords_vorgeschlagen", "Keyword hinzufügen"),
+        ("keyword_remove", "schwache_keywords", "Schwaches Keyword entfernen"),
+    ):
+        for keyword in feedback.get(field, []) or []:
+            add({
+                "action_type": action_type, "target_agent": "source-discovery/reddit-scraper",
+                "target": keyword, "stable_target": f"keyword:{str(keyword).casefold()}",
+                "autonomy": "human_required", "confidence": None, "risk": "medium",
+                "original_value": None, "recommendation": f"{label}: {keyword}",
+                "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
+            })
 
     for warning in build_source_quality_warnings(inputs.get("source_stats", {})):
         add({
-            "action_type": "source_quality_warning",
-            "target_agent": "source-discovery/reddit-scraper",
-            "target": warning["source"],
-            "autonomy": "suggestion_only",
-            "confidence": 1.0,
-            "risk": "engineering",
-            "recommendation": warning["reason"],
-            "reason": warning["reason"],
-            "details": warning,
+            "action_type": "source_quality_warning", "target_agent": "source-discovery/reddit-scraper",
+            "target": warning["source"], "stable_target": f"source:{warning['source']}",
+            "autonomy": "suggestion_only", "confidence": 1.0, "risk": "engineering",
+            "original_value": warning.get("status"), "recommendation": warning["reason"],
+            "reason": warning["reason"], "details": warning,
         })
 
     return actions
@@ -613,18 +670,24 @@ def ensure_priorisierung_vollstaendig(priorisierung: list, accept_ids: set) -> l
        markiert mit deterministisch_angehaengt=true, sodass LLM- vs. Code-Einträge
        unterscheidbar bleiben.
     """
-    ranked = [p for p in priorisierung if p.get("innovation_id") in accept_ids]
-    present = {p.get("innovation_id") for p in ranked}
-    fehlend = [iid for iid in accept_ids if iid not in present]
+    ranked = []
+    present = set()
+    for item in priorisierung:
+        innovation_id = item.get("innovation_id")
+        if innovation_id not in accept_ids or innovation_id in present:
+            continue
+        ranked.append(dict(item))
+        present.add(innovation_id)
 
-    max_rang = max((int(p.get("rang", 0)) for p in ranked), default=0)
-    for i, iid in enumerate(sorted(fehlend), start=1):
+    for iid in sorted(accept_ids - present):
         ranked.append({
-            "rang": max_rang + i,
+            "rang": 0,
             "innovation_id": iid,
             "begruendung": "vom LLM nicht explizit geranked, deterministisch ans Ende angehängt",
             "deterministisch_angehaengt": True,
         })
+    for rank, item in enumerate(ranked, start=1):
+        item["rang"] = rank
     return ranked
 
 
@@ -708,31 +771,112 @@ def validate_evaluator_output(out: dict, inputs: dict, pass_failures: list) -> d
     return out
 
 
+def sanitize_pass_result(pass_id: str, result: Any, inputs: dict) -> dict:
+    """Keep only entries usable by the existing downstream contract."""
+    if not isinstance(result, dict):
+        raise ValueError("LLM-Antwort ist kein JSON-Objekt")
+
+    if pass_id == "pass1_topics":
+        valid_ids = {str(item.get("Topic")) for item in inputs.get("topic_overview", [])}
+        usable = [
+            item for item in result.get("topic_evaluations", [])
+            if isinstance(item, dict)
+            and str(item.get("topic_id", "")) in valid_ids
+            and item.get("verdict") in {"keep", "remove", "merge"}
+            and isinstance(item.get("in_scope"), bool)
+            and isinstance(item.get("noise"), bool)
+        ] if isinstance(result.get("topic_evaluations"), list) else []
+        if not usable:
+            raise ValueError("keine brauchbare Topic-Evaluation")
+        return {**result, "topic_evaluations": usable}
+
+    if pass_id == "pass2_gaps":
+        valid_ids = {str(item.get("topic_id")) for item in inputs.get("gaps", [])}
+        usable = []
+        candidates = result.get("gap_evaluations", [])
+        for item in candidates if isinstance(candidates, list) else []:
+            if not isinstance(item, dict) or str(item.get("topic_id", "")) not in valid_ids:
+                continue
+            verdict = item.get("verdict")
+            if verdict not in {"accept", "reclassify", "remove"}:
+                continue
+            if verdict == "reclassify" and item.get("vorgeschlagene_klassifikation") not in VALID_CLASSIFICATIONS:
+                continue
+            usable.append(item)
+        if not usable:
+            raise ValueError("keine brauchbare Gap-Evaluation")
+        return {**result, "gap_evaluations": usable}
+
+    if pass_id == "pass3_innovations":
+        valid_ids = {str(item.get("innovation_id")) for item in inputs.get("innovations", [])}
+        candidates = result.get("innovation_evaluations", [])
+        usable = [
+            item for item in candidates
+            if isinstance(item, dict)
+            and str(item.get("innovation_id", "")) in valid_ids
+            and item.get("verdict") in {"accept", "rework", "merge_with_other"}
+        ] if isinstance(candidates, list) else []
+        if not usable:
+            raise ValueError("keine brauchbare Innovation-Evaluation")
+        return {**result, "innovation_evaluations": usable}
+
+    if pass_id == "pass4_aggregation":
+        if not (
+            isinstance(result.get("priorisierung"), list)
+            and isinstance(result.get("konvergenz_status"), dict)
+            and isinstance(result.get("keyword_feedback"), dict)
+        ):
+            raise ValueError("Aggregation verletzt den bestehenden Output-Vertrag")
+        return result
+
+    raise ValueError(f"unbekannter Evaluator-Pass: {pass_id}")
+
+
 # --------------------------------------------------------------------------- orchestration
-def run() -> None:
+def run() -> int:
+    global client
     print("Evaluator Agent gestartet (4-Pass)...")
     print(f"Backend: {BACKEND} ({MODEL})")
 
-    inputs = load_evaluator_inputs()
+    try:
+        inputs = load_evaluator_inputs()
+        client = get_llm_client()
+    except Exception as exc:
+        print(f"FEHLER: Evaluator-Konfiguration/Initialisierung fehlgeschlagen: {exc}")
+        print("Bestehender Evaluator-Output bleibt unverändert.")
+        return 1
     print(f"  {len(inputs['topic_overview'])} Topics | {len(inputs['gaps'])} Gaps | "
           f"{len(inputs['innovations'])} Innovationen | source_stats={inputs['source_stats_status']}")
 
     pass_failures: list[str] = []
+    successful_passes: set[str] = set()
 
-    def safe(label, fn, fallback):
+    def safe(pass_id, label, fn, fallback):
         try:
             print(f"  {label} ...")
-            return fn()
+            result = sanitize_pass_result(pass_id, fn(), inputs)
+            successful_passes.add(pass_id)
+            return result
         except Exception as exc:
             print(f"  FEHLER in {label}: {exc} — Pass übersprungen")
-            pass_failures.append(label)
+            pass_failures.append(pass_id)
             return fallback
 
-    pass1 = safe("Pass 1 (Topics)", lambda: run_pass1_topics(inputs), {"topic_evaluations": []})
-    pass2 = safe("Pass 2 (Gaps)", lambda: run_pass2_gaps(inputs, pass1), {"gap_evaluations": []})
-    pass3 = safe("Pass 3 (Innovationen)", lambda: run_pass3_innovations(inputs, pass1, pass2), {"innovation_evaluations": []})
-    pass4 = safe("Pass 4 (Aggregation)", lambda: run_pass4_aggregation(inputs, pass1, pass2, pass3),
+    pass1 = safe("pass1_topics", "Pass 1 (Topics)", lambda: run_pass1_topics(inputs),
+                 {"topic_evaluations": []})
+    pass2 = safe("pass2_gaps", "Pass 2 (Gaps)", lambda: run_pass2_gaps(inputs, pass1),
+                 {"gap_evaluations": []})
+    pass3 = safe("pass3_innovations", "Pass 3 (Innovationen)",
+                 lambda: run_pass3_innovations(inputs, pass1, pass2),
+                 {"innovation_evaluations": []})
+    pass4 = safe("pass4_aggregation", "Pass 4 (Aggregation)",
+                 lambda: run_pass4_aggregation(inputs, pass1, pass2, pass3),
                  {"priorisierung": [], "konvergenz_status": {}, "keyword_feedback": {}})
+
+    if not successful_passes.intersection({"pass1_topics", "pass2_gaps", "pass3_innovations"}):
+        print("FEHLER: Alle inhaltlichen Evaluator-Pässe sind fehlgeschlagen oder unbrauchbar.")
+        print("Bestehender Evaluator-Output bleibt unverändert.")
+        return 1
 
     out = {
         "topic_evaluations": pass1.get("topic_evaluations", []),
@@ -758,12 +902,17 @@ def run() -> None:
         "pass2_gaps_evaluated": len(out["gap_evaluations"]) - skipped,
         "pass2_gaps_skipped_out_of_scope": skipped,
         "pass3_innovations_evaluated": len(out["innovation_evaluations"]),
-        "pass4_aggregation_calls": 0 if "Pass 4 (Aggregation)" in pass_failures else 1,
+        "pass4_aggregation_calls": 0 if "pass4_aggregation" in pass_failures else 1,
     }
 
+    evaluator_run_id = new_evaluator_run_id()
     output = {
         "schema_version": SCHEMA_VERSION,
+        "evaluator_run_id": evaluator_run_id,
         "erstellt_am": now_iso(),
+        "output_status": "partial" if pass_failures else "complete",
+        "failed_pass_count": len(pass_failures),
+        "failed_passes": pass_failures,
         "modell_backend": BACKEND,
         "modell": MODEL,
         "pass_statistik": pass_statistik,
@@ -786,7 +935,8 @@ def run() -> None:
     print(f"\n  Pass-Failures: {pass_failures or 'keine'} | Review: {out['review_count']}")
     print(f"  Priorisiert (accept): {len(out['priorisierung'])} | Rework: {len(rework_warteschlange)}")
     print(f"Output gespeichert → {OUTPUT_PATH}")
+    return 0
 
 
 if __name__ == "__main__":
-    run()
+    raise SystemExit(run())

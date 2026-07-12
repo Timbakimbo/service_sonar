@@ -29,7 +29,11 @@ from typing import Any
 from dotenv import load_dotenv
 from groq import Groq
 
-from agents.human_feedback import innovation_merge_groups, innovation_rework_briefings
+from agents.human_feedback import (
+    innovation_merge_groups,
+    innovation_rework_briefings,
+    report_stale_decisions,
+)
 
 load_dotenv()
 
@@ -111,11 +115,11 @@ TRAEGER_ALIASES = {
     "kommunal": "Kommune",
 }
 
-api_key = os.getenv("GROQ_API_KEY")
-if not api_key:
-    raise RuntimeError("GROQ_API_KEY fehlt in .env")
-
-client = Groq(api_key=api_key)
+def get_llm_client() -> Any:
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY fehlt in .env")
+    return Groq(api_key=api_key)
 
 
 def now_iso() -> str:
@@ -368,7 +372,7 @@ Antworte NUR mit validem JSON in diesem Format:
 """
 
 
-def run_innovation(cluster_id: str, agg: dict) -> dict:
+def run_innovation(client: Any, cluster_id: str, agg: dict) -> dict:
     prompt = build_innovation_prompt(cluster_id, agg)
     response = client.chat.completions.create(
         model=MODEL,
@@ -378,6 +382,25 @@ def run_innovation(cluster_id: str, agg: dict) -> dict:
         max_tokens=MAX_TOKENS,
     )
     return parse_json_response(response.choices[0].message.content)
+
+
+def validate_raw_innovation_response(raw: Any, cluster_id: str) -> None:
+    """Reject syntactically valid but content-free Innovation responses."""
+    if not isinstance(raw, dict):
+        raise ValueError("Innovation-Antwort ist kein JSON-Objekt")
+    if not str(cluster_id).strip():
+        raise ValueError("stabile Cluster-Identitaet fehlt")
+    for field in ("titel", "kurzbeschreibung", "konkrete_loesung", "erwarteter_nutzen"):
+        if not isinstance(raw.get(field), str) or not raw[field].strip():
+            raise ValueError(f"unbrauchbare Innovation: Pflichttext {field} fehlt")
+    for field in ("zielgruppen", "moegliche_traeger", "umsetzungshuerden"):
+        value = raw.get(field)
+        if not isinstance(value, list) or not any(str(item).strip() for item in value):
+            raise ValueError(f"unbrauchbare Innovation: Pflichtliste {field} fehlt")
+    if raw.get("innovation_typ") not in VALID_INNOVATION_TYPES:
+        raise ValueError("unbrauchbare Innovation: innovation_typ fehlt oder ist ungueltig")
+    if raw.get("geschaetzter_aufwand") not in VALID_AUFWAND:
+        raise ValueError("unbrauchbare Innovation: geschaetzter_aufwand fehlt oder ist ungueltig")
 
 
 def validate_innovation(raw: dict, cluster_id: str, agg: dict, valid_service_names: set[str]) -> dict:
@@ -478,7 +501,7 @@ def order_innovation(inn: dict) -> dict:
     return ordered
 
 
-def run() -> None:
+def run() -> int:
     print("Innovation Agent gestartet...")
     print(f"Backend: Groq ({MODEL})")
 
@@ -487,9 +510,6 @@ def run() -> None:
     valid_service_names = get_valid_service_names(reference)
 
     gaps = gap_data.get("gaps", [])
-    if not gaps:
-        print("  Keine Gaps im v2-Output — Abbruch")
-        return
 
     clusters: dict[str, list[dict]] = defaultdict(list)
     for g in gaps:
@@ -497,33 +517,64 @@ def run() -> None:
 
     print(f"  {len(clusters)} Cluster aus Gap Agent v2")
 
-    innovations: list[dict] = []
+    eligible_clusters: list[tuple[str, list[dict]]] = []
     skipped = 0
-    inn_counter = 1
-    rework_by_innovation_id = innovation_rework_briefings()
-
     for cluster_id, cluster_gaps in clusters.items():
         skip, reason = should_skip_cluster(cluster_gaps)
         if skip:
             skipped += 1
             print(f"  SKIP '{cluster_id}' ({reason})")
-            continue
+        else:
+            eligible_clusters.append((cluster_id, cluster_gaps))
 
+    if not eligible_clusters:
+        output = {
+            "schema_version": SCHEMA_VERSION, "erstellt_am": now_iso(), "modell": MODEL,
+            "max_tokens": MAX_TOKENS, "output_status": "complete_empty_input",
+            "input_cluster_count": len(clusters), "eligible_cluster_count": 0,
+            "skipped_cluster_count": skipped, "generated_innovation_count": 0,
+            "failed_cluster_count": 0, "failed_clusters": [], "review_count": 0,
+            "innovations": [],
+        }
+        save_json(OUTPUT_PATH, output)
+        print("  Keine eligible Cluster — valider Empty-Input-Output gespeichert")
+        return 0
+
+    try:
+        client = get_llm_client()
+    except Exception as exc:
+        print(f"FEHLER: Innovation-Client konnte nicht initialisiert werden: {exc}")
+        print("Bestehender Innovation-Output bleibt unverändert.")
+        return 1
+
+    report_stale_decisions()
+    innovations: list[dict] = []
+    failed_clusters: list[dict] = []
+    inn_counter = 1
+    rework_by_cluster_id = innovation_rework_briefings()
+
+    for cluster_id, cluster_gaps in eligible_clusters:
         agg = aggregate_cluster(cluster_gaps, reference)
         predicted_innovation_id = f"INN_{inn_counter:03d}"
-        if predicted_innovation_id in rework_by_innovation_id:
-            agg["rework_feedback"] = rework_by_innovation_id[predicted_innovation_id]
+        feedback = rework_by_cluster_id.get(cluster_id)
+        if feedback:
+            agg["rework_feedback"] = feedback
         try:
-            raw = run_innovation(cluster_id, agg)
+            raw = run_innovation(client, cluster_id, agg)
+            validate_raw_innovation_response(raw, cluster_id)
             inn = validate_innovation(raw, cluster_id, agg, valid_service_names)
             inn["innovation_id"] = predicted_innovation_id
-            if predicted_innovation_id in rework_by_innovation_id:
-                feedback = rework_by_innovation_id[predicted_innovation_id]
+            if feedback:
                 inn["human_rework_applied"] = feedback.get("decision") == "accepted"
+                inn["human_override"] = feedback.get("decision") == "accepted"
                 inn["auto_rework_applied"] = feedback.get("autonomy") == "auto_apply"
-                inn["rework_action_id"] = feedback.get("action_id", "")
+                inn["evaluator_run_id"] = feedback.get("evaluator_run_id", "")
+                inn["evaluator_action_id"] = feedback.get("action_id", "")
+                inn["original_value"] = feedback.get("original_value")
+                inn["application_status"] = "applied"
+                inn["conflict_reason"] = ""
                 inn["rework_briefing_used"] = (
-                    feedback.get("recommendation") or feedback.get("reason") or feedback.get("human_note") or ""
+                    feedback.get("recommendation") or feedback.get("reason") or feedback.get("human_reason") or ""
                 )
             inn_counter += 1
             innovations.append(order_innovation(inn))
@@ -531,22 +582,31 @@ def run() -> None:
             print(f"  {inn['innovation_id']} '{cluster_id}': {inn.get('titel', '')}{flag}")
         except Exception as exc:  # pro-Cluster-Robustheit
             print(f"  FEHLER bei Cluster '{cluster_id}': {exc} — übersprungen")
+            failed_clusters.append({"cluster_id": cluster_id, "reason": str(exc)[:240]})
             continue
+
+    if not innovations:
+        print("FEHLER: Alle eligible Innovation-Cluster sind fehlgeschlagen.")
+        print("Bestehender Innovation-Output bleibt unverändert.")
+        return 1
 
     merge_groups = innovation_merge_groups()
     if merge_groups:
-        by_id = {item.get("innovation_id"): item for item in innovations}
+        by_cluster = {item.get("cluster_id"): item for item in innovations}
         for group in merge_groups:
             targets = [str(item) for item in group.get("targets", [])]
-            for iid in targets:
-                if iid not in by_id:
+            for cluster_id in targets:
+                if cluster_id not in by_cluster:
                     continue
-                by_id[iid].setdefault("merge_recommendations", []).append({
+                by_cluster[cluster_id].setdefault("merge_recommendations", []).append({
                     "merge_group": group.get("target", ""),
                     "targets": targets,
                     "recommendation": group.get("recommendation", ""),
                     "human_accepted": group.get("decision") == "accepted",
                     "auto_applied_by_evaluator": group.get("autonomy") == "auto_apply",
+                    "evaluator_run_id": group.get("evaluator_run_id", ""),
+                    "evaluator_action_id": group.get("action_id", ""),
+                    "application_status": "guidance_recorded",
                 })
 
     review_count = sum(1 for i in innovations if i.get("needs_review"))
@@ -556,9 +616,13 @@ def run() -> None:
         "erstellt_am": now_iso(),
         "modell": MODEL,
         "max_tokens": MAX_TOKENS,
+        "output_status": "partial" if failed_clusters else "complete",
         "input_cluster_count": len(clusters),
+        "eligible_cluster_count": len(eligible_clusters),
         "skipped_cluster_count": skipped,
         "generated_innovation_count": len(innovations),
+        "failed_cluster_count": len(failed_clusters),
+        "failed_clusters": failed_clusters,
         "review_count": review_count,
         "innovations": innovations,
     }
@@ -566,7 +630,8 @@ def run() -> None:
     save_json(OUTPUT_PATH, output)
     print(f"\n  Generiert: {len(innovations)} | Übersprungen: {skipped} | Review: {review_count}")
     print(f"Output gespeichert → {OUTPUT_PATH}")
+    return 0
 
 
 if __name__ == "__main__":
-    run()
+    raise SystemExit(run())
