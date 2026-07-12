@@ -1,15 +1,15 @@
 {
   "schema_version": "1.2-de",
-  "erstellt_am": "2026-07-10T20:14:01",
+  "erstellt_am": "2026-07-12T18:10:08",
   "modell": "gpt-4.1-mini",
   "max_tokens": 6000,
   "max_tokens_pass2": 2500,
   "zusammenfassung": {
-    "echte_luecke": 0,
+    "echte_luecke": 2,
     "prozessproblem": 10,
-    "informationsluecke": 2,
+    "informationsluecke": 1,
     "bereits_abgedeckt": 3,
-    "irrelevant": 2
+    "irrelevant": 1
   },
   "cluster_zusammenfassung": {
     "anzahl_cluster": 14,
@@ -63,30 +63,33 @@
   },
   "pass_statistik": {
     "pass1_calls": 1,
-    "pass2_calls": 9,
-    "pass2_clusters_skipped": 5
+    "pass2_calls": 10,
+    "pass2_clusters_skipped": 4
   },
-  "review_count": 2,
-  "invalid_matches_removed": 0,
+  "review_count": 1,
+  "invalid_matches_removed": 2,
+  "feedback_audit": {
+    "topic_removals": []
+  },
   "gaps": [
     {
       "topic_id": "1",
-      "kernproblem": "Familien erleben Probleme bei der Kommunikation mit Behörden, insbesondere bei der Empfangsbestätigung von Anträgen und der Akteneinsicht, was die Phase der behördlichen Bearbeitung erschwert.",
-      "customer_journey_phase": "bearbeitung",
+      "kernproblem": "Familien erleben Probleme und bürokratische Hürden bei der Kommunikation mit Behörden, insbesondere bei der Empfangsbestätigung von Anträgen und der Akteneinsicht, was die Behördenkommunikation erschwert.",
+      "customer_journey_phase": "bescheid_und_kommunikation",
       "cluster_id": "solo_1",
       "klassifizierung": "prozessproblem",
       "matching_services": [],
-      "begruendung": "Es gibt keine explizite Leistung zur Empfangsbestätigung oder Akteneinsicht im Kontext familienbezogener Sozialleistungen, jedoch handelt es sich hier um ein Prozessproblem bei der Behördenkommunikation, das nicht durch eine Leistung abgedeckt wird, sondern die Abläufe betrifft. Daher ist es ein Prozessproblem ohne direkten Leistungsbezug.",
+      "begruendung": "Es gibt keine explizite Leistung zur Empfangsbestätigung oder Akteneinsicht im Kontext familienbezogener Sozialleistungen. Allerdings handelt es sich um ein Prozessproblem bei der Behördenkommunikation, da bestehende Leistungen keine direkte Abdeckung bieten, aber das Thema eher auf Abläufe und Kommunikation verweist.",
       "prioritaet": 4,
       "confidence": 0.9,
-      "cluster_id_llm": "behoerdenkommunikation_und_verwaltung",
+      "cluster_id_llm": "behoerdenkommunikation",
       "needs_review": true,
       "review_reason": "klassifizierung_setzt_leistung_voraus_aber_keine_valide_leistung_gematcht",
-      "empfehlung_innovation": "Implementierung eines digitalen Akten- und Kommunikationsportals (Phase Bearbeitung), das über BayernID zugänglich ist und automatisch Empfangsbestätigungen generiert sowie den Echtzeit-Einblick in den aktuellen Bearbeitungsstand und relevante Dokumente ermöglicht; betroffen sind Familien (Antragsteller), Sachbearbeiter und die Elterngeldstelle, wobei das Portal mit bestehenden Antrags- und Dokumentenmanagementsystemen der Behörden integriert wird."
+      "empfehlung_innovation": "Implementierung eines digitalen Kommunikationsportals (Phase bescheid_und_kommunikation) für Familien, das über BayernID zugänglich ist und automatisch Empfangsbestätigungen generiert sowie eine sichere, transparente Akteneinsicht ermöglicht; betroffen sind Familien als Antragsteller und Sachbearbeiter in den Behörden, die über den Online-Assistenten kommunizieren und dabei bestehende Datenbestände der Behörden integrieren, um manuelle Nachfragen und Papierpost zu reduzieren."
     },
     {
       "topic_id": "2",
-      "kernproblem": "Familien stehen vor erheblichen Belastungen und Herausforderungen in der elterlichen Fürsorge und Erziehung, was einen Bedarf an psychosozialer und erziehungsunterstützender Beratung und Unterstützung signalisiert.",
+      "kernproblem": "Familien stehen vor erheblichen Belastungen und Herausforderungen bei der elterlichen Fürsorge und Erziehung, was psychosoziale und erziehungsunterstützende Bedarfe betrifft.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_2",
       "klassifizierung": "bereits_abgedeckt",
@@ -96,13 +99,12 @@
         "Psychosoziale Beratung und Unterstützung für Familien",
         "Familienberatungsdienste",
         "Elternberatung",
-        "Ambulante Erziehungshilfen (AEH)",
         "Jugendsozialarbeit an Schulen",
-        "Schulpsychologische Beratung"
+        "Ambulante Erziehungshilfen (AEH)"
       ],
-      "begruendung": "Der Bedarf an erziehungsunterstützender und psychosozialer Beratung wird durch zahlreiche bestehende Beratungsleistungen abgedeckt. Obwohl Belastungen bestehen, zeigen die vorhandenen Angebote eine grundsätzliche Abdeckung ohne starke negative Prozess- oder Informationssignale.",
+      "begruendung": "Der Bedarf an Erziehungs- und psychosozialer Unterstützung ist durch zahlreiche Beratungs- und Unterstützungsangebote abgedeckt. Obwohl Belastungen bestehen, zeigen die vorhandenen Leistungen eine umfassende Abdeckung ohne relevante negative Prozess- oder Informationssignale.",
       "prioritaet": 2,
-      "confidence": 0.85,
+      "confidence": 0.95,
       "cluster_id_llm": "familienberatung",
       "needs_review": false,
       "review_reason": "",
@@ -110,7 +112,7 @@
     },
     {
       "topic_id": "4",
-      "kernproblem": "Familien haben Schwierigkeiten und Konflikte bei der Planung und Aufteilung der Elternzeit sowie in der Elternbeziehung, was die Antragstellung und Planung der Elternzeit erschwert.",
+      "kernproblem": "Familien haben Schwierigkeiten und Konflikte bei der Planung und Aufteilung der Elternzeit sowie in der Elternbeziehung, was die Antragstellung und Planung der Elternzeit betrifft.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "elterngeld",
       "klassifizierung": "prozessproblem",
@@ -118,40 +120,34 @@
         "Elterngeld",
         "ElterngeldPlus",
         "Partnerschaftsbonus",
-        "Elterngeldantrag Bayern"
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Elternzeit und Elterngeld sind durch bestehende Leistungen abgedeckt, jedoch deuten die Schwierigkeiten auf Prozessprobleme bei der Planung und Antragstellung hin, z.B. unklare Regelungen oder komplexe Anforderungen.",
+      "begruendung": "Elterngeld und Elternzeit sind durch umfassende Leistungen abgedeckt. Die Schwierigkeiten bei Planung und Aufteilung deuten auf Prozess- und Beratungsprobleme hin, da die Regelungen komplex sind und es negative Erfahrungen gibt, aber keine echte Lücke bei der Leistung selbst.",
       "prioritaet": 4,
       "confidence": 0.9,
       "cluster_id_llm": "elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwickeln Sie einen interaktiven Online-Planungsassistenten (Phase: Informationssuche und Antragstellung), der über BayernID auf bereits vorhandene Daten aus Elterngeldanträgen und Bescheiden zugreift, um Eltern (Väter, Mütter, Paare) personalisierte, konfliktvermeidende Elternzeit- und ElterngeldPlus-Planungsszenarien mit automatischer Antragserstellung anzubieten; der Assistent integriert sich nahtlos in das bestehende Elterngeldantrag Bayern-System und ermöglicht eine digitale, stufenweise Antragseinreichung mit Echtzeit-Statusupdates und verständlichen Erläuterungen zu Fristen und Einkommensprüfungen."
+      "empfehlung_innovation": "Entwicklung eines interaktiven, digital integrierten Planungs- und Antragsassistenten für Elterngeld und ElterngeldPlus (Phasen Informationssuche und Antragstellung), der über BayernID auf persönliche Daten zugreift, automatisch Einkommens- und Fristprüfungen durchführt, Eltern gemeinsam in Echtzeit bei der Aufteilung der Elternzeit unterstützt und den Antrag direkt mit der Elterngeldantrag Bayern Plattform verknüpft, um Konflikte bei der Planung zu reduzieren, Unsicherheiten zu beseitigen und die Bescheidkommunikation zu vereinfachen; betroffene Stakeholder sind Eltern (insbesondere Paare), Elterngeldstellen und ZBFS-Regionalstellen, genutzt wird ein Online-Assistent mit Chat- und Planungsfunktion."
     },
     {
       "topic_id": "5",
-      "kernproblem": "Familien sind mit komplexen rechtlichen Auseinandersetzungen und Vertragsfragen konfrontiert, die oft die Einschaltung eines Anwalts oder des Amtsgerichts erfordern, was rechtliche Unterstützung und Verfahrensprobleme betrifft.",
-      "customer_journey_phase": "uebergreifend",
+      "kernproblem": "Familien sind mit komplexen rechtlichen Auseinandersetzungen oder Vertragsfragen konfrontiert, die oft die Einschaltung eines Anwalts oder des Amtsgerichts erfordern, was rechtliche Absicherung betrifft.",
+      "customer_journey_phase": "widerspruch_und_klage",
       "cluster_id": "solo_5",
-      "klassifizierung": "irrelevant",
+      "klassifizierung": "echte_luecke",
       "matching_services": [],
-      "begruendung": "Es existieren keine staatlichen familienbezogenen Sozialleistungen, die rechtliche Auseinandersetzungen oder Vertragsfragen direkt abdecken. Rechtliche Beratung oder Prozessvertretung sind nicht Teil der Sozialleistungen, daher liegt hier eine echte Lücke vor.",
+      "begruendung": "Es existieren keine staatlichen oder öffentlich geförderten familienbezogenen Sozialleistungen, die rechtliche Auseinandersetzungen oder Vertragsfragen direkt abdecken. Rechtsmittel und Anwaltshilfe sind nicht als Sozialleistung gelistet, daher besteht hier eine echte Lücke.",
       "prioritaet": 5,
       "confidence": 0.95,
-      "cluster_id_llm": "rechtliche_hilfe_und_verfahren",
+      "cluster_id_llm": "rechtliche_absicherung",
       "needs_review": false,
-      "review_reason": "evaluator_matching_unplausibel",
-      "empfehlung_innovation": "",
-      "klassifizierung_original": "echte_luecke",
-      "human_override": false,
-      "auto_applied_by_evaluator": true,
-      "evaluator_action_id": "EA_010",
-      "human_override_reason": "Das Kernproblem betrifft rechtliche Auseinandersetzungen, die Beratungsstelle Radikalisierung ist thematisch nicht passend. Die Klassifizierung als Prozessproblem ist hier nicht zielführend.",
-      "force_solo_cluster": true
+      "review_reason": "",
+      "empfehlung_innovation": "Entwicklung eines digital begleiteten Rechtshilfe-Assistenten (Phase widerspruch_und_klage), der über eine App betroffenen Alleinerziehenden und Familien automatisierte, rechtlich geprüfte Musterschreiben und Schritt-für-Schritt-Anleitungen bereitstellt, um Widersprüche und Klagen eigenständig vorzubereiten; der Assistent nutzt BayernID zur sicheren Nutzeridentifikation und integriert sich mit den Akten der Sozialleistungsstellen, um relevante Falldaten automatisch zu übernehmen und den Kontakt zu kostenfreien Beratungsstellen oder Mediatoren herzustellen."
     },
     {
       "topic_id": "7",
-      "kernproblem": "Familien haben Schwierigkeiten mit der Zuständigkeit der Familienkasse und Problemen bei der Beantragung von Kindergeld und Elterngeld, was die Antragstellung erschwert.",
+      "kernproblem": "Familien haben Fragen zur Zuständigkeit der Familienkasse und Schwierigkeiten bei der Beantragung von Kindergeld und Elterngeld, was die Antragstellung betrifft.",
       "customer_journey_phase": "antragstellung",
       "cluster_id": "kindergeld",
       "klassifizierung": "prozessproblem",
@@ -159,49 +155,47 @@
         "Kindergeld",
         "Elterngeld",
         "ElterngeldPlus",
-        "Kindergeld-Erhöhung",
-        "Kinderzuschlag"
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Kindergeld und Elterngeld sind durch bestehende Leistungen abgedeckt, jedoch zeigen die Probleme bei Zuständigkeit und Antragstellung typische Prozessprobleme wie unklare Zuständigkeiten und bürokratische Hürden.",
+      "begruendung": "Kindergeld und Elterngeld sind durch klare Leistungen abgedeckt. Die Probleme mit Zuständigkeit und Antrag deuten auf Prozessprobleme hin, da negative Erfahrungen bei Antragstellung und Zuständigkeit bestehen.",
       "prioritaet": 4,
       "confidence": 0.9,
-      "cluster_id_llm": "kindergeld_und_elterngeld",
+      "cluster_id_llm": "kindergeld_elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Implementiere einen digitalen, interaktiven Antragsscreener (Phase Antragstellung) als Online-Assistent, der über BayernID die Zuständigkeit automatisch ermittelt, relevante Antragsformulare für Kindergeld, Elterngeld, ElterngeldPlus und Kinderzuschlag vorbefüllt und die Einkommensdaten aus bestehenden Systemen der Familienkasse integriert, um Familien (Eltern, Alleinerziehende) und Sachbearbeiter bei der korrekten und vollständigen Antragstellung zu entlasten."
+      "empfehlung_innovation": "Entwicklung eines integrierten Online-Interaktiven Antragsassistenten (Phase Antragstellung), der über BayernID sowohl die Zuständigkeit der Familienkasse als auch des ZBFS automatisch prüft und den Nutzer bedarfsgerecht zum passenden Kindergeld- oder Elterngeldantrag weiterleitet; dabei werden Antragsdaten zwischen Kindergeld- und Elterngeldsystemen synchronisiert, um Mehrfacheingaben zu vermeiden. Betroffen sind Familien (insb. Väter und Alleinerziehende), Familienkasse und ZBFS-Sachbearbeiter; der Kanal ist eine webbasierte Anwendung, die bestehende Systeme wie Elterngeldantrag Bayern (digital) und Kindergeld-Onlineportal integriert."
     },
     {
       "topic_id": "8",
-      "kernproblem": "Familien sind von Problemen im Arbeitsverhältnis und Arbeitslosigkeit betroffen, die ihre finanzielle Stabilität und den Zugang zu sozialen Leistungen beeinträchtigen, insbesondere bei Arbeitslosengeld.",
+      "kernproblem": "Familien sind von Problemen im Arbeitsverhältnis und Arbeitslosigkeit betroffen, die ihre finanzielle Stabilität und den Zugang zu sozialen Leistungen beeinträchtigen.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_8",
       "klassifizierung": "bereits_abgedeckt",
       "matching_services": [
         "Arbeitslosengeld",
-        "Grundsicherung für Arbeitsuchende"
+        "Sozialhilfe"
       ],
-      "begruendung": "Arbeitslosengeld und Grundsicherung sind als Leistungen vorhanden und decken den Bedarf grundsätzlich ab. Die Probleme scheinen eher situativ und nicht auf eine Lücke oder systematische Prozessprobleme hinzudeuten.",
+      "begruendung": "Die finanzielle Absicherung bei Arbeitslosigkeit und sozialer Notlage ist durch Arbeitslosengeld und Sozialhilfe abgedeckt. Trotz Problemen im Arbeitsverhältnis gibt es keine Hinweise auf fehlende Leistungen oder systematische Prozessprobleme.",
       "prioritaet": 2,
-      "confidence": 0.8,
-      "cluster_id_llm": "arbeitslosengeld_und_soziale_absicherung",
+      "confidence": 0.85,
+      "removed_invalid_matching_services": [
+        "Bürgergeld"
+      ],
+      "cluster_id_llm": "arbeitslosengeld_und_sozialhilfe",
       "needs_review": false,
       "review_reason": "",
       "empfehlung_innovation": ""
     },
     {
       "topic_id": "10",
-      "kernproblem": "Familien sind gesundheitlichen Herausforderungen ausgesetzt, die durch Pandemie-Bedingungen verschärft werden und Meldungen oder Verhandlungen erfordern, was die gesundheitliche Versorgung betrifft.",
+      "kernproblem": "Familien sind gesundheitlichen Herausforderungen ausgesetzt, die durch Pandemie-Bedingungen verschärft werden und Meldungen oder Verhandlungen erfordern.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_10",
-      "klassifizierung": "bereits_abgedeckt",
-      "matching_services": [
-        "Kinderkrankengeld",
-        "Mutterschaftsgeld",
-        "Mutterschaftslohn"
-      ],
-      "begruendung": "Gesundheitliche Versorgung und finanzielle Entlastung bei Krankheit sind durch bestehende Leistungen abgedeckt. Die Pandemie als Kontext ist kein eigenständiger Leistungsbedarf, sondern ein situativer Faktor.",
-      "prioritaet": 1,
-      "confidence": 0.75,
+      "klassifizierung": "irrelevant",
+      "matching_services": [],
+      "begruendung": "Das Thema ist sehr allgemein und nicht spezifisch auf familienbezogene Sozialleistungen in Bayern bezogen. Pandemiebedingte Meldungen und Verhandlungen fallen eher in den Bereich Gesundheitsschutz und sind kein direkter Sozialleistungsbedarf.",
+      "prioritaet": 0,
+      "confidence": 0.9,
       "cluster_id_llm": "gesundheitliche_versorgung",
       "needs_review": false,
       "review_reason": "",
@@ -209,45 +203,39 @@
     },
     {
       "topic_id": "11",
-      "kernproblem": "Familien sind mit rechtlichen Herausforderungen konfrontiert, die die Einschaltung des Amtsgerichts erfordern, insbesondere im deutschen Rechtssystem.",
-      "customer_journey_phase": "uebergreifend",
+      "kernproblem": "Familien sind mit rechtlichen Herausforderungen konfrontiert, die die Einschaltung des Amtsgerichts erfordern, im spezifisch deutschen Kontext.",
+      "customer_journey_phase": "widerspruch_und_klage",
       "cluster_id": "solo_11",
-      "klassifizierung": "irrelevant",
+      "klassifizierung": "echte_luecke",
       "matching_services": [],
-      "begruendung": "Wie bei Topic 5 gibt es keine familienbezogenen Sozialleistungen, die gerichtliche Verfahren oder rechtliche Konflikte abdecken. Dies stellt eine echte Lücke dar.",
+      "begruendung": "Wie bei Topic 5 gibt es keine expliziten familienbezogenen Sozialleistungen, die gerichtliche Verfahren oder rechtliche Auseinandersetzungen abdecken. Dies stellt eine echte Lücke dar.",
       "prioritaet": 5,
       "confidence": 0.95,
-      "cluster_id_llm": "rechtliche_hilfe_und_verfahren",
+      "cluster_id_llm": "rechtliche_absicherung",
       "needs_review": false,
-      "review_reason": "evaluator_matching_unplausibel",
-      "empfehlung_innovation": "",
-      "klassifizierung_original": "echte_luecke",
-      "human_override": false,
-      "auto_applied_by_evaluator": true,
-      "evaluator_action_id": "EA_011",
-      "human_override_reason": "Das Kernproblem betrifft rechtliche Herausforderungen, aber die Beratungsstelle Radikalisierung ist thematisch nicht passend. Die Klassifizierung als Prozessproblem ist hier nicht zielführend.",
-      "force_solo_cluster": true
+      "review_reason": "",
+      "empfehlung_innovation": "Entwicklung eines digitalen Amtsgerichts-Widerspruchs- und Klageassistenten (Phase widerspruch_und_klage), der betroffene Familien (z.B. Alleinerziehende, Väter) Schritt für Schritt durch die rechtlichen Anforderungen führt, automatisch relevante Dokumente aus BayernID und bestehenden Sozialleistungsakten zieht, und über eine sichere Chatfunktion direkten Kontakt zu spezialisierten Gerichtsbeteiligten ermöglicht."
     },
     {
       "topic_id": "12",
-      "kernproblem": "Familien in Bayern haben Fragen oder Anliegen zum Bayerischen Familiengeld, was die Informationssuche betrifft.",
+      "kernproblem": "Familien in Bayern haben Fragen oder Anliegen bezüglich des Bayerischen Familiengeldes, insbesondere zur Beantragung und Anspruch.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_12",
-      "klassifizierung": "informationsluecke",
+      "klassifizierung": "bereits_abgedeckt",
       "matching_services": [
         "Bayerisches Familiengeld"
       ],
-      "begruendung": "Das Bayerische Familiengeld ist als Leistung vorhanden und deckt den Bedarf ab. Die geringe negative Stimmung deutet auf eine Informationslücke hin, da Familien Fragen und Unklarheiten haben, aber die Leistung grundsätzlich existiert.",
-      "prioritaet": 3,
-      "confidence": 0.85,
+      "begruendung": "Das Bayerische Familiengeld ist eine etablierte Leistung zur finanziellen Entlastung von Familien in Bayern. Die geringe negative Stimmung deutet auf kleinere Fragen hin, aber keine echte Lücke oder gravierende Prozessprobleme.",
+      "prioritaet": 2,
+      "confidence": 0.9,
       "cluster_id_llm": "bayerisches_familiengeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Implementiere einen interaktiven Chatbot auf der Website des Bayerischen Familiengeldes (Phase: information_suche), der über BayernID personalisierte Auskünfte zu Anspruchsvoraussetzungen, Fristen und Einkommensprüfungen gibt, indem er Daten aus dem Antragssystem und der Elterngeldstelle abgleicht; betroffen sind Eltern (insbesondere Erstnutzer) sowie Sachbearbeiter, die durch automatisierte Vorabklärungen entlastet werden."
+      "empfehlung_innovation": ""
     },
     {
       "topic_id": "13",
-      "kernproblem": "Familien haben gravierende Probleme im Bereich Wohnen, die schwierige Gespräche und Entscheidungen erfordern, was die Sicherung von Wohnraum betrifft.",
+      "kernproblem": "Familien haben gravierende Probleme im Bereich Wohnen, die häufig schwierige Gespräche oder Entscheidungen erfordern, was die Wohnraumsicherung betrifft.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_13",
       "klassifizierung": "prozessproblem",
@@ -255,105 +243,110 @@
         "Wohngeld",
         "Wohnungslosenhilfe"
       ],
-      "begruendung": "Wohngeld und Wohnungslosenhilfe sind als Leistungen vorhanden und decken den Bedarf grundsätzlich ab. Die gravierenden Probleme und schwierigen Gespräche deuten auf Prozessprobleme und mögliche Informationsdefizite hin, insbesondere bei Zugang und Kommunikation.",
+      "begruendung": "Wohngeld und Wohnungslosenhilfe decken Wohnraumsicherung ab. Die gravierenden Probleme und schwierigen Gespräche deuten auf Prozess- und Informationsdefizite hin, insbesondere bei Zugang und Kommunikation.",
       "prioritaet": 4,
       "confidence": 0.85,
-      "cluster_id_llm": "wohnen_und_wohnraum_sicherung",
+      "cluster_id_llm": "wohnen",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwicklung eines interaktiven Online-Wohnraum-Sicherungsassistenten (Phase: information_suche), der Familien über BayernID authentifiziert, ihre Wohnsituation und finanzielle Lage automatisiert mit Wohngeld- und Wohnungslosenhilfe-Daten abgleicht, um passgenaue Unterstützungsoptionen und konkrete nächste Schritte anzuzeigen; der Assistent bindet zudem eine mehrsprachige Chatbot-Funktion ein, die bei Verständnisschwierigkeiten unterstützt und eine direkte Terminvereinbarung bei Wohngeldstellen oder Wohnungslosenhilfe ermöglicht."
+      "empfehlung_innovation": "Entwicklung eines interaktiven Online-Tools (Phase: information_suche), das Familien durch gezielte, mehrsprachige Szenarienfragen zur Wohnsituation führt, um passgenaue Hinweise auf Wohngeld- und Wohnungslosenhilfe-Leistungen zu geben; das Tool nutzt BayernID zur Nutzeridentifikation, integriert Datenabgleiche mit Wohngeldstellen und ermöglicht eine direkte Terminvereinbarung bei der Wohnungslosenhilfe, wodurch sowohl Familien als auch Sachbearbeiter entlastet werden."
     },
     {
       "topic_id": "14",
-      "kernproblem": "Familien haben Schwierigkeiten bei der Einreichung von Elterngeldanträgen und beim Erhalt des Elterngeldbescheids, was die Antragstellung und Bescheidkommunikation betrifft.",
+      "kernproblem": "Familien stoßen auf Schwierigkeiten bei der Einreichung von Elterngeldanträgen und beim Erhalt des Elterngeldbescheids, was die Antragstellung und Bescheidkommunikation betrifft.",
       "customer_journey_phase": "antragstellung",
       "cluster_id": "elterngeld",
       "klassifizierung": "prozessproblem",
       "matching_services": [
         "Elterngeld",
-        "Elterngeldantrag Bayern",
-        "Elterngeld-Bescheid"
+        "Elterngeld-Bescheid",
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Elterngeld und zugehörige Verfahrensleistungen sind vorhanden, jedoch zeigen die Schwierigkeiten bei Antrag und Bescheid deutliche Prozessprobleme, z.B. komplexe Nachweise, Fristen und Bearbeitungsabläufe.",
+      "begruendung": "Elterngeld ist umfassend abgedeckt, aber die negativen Erfahrungen bei Antragstellung und Bescheid deuten auf Prozessprobleme hin, z.B. bei Formularen, Nachweisen und Kommunikation.",
       "prioritaet": 4,
       "confidence": 0.9,
       "cluster_id_llm": "elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwickeln Sie einen interaktiven Online-Planungsassistenten (Phase: Informationssuche und Antragstellung), der über BayernID auf bereits vorhandene Daten aus Elterngeldanträgen und Bescheiden zugreift, um Eltern (Väter, Mütter, Paare) personalisierte, konfliktvermeidende Elternzeit- und ElterngeldPlus-Planungsszenarien mit automatischer Antragserstellung anzubieten; der Assistent integriert sich nahtlos in das bestehende Elterngeldantrag Bayern-System und ermöglicht eine digitale, stufenweise Antragseinreichung mit Echtzeit-Statusupdates und verständlichen Erläuterungen zu Fristen und Einkommensprüfungen."
+      "empfehlung_innovation": "Entwicklung eines interaktiven, digital integrierten Planungs- und Antragsassistenten für Elterngeld und ElterngeldPlus (Phasen Informationssuche und Antragstellung), der über BayernID auf persönliche Daten zugreift, automatisch Einkommens- und Fristprüfungen durchführt, Eltern gemeinsam in Echtzeit bei der Aufteilung der Elternzeit unterstützt und den Antrag direkt mit der Elterngeldantrag Bayern Plattform verknüpft, um Konflikte bei der Planung zu reduzieren, Unsicherheiten zu beseitigen und die Bescheidkommunikation zu vereinfachen; betroffene Stakeholder sind Eltern (insbesondere Paare), Elterngeldstellen und ZBFS-Regionalstellen, genutzt wird ein Online-Assistent mit Chat- und Planungsfunktion."
     },
     {
       "topic_id": "16",
-      "kernproblem": "Familien erleben bürokratische Hürden und Schwierigkeiten bei der Beantragung und dem Erhalt von Kindergeld durch die Familienkasse, was die Antragstellung betrifft.",
+      "kernproblem": "Familien erleben bürokratische Hürden und Schwierigkeiten bei der Beantragung und dem Erhalt von Kindergeld durch die Familienkasse, insbesondere bei der Antragstellung.",
       "customer_journey_phase": "antragstellung",
       "cluster_id": "kindergeld",
       "klassifizierung": "prozessproblem",
       "matching_services": [
         "Kindergeld"
       ],
-      "begruendung": "Kindergeld ist eine etablierte Leistung, aber die negativen Erfahrungen bei Antragstellung und Auszahlung deuten auf Prozessprobleme wie lange Bearbeitungszeiten oder unklare Zuständigkeiten hin.",
+      "begruendung": "Kindergeld ist eine etablierte Leistung, aber die negativen Erfahrungen bei Antragstellung und Auszahlung deuten auf Prozessprobleme hin, z.B. bei Zuständigkeit, Nachweisen oder Bearbeitungsdauer.",
       "prioritaet": 4,
       "confidence": 0.9,
-      "cluster_id_llm": "kindergeld_und_elterngeld",
+      "cluster_id_llm": "kindergeld_elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Implementiere einen digitalen, interaktiven Antragsscreener (Phase Antragstellung) als Online-Assistent, der über BayernID die Zuständigkeit automatisch ermittelt, relevante Antragsformulare für Kindergeld, Elterngeld, ElterngeldPlus und Kinderzuschlag vorbefüllt und die Einkommensdaten aus bestehenden Systemen der Familienkasse integriert, um Familien (Eltern, Alleinerziehende) und Sachbearbeiter bei der korrekten und vollständigen Antragstellung zu entlasten."
+      "empfehlung_innovation": "Entwicklung eines integrierten Online-Interaktiven Antragsassistenten (Phase Antragstellung), der über BayernID sowohl die Zuständigkeit der Familienkasse als auch des ZBFS automatisch prüft und den Nutzer bedarfsgerecht zum passenden Kindergeld- oder Elterngeldantrag weiterleitet; dabei werden Antragsdaten zwischen Kindergeld- und Elterngeldsystemen synchronisiert, um Mehrfacheingaben zu vermeiden. Betroffen sind Familien (insb. Väter und Alleinerziehende), Familienkasse und ZBFS-Sachbearbeiter; der Kanal ist eine webbasierte Anwendung, die bestehende Systeme wie Elterngeldantrag Bayern (digital) und Kindergeld-Onlineportal integriert."
     },
     {
       "topic_id": "18",
-      "kernproblem": "Familien haben Schwierigkeiten beim Zugang zu Sozialhilfe, Bürgergeld und Krankenversicherung, was die Antragstellung und Bearbeitung betrifft.",
+      "kernproblem": "Familien haben Schwierigkeiten beim Zugang zu Sozialhilfe, Bürgergeld und Krankenversicherung, insbesondere im Kontakt mit dem Sozialamt, was die Antragstellung und Bearbeitung betrifft.",
       "customer_journey_phase": "antragstellung",
       "cluster_id": "solo_18",
       "klassifizierung": "prozessproblem",
       "matching_services": [
-        "Sozialhilfe",
-        "Bürgergeld-Mehrbedarfe für Alleinerziehende"
+        "Sozialhilfe"
       ],
-      "begruendung": "Sozialhilfe und Bürgergeld decken den Bedarf grundsätzlich ab, jedoch zeigen die Herausforderungen beim Zugang und Kontakt mit Sozialämtern typische Prozessprobleme wie komplexe Nachweise und lange Bearbeitungszeiten.",
+      "begruendung": "Sozialhilfe und Bürgergeld decken den Bedarf ab, aber die Probleme beim Zugang und Kontakt zum Sozialamt deuten auf Prozessprobleme hin, z.B. lange Bearbeitungszeiten oder unklare Zuständigkeiten.",
       "prioritaet": 4,
       "confidence": 0.85,
-      "cluster_id_llm": "sozialhilfe_und_buergergeld",
+      "removed_invalid_matching_services": [
+        "Bürgergeld"
+      ],
+      "cluster_id_llm": "sozialhilfe_buergergeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwicklung eines gemeinsamen digitalen Antragstools (Phase Antragstellung) für Sozialhilfe und Bürgergeld-Mehrbedarfe, das über BayernID den automatisierten Datenabgleich von Einkommens- und Vermögensdaten zwischen Jobcenter und Sozialamt ermöglicht, um Mehrfachprüfungen zu vermeiden; betroffen sind Alleinerziehende und Sachbearbeiter, genutzt wird ein Online-Assistent mit integriertem Dokumentenupload und Status-Tracking, der nahtlos an bestehende Fachverfahren der Sozialhilfe- und Bürgergeldstellen angebunden wird."
+      "empfehlung_innovation": "Implementierung eines interaktiven Online-Assistenten für die Antragstellung von Sozialhilfe (Phase Antragstellung), der über BayernID automatisch Einkommens- und Vermögensdaten aus bestehenden Datenbanken (z.B. Finanzamt, Elterngeldstelle) abruft, um Familien (insbesondere Alleinerziehende) den Zugang zum Sozialamt zu erleichtern und die manuelle Dateneingabe zu eliminieren."
     },
     {
       "topic_id": "19",
-      "kernproblem": "Familien haben Fragen und geringfügige Schwierigkeiten bei der Planung und dem Einlegen von Elternzeitmonaten im Zusammenhang mit der Elterngeldstelle, was die Antragstellung betrifft.",
+      "kernproblem": "Familien haben Fragen und kleinere Schwierigkeiten bei der Planung und Einlegung von Elternzeitmonaten im Zusammenhang mit der Elterngeldstelle, was die Antragstellung betrifft.",
       "customer_journey_phase": "antragstellung",
       "cluster_id": "solo_19",
       "klassifizierung": "informationsluecke",
       "matching_services": [
         "Elterngeld",
         "ElterngeldPlus",
-        "Elterngeldantrag Bayern"
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Die Leistungen sind vorhanden und decken den Bedarf ab. Die geringe negative Stimmung und die Art der Fragen deuten auf eine Informationslücke hin, da Familien die komplexen Regelungen nicht vollständig verstehen.",
+      "begruendung": "Elterngeld und Elternzeit sind abgedeckt, die Probleme deuten auf Informationslücken bei der Planung und Antragstellung hin, da die Regelungen komplex sind und Familien Orientierung benötigen.",
       "prioritaet": 3,
-      "confidence": 0.8,
+      "confidence": 0.9,
       "cluster_id_llm": "elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwicklung eines interaktiven Online-Planungsassistenten (Phase Antragstellung), der über BayernID die individuellen Einkommens- und Beschäftigungsdaten automatisch aus dem Elterngeldsystem und der Familienkasse abruft, um Eltern (insbesondere Väter und Alleinerziehende) Schritt für Schritt bei der optimalen Einlegung und Beantragung von Elternzeitmonaten zu unterstützen; der Assistent integriert sich nahtlos in den bestehenden Elterngeldantrag Bayern und bietet eine Echtzeit-Validierung von Fristen und Einkommensprüfungen, um Fehler und Nachfragen bei der Antragstellung zu minimieren."
+      "empfehlung_innovation": "Implementierung eines interaktiven, kontextsensitiven Online-Assistenten im Elterngeldantrag Bayern (digital), der während der Antragstellung (Phase Antragstellung) Eltern Schritt für Schritt durch die Planung und Einlegung der Elternzeitmonate führt, individuelle Fragen in Echtzeit beantwortet und automatisch prüft, ob die eingegebenen Monate mit den ElterngeldPlus- und Partnerschaftsbonus-Regeln übereinstimmen; der Assistent nutzt die BayernID zur Authentifizierung, greift auf bestehende Antragsdaten zu und synchronisiert sich mit den ZBFS-Systemen, um Fristen und Einkommensprüfungen zu berücksichtigen, und richtet sich insbesondere an Eltern mit geringer digitaler Kompetenz sowie die Sachbearbeiter, die so weniger Rückfragen erhalten."
     },
     {
       "topic_id": "20",
-      "kernproblem": "Familien haben Fragen und geringfügige Schwierigkeiten bei der Nutzung des Bayernportals und der Dienste des Zentrums Bayern Familie und Soziales, was die Informationssuche betrifft.",
+      "kernproblem": "Familien haben geringfügige Schwierigkeiten oder Fragen bei der Nutzung des Bayernportals und der Dienste des Zentrums Bayern Familie und Soziales, was die Information und digitale Nutzung betrifft.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "solo_20",
       "klassifizierung": "prozessproblem",
-      "matching_services": [],
-      "begruendung": "Es gibt keine spezifische Leistung namens Bayernportal, sondern es handelt sich um eine technische Plattform. Die Probleme beziehen sich auf die Nutzung und Zugänglichkeit, was als Prozessproblem bei der digitalen Kommunikation und Antragstellung zu werten ist.",
-      "prioritaet": 3,
-      "confidence": 0.75,
-      "cluster_id_llm": "bayernportal_und_kommunikation",
-      "needs_review": true,
-      "review_reason": "klassifizierung_setzt_leistung_voraus_aber_keine_valide_leistung_gematcht",
-      "empfehlung_innovation": "Implementiere einen interaktiven, kontextsensitiven Chatbot im Bayernportal (Phase: information_suche), der Familien bei der Navigation und Nutzung der Dienste des Zentrums Bayern Familie und Soziales unterstützt, indem er häufige Fragen erkennt und direkt beantwortet; dieser Chatbot nutzt die BayernID zur personalisierten Nutzererkennung und integriert sich nahtlos in bestehende Portalfunktionen, um bei Bedarf gezielt an zuständige Sachbearbeiter oder weiterführende Online-Services zu verweisen."
+      "matching_services": [
+        "Bayerisches Familiengeld",
+        "Elterngeldantrag Bayern (digital)"
+      ],
+      "begruendung": "Die Leistungen sind vorhanden, aber die Nutzung des Bayernportals zeigt kleinere Prozessprobleme, z.B. fehlende digitale Kompetenzen oder unklare Bedienung, die den Zugang erschweren.",
+      "prioritaet": 2,
+      "confidence": 0.8,
+      "cluster_id_llm": "digitaler_zugang_zbfs",
+      "needs_review": false,
+      "review_reason": "",
+      "empfehlung_innovation": "Implementierung eines interaktiven, kontextsensitiven Chatbot-Assistenten im Bayernportal (Phase: Informationssuche), der Familien bei Fragen zu BayernFamiliengeld und Elterngeldantrag digital begleitet, indem er über BayernID auf individuelle Antragsdaten zugreift und personalisierte Hilfestellungen sowie Schritt-für-Schritt-Erklärungen bietet; betroffen sind Familiennutzer mit geringen digitalen Kompetenzen und Sachbearbeiter, die dadurch entlastet werden, und die Integration erfolgt direkt mit den bestehenden Antragsdatenbanken des ZBFS."
     },
     {
       "topic_id": "21",
-      "kernproblem": "Familien stehen vor erheblichen Herausforderungen und Unsicherheiten bei der Beantragung und dem Verständnis der komplexen Regelungen von Elterngeld und ElterngeldPlus in Verbindung mit der Elternzeit, was die Informationssuche und Antragstellung betrifft.",
+      "kernproblem": "Familien stehen vor erheblichen Herausforderungen und Unsicherheiten bei der Beantragung und dem Verständnis der komplexen Regelungen von Elterngeld und ElterngeldPlus in Verbindung mit der Elternzeit, was die Antragstellung und Information betrifft.",
       "customer_journey_phase": "information_suche",
       "cluster_id": "elterngeld",
       "klassifizierung": "prozessproblem",
@@ -361,15 +354,15 @@
         "Elterngeld",
         "ElterngeldPlus",
         "Partnerschaftsbonus",
-        "Elterngeldantrag Bayern"
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Elterngeld und verwandte Leistungen sind vorhanden, aber die komplexen Regelungen und Unsicherheiten führen zu deutlichen Prozessproblemen bei Antragstellung und Verständnis.",
+      "begruendung": "Elterngeld ist umfassend abgedeckt, aber die komplexen Regelungen führen zu Unsicherheiten und Problemen, die auf Prozess- und Beratungsdefizite hinweisen.",
       "prioritaet": 4,
       "confidence": 0.9,
       "cluster_id_llm": "elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Entwickeln Sie einen interaktiven Online-Planungsassistenten (Phase: Informationssuche und Antragstellung), der über BayernID auf bereits vorhandene Daten aus Elterngeldanträgen und Bescheiden zugreift, um Eltern (Väter, Mütter, Paare) personalisierte, konfliktvermeidende Elternzeit- und ElterngeldPlus-Planungsszenarien mit automatischer Antragserstellung anzubieten; der Assistent integriert sich nahtlos in das bestehende Elterngeldantrag Bayern-System und ermöglicht eine digitale, stufenweise Antragseinreichung mit Echtzeit-Statusupdates und verständlichen Erläuterungen zu Fristen und Einkommensprüfungen."
+      "empfehlung_innovation": "Entwicklung eines interaktiven, digital integrierten Planungs- und Antragsassistenten für Elterngeld und ElterngeldPlus (Phasen Informationssuche und Antragstellung), der über BayernID auf persönliche Daten zugreift, automatisch Einkommens- und Fristprüfungen durchführt, Eltern gemeinsam in Echtzeit bei der Aufteilung der Elternzeit unterstützt und den Antrag direkt mit der Elterngeldantrag Bayern Plattform verknüpft, um Konflikte bei der Planung zu reduzieren, Unsicherheiten zu beseitigen und die Bescheidkommunikation zu vereinfachen; betroffene Stakeholder sind Eltern (insbesondere Paare), Elterngeldstellen und ZBFS-Regionalstellen, genutzt wird ein Online-Assistent mit Chat- und Planungsfunktion."
     },
     {
       "topic_id": "24",
@@ -378,17 +371,15 @@
       "cluster_id": "solo_24",
       "klassifizierung": "prozessproblem",
       "matching_services": [
-        "Elterngeld digital",
-        "Elterngeld",
-        "Elterngeldantrag Bayern"
+        "Elterngeldantrag Bayern (digital)"
       ],
-      "begruendung": "Die Online-Beantragung ist durch bestehende Verfahrensleistungen abgedeckt, jedoch zeigen die Schwierigkeiten bei der digitalen Antragstellung typische Prozessprobleme wie fehlende digitale Kompetenzen oder technische Hürden.",
+      "begruendung": "Die Online-Beantragung ist eine bestehende Verfahrensleistung, aber die negativen Erfahrungen deuten auf Prozessprobleme bei der digitalen Antragstellung hin, z.B. fehlende digitale Kompetenzen oder technische Hürden.",
       "prioritaet": 4,
       "confidence": 0.9,
       "cluster_id_llm": "elterngeld",
       "needs_review": false,
       "review_reason": "",
-      "empfehlung_innovation": "Implementiere einen interaktiven, schrittweisen Online-Assistenten für die Antragstellung von Elterngeld (Phase Antragstellung), der über BayernID automatisch relevante persönliche und einkommensbezogene Daten aus bestehenden Systemen (z.B. Elterngeld digital, Elterngeldantrag Bayern) zieht, um Eingabefehler zu reduzieren und Fristen einzuhalten; dieser Assistent richtet sich an alle Eltern (inkl. Väter und Alleinerziehende) und wird als Web- und Mobile-App angeboten, wobei die Sachbearbeiter im Zentrum Bayern Familie und Soziales durch eine integrierte Echtzeit-Datenprüfung unterstützt werden."
+      "empfehlung_innovation": "Implementierung eines interaktiven, schrittweisen Online-Assistenten für die Antragstellung des Elterngelds (Phase Antragstellung), der über BayernID automatisch persönliche und einkommensrelevante Daten aus dem Steuer- und Sozialversicherungssystem bezieht, um Eingabefehler zu minimieren und Fristen dynamisch anzuzeigen; dieser Assistent richtet sich an Antragsteller (Eltern) mit geringer digitaler Kompetenz und wird in die bestehende Elterngeldantrag Bayern Plattform integriert, unterstützt durch eine Chatbot-Hotline zur Echtzeit-Hilfe."
     }
   ]
 }
