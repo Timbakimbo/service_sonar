@@ -688,3 +688,54 @@ Input für den nächsten Stage-Lauf.
 - FragDenStaat fand keine neuen Anfragen und übersprang alle 68 bestehenden Einträge ohne Duplikate.
 - Keine `echte_luecke` trotz breiterem Themenspektrum bleibt ein Signal, die Kriterien und das
   Service-Matching weiter zu prüfen.
+
+---
+
+## Abschlussaudit und Correctness-Fixes — 12.07.2026
+
+### Datenstand vor den Fixes
+
+- 207 Sources; 146 Web-Dokumente; 361 erhaltene Reddit-Posts; 68 FragDenStaat-Anfragen
+- 575 Preprocessing-/Analysis-Dokumente
+- 26 Topics: 17 relevant, 9 irrelevant
+- 17 Gaps in 14 Clustern: 10 Prozessprobleme, 2 Informationslücken,
+  3 bereits abgedeckt, 2 irrelevant, 0 echte Lücken
+- 9 Innovationen; Evaluator: 7 accept, 2 rework
+- 29 normalisierte Aktionen: 11 auto_apply, 17 human_required, 1 suggestion_only
+- needs_review: Gap 2, Innovation 3, Evaluator 0
+- human_decisions.json: 54 Entscheidungen (31 accepted, 11 rejected, 12 deferred)
+
+### Bestätigte Probleme
+
+Die vorhandenen Human Decisions waren über mehrere Evaluator-Läufe akkumuliert und nur über
+Aktionstyp plus wiederverwendbare Ziele wie `INN_005` verbunden. Dadurch konnten alte Rework-
+oder Merge-Entscheidungen auf fachlich andere neue Innovationen wirken. Die bestehende
+`human_decisions.json` besitzt keine passende Run-/Action-Provenienz, gilt daher als stale und
+kann nicht als finale fachliche Evidenz verwendet werden.
+
+Weitere bestätigte Correctness-Probleme waren: konsumierbare deferred Auto-Aktionen, zu breite
+Evaluator-Autonomie ohne explizites Unambiguous-Signal, fehlende Pflichtprüfung neuer
+`echte_luecke`-Behauptungen, Überschreiben valider Evaluator-/Innovation-Outputs bei kompletten
+LLM-Fehlern, falsche Human-Gate-Aktivierung durch Auto-/Suggestion-/Review-Zähler, doppelte
+Innovations-Ränge, möglicher Reddit-Corpusverlust bei null verwendbaren Posts sowie ein
+Windows-Encoding-Crash im Text-Status.
+
+### Umgesetzte begrenzte Korrekturen
+
+- `evaluator_run_id` und semantische, stabile `action_id` für Topic-/Gap-/Cluster-Ziele
+- stale/legacy Decisions werden sichtbar gemeldet und nie konsumiert
+- accepted/rejected/deferred und auto_apply entsprechen der freigegebenen Rechte-Matrix
+- jede neue `echte_luecke` erzeugt eine unresolved `real_gap_review`-Aktion
+- output-preserving Fehlerpfade und explizite Partial-Metadaten für Evaluator/Innovation
+- Human Gate nur für aktuelle unresolved `human_required`-Aktionen
+- eindeutige, sequenzielle Innovation-Priorisierung ohne Duplikate
+- Erhalt des Reddit-Haupt-Corpus bei null verwendbaren Posts
+- offline-sichere Tests; DDG-Smoke-Test nur opt-in
+
+### Konsequenz für die finale Evidenz
+
+Nach Code-Freeze ist ein frischer kontrollierter Lauf mit anschließender neuer Human Review
+erforderlich. Erst dessen provenance-gebundene Gap-, Innovation-, Evaluator- und Human-Decision-
+Artefakte dürfen für die finale Ergebnisdarstellung verwendet werden. Der nächste fachliche
+Schritt ist die kuratierte Prüfung der bestehenden Leistungsreferenz; bestehende generierte
+Artefakte wurden in diesem Fix-Schritt bewusst nicht verändert.
