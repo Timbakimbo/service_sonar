@@ -3,17 +3,16 @@
   "services": [
     {
       "name": "Bayerisches Familiengeld",
-      "beschreibung": "Eine Geldleistung für Eltern von ein- und zweijährigen Kindern, die in Bayern wohnen.",
-      "zielgruppe": "Eltern von ein- und zweijährigen Kindern",
+      "beschreibung": "Eine einkommensunabhängige Geldleistung für Eltern von Kindern im zweiten und dritten Lebensjahr mit Hauptwohnsitz in Bayern, sofern das Kind vor dem 01.01.2025 geboren wurde.",
+      "zielgruppe": "Eltern von vor dem 01.01.2025 geborenen Kindern im zweiten und dritten Lebensjahr",
       "zustaendige_stelle": "Zentrum Bayern Familie und Soziales",
       "leistungsart": "Geldleistung",
       "ebene": "Land Bayern",
       "abgedeckte_bedarfe": [
-        "existenzsicherung",
         "finanzielle_entlastung"
       ],
       "zugangsvoraussetzungen": [
-        "Hauptwohnsitz in Bayern, Kinder unter 3 Jahren"
+        "Hauptwohnsitz in Bayern und Kind vor dem 01.01.2025 geboren"
       ],
       "antragskanaele": [
         "online",
@@ -21,43 +20,12 @@
         "persoenlich"
       ],
       "bekannte_prozessrisiken": [
-        "fristen",
-        "einkommenspruefung"
+        "fristen"
       ],
       "quellen_urls": [
-        "https://www.bayernportal.de/dokumente/leistung/663404917852?locale=en"
+        "https://www.zbfs.bayern.de/familienleistungen/familiengeld/"
       ],
       "konfidenz": 0.9,
-      "hinzugefuegt_am": "2026-06-06T16:40:36",
-      "aktualisiert_am": "2026-06-06T16:40:36"
-    },
-    {
-      "name": "Elterngeld",
-      "beschreibung": "Eine Geldleistung für Eltern, die ihre Kinder selbst betreuen.",
-      "zielgruppe": "Eltern, die ihre Kinder selbst betreuen",
-      "zustaendige_stelle": "Familienkasse",
-      "leistungsart": "Geldleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Elternschaft, Betreuung des Kindes"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich",
-        "persoenlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "fristen",
-        "einkommenspruefung"
-      ],
-      "quellen_urls": [
-        "https://www.zbfs.bayern.de/sprache/english/"
-      ],
-      "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:36",
       "aktualisiert_am": "2026-06-06T16:40:36"
     },
@@ -94,7 +62,7 @@
       "name": "ElterngeldPlus",
       "beschreibung": "ElterngeldPlus ist eine Leistung, die Eltern bei der Vereinbarkeit von Familie und Beruf unterstützt.",
       "zielgruppe": "Eltern, die ihre Arbeitszeit reduzieren möchten, um sich um ihre Kinder zu kümmern",
-      "zustaendige_stelle": "Familienkasse",
+      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales (zuständige ZBFS-Regionalstelle)",
       "leistungsart": "Geldleistung",
       "ebene": "Bund",
       "abgedeckte_bedarfe": [
@@ -113,7 +81,7 @@
         "fristen"
       ],
       "quellen_urls": [
-        "https://einfach-elterngeld.de/en/bayern"
+        "https://www.zbfs.bayern.de/familienleistungen/elterngeld/"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:38",
@@ -121,9 +89,9 @@
     },
     {
       "name": "Partnerschaftsbonus",
-      "beschreibung": "Der Partnerschaftsbonus ist eine Leistung, die Paare bei der Vereinbarkeit von Familie und Beruf unterstützt.",
+      "beschreibung": "Der Partnerschaftsbonus ist Bestandteil des ElterngeldPlus-Rahmens und ermöglicht zusätzliche ElterngeldPlus-Monate, wenn die maßgeblichen Voraussetzungen erfüllt sind.",
       "zielgruppe": "Paare, die ihre Arbeitszeit reduzieren möchten, um sich um ihre Kinder zu kümmern",
-      "zustaendige_stelle": "Familienkasse",
+      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales (zuständige ZBFS-Regionalstelle)",
       "leistungsart": "Geldleistung",
       "ebene": "Bund",
       "abgedeckte_bedarfe": [
@@ -142,7 +110,7 @@
         "fristen"
       ],
       "quellen_urls": [
-        "https://einfach-elterngeld.de/en/bayern"
+        "https://www.zbfs.bayern.de/familienleistungen/elterngeld/faq/elterngeldarten_und_dauer/"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:38",
@@ -296,7 +264,7 @@
       "name": "Elterngeld",
       "beschreibung": "Eine Leistung für Eltern nach der Geburt eines Kindes, um die finanzielle Lebensgrundlage der Familien zu sichern.",
       "zielgruppe": "Eltern nach der Geburt eines Kindes",
-      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales",
+      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales (zuständige ZBFS-Regionalstelle)",
       "leistungsart": "Geldleistung",
       "ebene": "Bund",
       "abgedeckte_bedarfe": [
@@ -316,8 +284,7 @@
         "fristen"
       ],
       "quellen_urls": [
-        "https://www.bayernportal.de/dokumente/leistung/617534666450",
-        "https://www.unibw.de/familienservice/eltern/elterngeld"
+        "https://www.zbfs.bayern.de/familienleistungen/elterngeld/"
       ],
       "konfidenz": 0.9,
       "hinzugefuegt_am": "2026-06-06T16:40:45",
@@ -436,15 +403,14 @@
       "aktualisiert_am": "2026-06-06T16:40:49"
     },
     {
-      "name": "Bürgergeld-Mehrbedarfe für Alleinerziehende",
-      "beschreibung": "Bürgergeld-Mehrbedarfe für Alleinerziehende sind eine Leistung, die Alleinerziehende bei der Erziehung ihrer Kinder unterstützt.",
+      "name": "Grundsicherungsgeld – Mehrbedarf für Alleinerziehende",
+      "beschreibung": "Der Mehrbedarf für Alleinerziehende ist ein zusätzlicher Bestandteil des Grundsicherungsgeldes für Arbeitsuchende (früher Bürgergeld).",
       "zielgruppe": "Alleinerziehende",
       "zustaendige_stelle": "Jobcenter",
       "leistungsart": "Geldleistung",
       "ebene": "Bund",
       "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "erziehungsunterstuetzung"
+        "existenzsicherung"
       ],
       "zugangsvoraussetzungen": [
         "Alleinerziehende müssen bestimmte Voraussetzungen erfüllen, wie z.B. ein bestimmtes Einkommen nicht überschreiten."
@@ -459,7 +425,7 @@
         "vermoegenspruefung"
       ],
       "quellen_urls": [
-        "https://www.elterngeld.de/familiengeld/"
+        "https://www.arbeitsagentur.de/grundsicherung/finanziell-absichern/bedarfe"
       ],
       "konfidenz": 0.6,
       "hinzugefuegt_am": "2026-06-06T16:40:49",
@@ -526,36 +492,10 @@
       "aktualisiert_am": "2026-06-06T16:40:49"
     },
     {
-      "name": "Kinderstartgeld",
-      "beschreibung": "Einmalige Zahlung in Höhe von 3.000 € zum ersten Geburtstag des Kindes.",
-      "zielgruppe": "Familien mit Kindern, die ab dem 1. Januar 2025 geboren wurden",
-      "zustaendige_stelle": "Land Bayern",
-      "leistungsart": "Geldleistung",
-      "ebene": "Land Bayern",
-      "abgedeckte_bedarfe": [
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Kinder, die ab dem 1. Januar 2025 geboren wurden"
-      ],
-      "antragskanaele": [
-        "unklar"
-      ],
-      "bekannte_prozessrisiken": [
-        "unklare_zustaendigkeit"
-      ],
-      "quellen_urls": [
-        "https://www.br.de/nachrichten/bayern/kinderstartgeld-gestrichen-was-familien-in-bayern-weiter-kriegen,V2ElhCk"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:40:52",
-      "aktualisiert_am": "2026-06-06T16:40:52"
-    },
-    {
       "name": "Krippengeld",
-      "beschreibung": "Monatliche Zahlung bis zu 100 € pro Kind für Kinderbetreuungsbeiträge",
-      "zielgruppe": "Einkommensschwache Familien mit Kindern im Alter von 1-2 Jahren",
-      "zustaendige_stelle": "Land Bayern",
+      "beschreibung": "Das Bayerische Krippengeld unterstützt Eltern mit bis zu 100 € monatlich bei selbst getragenen Beiträgen für eine nach dem BayKiBiG geförderte Betreuung; es ist nur für vor dem 01.01.2025 geborene Kinder vorgesehen.",
+      "zielgruppe": "Eltern von vor dem 01.01.2025 geborenen Kindern mit förderfähiger Betreuung und Einkommen unterhalb der maßgeblichen Grenze",
+      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales",
       "leistungsart": "Geldleistung",
       "ebene": "Land Bayern",
       "abgedeckte_bedarfe": [
@@ -563,16 +503,18 @@
         "kinderbetreuung"
       ],
       "zugangsvoraussetzungen": [
-        "Einkommensschwache Familien mit Kindern im Alter von 1-2 Jahren"
+        "Kind vor dem 01.01.2025 geboren, förderfähige Betreuung, selbst getragener Elternbeitrag und maßgebliche Einkommensgrenze nicht überschritten"
       ],
       "antragskanaele": [
-        "unklar"
+        "online",
+        "formular",
+        "schriftlich"
       ],
       "bekannte_prozessrisiken": [
         "einkommenspruefung"
       ],
       "quellen_urls": [
-        "https://www.br.de/nachrichten/bayern/kinderstartgeld-gestrichen-was-familien-in-bayern-weiter-kriegen,V2ElhCk"
+        "https://www.zbfs.bayern.de/familienleistungen/krippengeld/"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:52",
@@ -580,26 +522,23 @@
     },
     {
       "name": "Mutterschaftslohn",
-      "beschreibung": "Geldleistung für Mütter während und nach der Schwangerschaft",
-      "zielgruppe": "Mütter",
-      "zustaendige_stelle": "Krankenkasse",
+      "beschreibung": "Lohnfortzahlung durch den Arbeitgeber bei einem Beschäftigungsverbot außerhalb der gesetzlichen Mutterschutzfristen.",
+      "zielgruppe": "Schwangere oder stillende Beschäftigte mit einem Beschäftigungsverbot außerhalb der gesetzlichen Mutterschutzfristen",
+      "zustaendige_stelle": "Arbeitgeber",
       "leistungsart": "Geldleistung",
-      "ebene": "Sozialversicherung",
+      "ebene": "Bund",
       "abgedeckte_bedarfe": [
-        "finanzielle_entlastung",
-        "gesundheitliche_versorgung"
+        "finanzielle_entlastung"
       ],
       "zugangsvoraussetzungen": [
-        "Mütter während und nach der Schwangerschaft"
+        "Beschäftigungsverbot außerhalb der gesetzlichen Mutterschutzfristen"
       ],
       "antragskanaele": [
-        "krankenkasse"
+        "arbeitgeber"
       ],
-      "bekannte_prozessrisiken": [
-        "unklare_zustaendigkeit"
-      ],
+      "bekannte_prozessrisiken": [],
       "quellen_urls": [
-        "https://www.br.de/nachrichten/bayern/kinderstartgeld-gestrichen-was-familien-in-bayern-weiter-kriegen,V2ElhCk"
+        "https://familienportal.de/familienportal/familienleistungen/mutterschaftsleistungen/was-ist-mutterschutzlohn-und-wann-bekomme-ich-ihn--125048"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:52",
@@ -619,12 +558,16 @@
       "zugangsvoraussetzungen": [
         "Alleinerziehende oder Familien mit geringem Einkommen"
       ],
-      "antragskanaele": [],
+      "antragskanaele": [
+        "online",
+        "formular",
+        "schriftlich"
+      ],
       "bekannte_prozessrisiken": [
         "einkommenspruefung"
       ],
       "quellen_urls": [
-        "https://www.br.de/nachrichten/bayern/kinderstartgeld-gestrichen-was-familien-in-bayern-weiter-kriegen,V2ElhCk"
+        "https://www.arbeitsagentur.de/familie-und-kinder/kinderzuschlag-beantragen"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:52",
@@ -632,9 +575,9 @@
     },
     {
       "name": "Bildung und Teilhabe",
-      "beschreibung": "Leistungen zur Förderung von Bildung und Teilhabe",
-      "zielgruppe": "Kinder und Jugendliche",
-      "zustaendige_stelle": "Jugendamt",
+      "beschreibung": "Leistungen zur schulischen Unterstützung und sozialen Teilhabe für anspruchsberechtigte Kinder, Jugendliche und junge Erwachsene.",
+      "zielgruppe": "Kinder, Jugendliche und junge Erwachsene mit Anspruch aufgrund einer bezogenen Grundleistung oder festgestellten Hilfebedürftigkeit",
+      "zustaendige_stelle": "Jobcenter oder zuständige Kommune, abhängig von der bezogenen Grundleistung",
       "leistungsart": "Sachleistung",
       "ebene": "Kommunal",
       "abgedeckte_bedarfe": [
@@ -642,16 +585,17 @@
         "soziale_teilhabe"
       ],
       "zugangsvoraussetzungen": [
-        "Kinder und Jugendliche"
+        "Anspruch aufgrund von Grundsicherungsgeld, Sozialhilfe, Wohngeld, Kinderzuschlag, Leistungen nach dem Asylbewerberleistungsgesetz oder besonderer Hilfebedürftigkeit"
       ],
       "antragskanaele": [
-        "jugendamt"
+        "persoenlich",
+        "schriftlich"
       ],
       "bekannte_prozessrisiken": [
         "unklare_zustaendigkeit"
       ],
       "quellen_urls": [
-        "https://www.br.de/nachrichten/bayern/kinderstartgeld-gestrichen-was-familien-in-bayern-weiter-kriegen,V2ElhCk"
+        "https://www.bmas.de/DE/Arbeit/Grundsicherung-Buergergeld/Bildungspaket/bildungspaket.html"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:52",
@@ -676,12 +620,10 @@
         "schriftlich"
       ],
       "bekannte_prozessrisiken": [
-        "einkommenspruefung",
         "fristen"
       ],
       "quellen_urls": [
-        "https://integreat.app/lkmuenchen/en/information-for-people-from-ukraine/apply-for-financial-support/applying-for-child-benefit-kindergeld",
-        "https://kindergeld.eu/en/"
+        "https://www.arbeitsagentur.de/familie-und-kinder/infos-rund-um-kindergeld"
       ],
       "konfidenz": 0.9,
       "hinzugefuegt_am": "2026-06-06T16:40:54",
@@ -746,72 +688,14 @@
       "aktualisiert_am": "2026-06-06T16:40:54"
     },
     {
-      "name": "Child Benefit",
-      "beschreibung": "Eine Geldleistung für Familien mit Kindern, die von der Familienkasse ausgezahlt wird.",
-      "zielgruppe": "Familien mit Kindern",
-      "zustaendige_stelle": "Familienkasse",
-      "leistungsart": "Geldleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Deutsche Staatsbürgerschaft oder Aufenthaltstitel, Wohnsitz in Deutschland"
-      ],
-      "antragskanaele": [
-        "formular",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "fristen"
-      ],
-      "quellen_urls": [
-        "https://familienportal.de/familienportal/meta/languages/family-benefits/child-benefit-141946"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:40:57",
-      "aktualisiert_am": "2026-06-06T16:40:57"
-    },
-    {
-      "name": "Elterngeld Plus",
-      "beschreibung": "Elterngeld Plus ist eine staatliche Leistung in Deutschland, die Eltern finanziell unterstützt, wenn sie nach der Geburt ihres Kindes ihre Arbeitszeit reduzieren oder vorübergehend ganz aufhören zu arbeiten.",
-      "zielgruppe": "Eltern",
-      "zustaendige_stelle": "Familienkasse",
-      "leistungsart": "Geldleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Eltern müssen in Deutschland leben und ihr Kind betreuen"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "fristen"
-      ],
-      "quellen_urls": [
-        "https://einfach-elterngeld.de/elterngeld/elterngeld-plus",
-        "https://www.elterngeld.de/elterngeld-plus/"
-      ],
-      "konfidenz": 0.9,
-      "hinzugefuegt_am": "2026-06-06T16:40:59",
-      "aktualisiert_am": "2026-06-06T16:40:59"
-    },
-    {
-      "name": "Elterngeldantrag Bayern",
-      "beschreibung": "Elterngeldantrag Bayern ist ein Antrag auf Elterngeld, der in Bayern gestellt werden kann.",
+      "name": "Elterngeldantrag Bayern (digital)",
+      "beschreibung": "Digitales Antragsverfahren des ZBFS für BasisElterngeld, ElterngeldPlus und Partnerschaftsbonus in Bayern.",
       "zielgruppe": "Eltern in Bayern",
-      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales",
+      "zustaendige_stelle": "Zentrum Bayern Familie und Soziales (zuständige ZBFS-Regionalstelle)",
       "leistungsart": "Verfahrensleistung",
       "ebene": "Land Bayern",
       "abgedeckte_bedarfe": [
+        "informations_und_beratungsbedarf",
         "existenzsicherung",
         "finanzielle_entlastung"
       ],
@@ -819,15 +703,15 @@
         "Eltern müssen in Bayern leben und ihr Kind betreuen"
       ],
       "antragskanaele": [
-        "online",
-        "persoenlich"
+        "online"
       ],
       "bekannte_prozessrisiken": [
         "einkommenspruefung",
-        "fristen"
+        "fristen",
+        "fehlende_digitale_kompetenzen"
       ],
       "quellen_urls": [
-        "https://www.elternzeit.de/elterngeld/elterngeldantrag/bayern/"
+        "https://www.zbfs.bayern.de/familienleistungen/elterngeld/"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:40:59",
@@ -1122,35 +1006,6 @@
       "aktualisiert_am": "2026-06-06T16:41:10"
     },
     {
-      "name": "Kindergeld-Erhöhung",
-      "beschreibung": "Erhöhung des Kindergeldes für Familien in Deutschland",
-      "zielgruppe": "Familien mit Kindern",
-      "zustaendige_stelle": "Bundesregierung",
-      "leistungsart": "Geldleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Familien mit Kindern"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "fristen"
-      ],
-      "quellen_urls": [
-        "https://www.sueddeutsche.de/wirtschaft/kindergeld-regierung-verschleppt-familienunterstuetzung-1.2324733"
-      ],
-      "konfidenz": 0.9,
-      "hinzugefuegt_am": "2026-06-06T16:41:10",
-      "aktualisiert_am": "2026-06-06T16:41:10"
-    },
-    {
       "name": "Integrationshilfe",
       "beschreibung": "Hilfe für behinderte Kinder und Jugendliche in Kindertagesstätten oder Schulen",
       "zielgruppe": "Behinderte Kinder und Jugendliche",
@@ -1293,64 +1148,6 @@
         "https://www.bundesjustizamt.de/"
       ],
       "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:14",
-      "aktualisiert_am": "2026-06-06T16:41:14"
-    },
-    {
-      "name": "Situation und staatliche Unterstützung verwitweter Personen in Bayern",
-      "beschreibung": "Unterstützung für verwitwete Personen in Bayern.",
-      "zielgruppe": "Verwitwete Personen in Bayern",
-      "zustaendige_stelle": "Staatsministerium für Arbeit und Soziales, Familie und Integration",
-      "leistungsart": "Beratung",
-      "ebene": "Land Bayern",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "psychosoziale_unterstuetzung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Verwitwete Personen in Bayern"
-      ],
-      "antragskanaele": [
-        "schriftlich",
-        "persoenlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "vermoegenspruefung"
-      ],
-      "quellen_urls": [
-        "https://kleineanfragen.de/bayern/17/20558-situation-und-staatliche-unterstuetzung-verwitweter-personen-in-bayern"
-      ],
-      "konfidenz": 0.7,
-      "hinzugefuegt_am": "2026-06-06T16:41:14",
-      "aktualisiert_am": "2026-06-06T16:41:14"
-    },
-    {
-      "name": "Situation und staatliche Unterstützung geschiedener Personen in Bayern",
-      "beschreibung": "Unterstützung für geschiedene Personen in Bayern.",
-      "zielgruppe": "Geschiedene Personen in Bayern",
-      "zustaendige_stelle": "Staatsministerium für Arbeit und Soziales, Familie und Integration",
-      "leistungsart": "Beratung",
-      "ebene": "Land Bayern",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "psychosoziale_unterstuetzung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Geschiedene Personen in Bayern"
-      ],
-      "antragskanaele": [
-        "schriftlich",
-        "persoenlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "vermoegenspruefung"
-      ],
-      "quellen_urls": [
-        "https://kleineanfragen.de/bayern/17/20413-situation-und-staatliche-unterstuetzung-geschiedener-personen-in-bayern"
-      ],
-      "konfidenz": 0.7,
       "hinzugefuegt_am": "2026-06-06T16:41:14",
       "aktualisiert_am": "2026-06-06T16:41:14"
     },
@@ -1501,116 +1298,6 @@
       "aktualisiert_am": "2026-06-06T16:41:25"
     },
     {
-      "name": "Elterngeld digital",
-      "beschreibung": "Ein Online-Verfahren, um Elterngeld zu beantragen.",
-      "zielgruppe": "Eltern, die Elterngeld beantragen möchten",
-      "zustaendige_stelle": "Bund",
-      "leistungsart": "Verfahrensleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "informations_und_beratungsbedarf",
-        "existenzsicherung"
-      ],
-      "zugangsvoraussetzungen": [
-        "e-Personalausweis"
-      ],
-      "antragskanaele": [
-        "online"
-      ],
-      "bekannte_prozessrisiken": [
-        "fehlende_digitale_kompetenzen"
-      ],
-      "quellen_urls": [
-        "https://www.eimsbuetteler-nachrichten.de/elterngeld-warten-ueberbrueckungsdarlehen-bremer-modell-spd-bezirksamt/"
-      ],
-      "konfidenz": 0.9,
-      "hinzugefuegt_am": "2026-06-06T16:41:25",
-      "aktualisiert_am": "2026-06-06T16:41:25"
-    },
-    {
-      "name": "Elterngeldantrag",
-      "beschreibung": "Elterngeldantrag für das Basis Elterngeld und Elterngeld Plus in Baden-Württemberg.",
-      "zielgruppe": "Eltern in Baden-Württemberg",
-      "zustaendige_stelle": "L-Bank (Staatsbank für Baden-Württemberg)",
-      "leistungsart": "Geldleistung",
-      "ebene": "Unklar",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Eltern mit Wohnsitz in Baden-Württemberg"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "lange_bearbeitungszeit"
-      ],
-      "quellen_urls": [
-        "https://einfach-elterngeld.de/elterngeldantrag/baden-wuerttemberg"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:28",
-      "aktualisiert_am": "2026-06-06T16:41:28"
-    },
-    {
-      "name": "Kindergeldauszahlungstermine",
-      "beschreibung": "Termine für die Auszahlung des Kindergeldes im Jahr 2025.",
-      "zielgruppe": "Familien mit Kindern",
-      "zustaendige_stelle": "Familienkasse",
-      "leistungsart": "Geldleistung",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Familien mit Kindern"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "fristen"
-      ],
-      "quellen_urls": [
-        "https://www.familie.de/familienleben/finanzen/?page=2"
-      ],
-      "konfidenz": 0.7,
-      "hinzugefuegt_am": "2026-06-06T16:41:28",
-      "aktualisiert_am": "2026-06-06T16:41:28"
-    },
-    {
-      "name": "Widerspruch gegen Anrechnung des Familiengeldes",
-      "beschreibung": "Widerspruch gegen die Anrechnung des Familiengeldes bei Hartz IV-Bezügen.",
-      "zielgruppe": "Hartz IV-Bezieher mit Familiengeld",
-      "zustaendige_stelle": "Jobcenter",
-      "leistungsart": "Rechtsanspruch",
-      "ebene": "Bund",
-      "abgedeckte_bedarfe": [
-        "existenzsicherung",
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Hartz IV-Bezieher mit Familiengeld"
-      ],
-      "antragskanaele": [
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "widerspruch_noetig"
-      ],
-      "quellen_urls": [
-        "https://www.anwaltskanzlei-wue.de/familiengeld/"
-      ],
-      "konfidenz": 0.9,
-      "hinzugefuegt_am": "2026-06-06T16:41:28",
-      "aktualisiert_am": "2026-06-06T16:41:28"
-    },
-    {
       "name": "Pflegegeld",
       "beschreibung": "Ein Geldbetrag, der für die Pflege von Familienmitgliedern gezahlt wird.",
       "zielgruppe": "Familien mit pflegebedürftigen Mitgliedern",
@@ -1637,114 +1324,6 @@
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:41:29",
       "aktualisiert_am": "2026-06-06T16:41:29"
-    },
-    {
-      "name": "Krippengeld",
-      "beschreibung": "Ein Geldbetrag, der für die Betreuung von Kindern in Krippen gezahlt wird.",
-      "zielgruppe": "Familien mit Kindern in Krippen",
-      "zustaendige_stelle": "Unklar",
-      "leistungsart": "Geldleistung",
-      "ebene": "Land Bayern",
-      "abgedeckte_bedarfe": [
-        "kinderbetreuung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Kinder in Krippen"
-      ],
-      "antragskanaele": [
-        "persoenlich",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "fristen"
-      ],
-      "quellen_urls": [
-        "https://www.merkur.de/bayern/soeder-massiv-gekuerzt-halbiert-aiwanger-geld-eltern-familien-bayern-familiengeld-pflegegeld-93408638.html"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:29",
-      "aktualisiert_am": "2026-06-06T16:41:29"
-    },
-    {
-      "name": "Familienreiseversicherung",
-      "beschreibung": "Eine Reiseversicherung mit günstigen Konditionen für Familien.",
-      "zielgruppe": "Familien mit Kindern",
-      "zustaendige_stelle": "Allianz Direct",
-      "leistungsart": "Sachleistung",
-      "ebene": "Privat",
-      "abgedeckte_bedarfe": [
-        "finanzielle_entlastung",
-        "gesundheitliche_versorgung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Familien mit Kindern"
-      ],
-      "antragskanaele": [
-        "online",
-        "telefonisch"
-      ],
-      "bekannte_prozessrisiken": [
-        "fehlende_information"
-      ],
-      "quellen_urls": [
-        "https://www.allianzdirect.de/reiseversicherung/familienreiseversicherung/"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:31",
-      "aktualisiert_am": "2026-06-06T16:41:31"
-    },
-    {
-      "name": "Reise-Assistance",
-      "beschreibung": "Eine 24/7-Notfallhilfe für Reisende.",
-      "zielgruppe": "Reisende",
-      "zustaendige_stelle": "Unklar",
-      "leistungsart": "Sachleistung",
-      "ebene": "Unklar",
-      "abgedeckte_bedarfe": [
-        "gesundheitliche_versorgung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Reisende"
-      ],
-      "antragskanaele": [
-        "telefonisch"
-      ],
-      "bekannte_prozessrisiken": [
-        "fehlende_information"
-      ],
-      "quellen_urls": [
-        "https://www.allianzdirect.de/reiseversicherung/familienreiseversicherung/"
-      ],
-      "konfidenz": 0.6,
-      "hinzugefuegt_am": "2026-06-06T16:41:31",
-      "aktualisiert_am": "2026-06-06T16:41:31"
-    },
-    {
-      "name": "Familienkredit",
-      "beschreibung": "Ein Kredit für Familien, der von der Deutschen Skatbank angeboten wird.",
-      "zielgruppe": "Familien mit regelmäßigem Einkommen",
-      "zustaendige_stelle": "Deutsche Skatbank",
-      "leistungsart": "Förderprogramm",
-      "ebene": "Privat",
-      "abgedeckte_bedarfe": [
-        "finanzielle_entlastung"
-      ],
-      "zugangsvoraussetzungen": [
-        "Regelmäßiges Einkommen, festes Wohnsitz in Deutschland"
-      ],
-      "antragskanaele": [
-        "online"
-      ],
-      "bekannte_prozessrisiken": [
-        "lange_bearbeitungszeit"
-      ],
-      "quellen_urls": [
-        "https://www.skatbank.de/privatkunden/kredit-und-finanzieren/privatkredite/landingpages/lp-familienkredit-fmh.html"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:33",
-      "aktualisiert_am": "2026-06-06T16:41:33"
     },
     {
       "name": "Elterngeld-Bescheid",
@@ -1834,34 +1413,6 @@
       "aktualisiert_am": "2026-06-06T16:41:36"
     },
     {
-      "name": "Bildungspaket",
-      "beschreibung": "Das Bildungspaket ist ein Programm, das Kinder und Jugendliche aus bedürftigen Familien unterstützt, um ihre Bildungschancen zu verbessern.",
-      "zielgruppe": "Kinder und Jugendliche aus bedürftigen Familien",
-      "zustaendige_stelle": "Jugendamt",
-      "leistungsart": "Förderprogramm",
-      "ebene": "Kommunal",
-      "abgedeckte_bedarfe": [
-        "soziale_teilhabe"
-      ],
-      "zugangsvoraussetzungen": [
-        "Kinder und Jugendliche aus bedürftigen Familien, die einen Antrag auf Bildungspaket stellen"
-      ],
-      "antragskanaele": [
-        "persoenlich",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "einkommenspruefung",
-        "vermoegenspruefung"
-      ],
-      "quellen_urls": [
-        "https://www.bmas.de/DE/Arbeit/Grundsicherung-Buergergeld/Bildungspaket/Anlaufstellen/Bayern/bayern.html"
-      ],
-      "konfidenz": 0.7,
-      "hinzugefuegt_am": "2026-06-06T16:41:36",
-      "aktualisiert_am": "2026-06-06T16:41:36"
-    },
-    {
       "name": "Sozialhilfe",
       "beschreibung": "Sozialhilfe schützt vor Armut und sozialer Ausgrenzung und ermöglicht die Teilnahme am gesellschaftlichen Leben.",
       "zielgruppe": "Personen, die sich nicht selbst helfen können und keine vorrangigen Sozialleistungsansprüche erworben haben",
@@ -1891,8 +1442,8 @@
       "aktualisiert_am": "2026-06-06T16:41:41"
     },
     {
-      "name": "Grundsicherung für Arbeitsuchende",
-      "beschreibung": "Grundsicherung für Arbeitsuchende soll zur Sicherung des Lebensunterhalts dienen und bei der Eingliederung ins Arbeitsleben helfen.",
+      "name": "Grundsicherungsgeld für Arbeitsuchende",
+      "beschreibung": "Das Grundsicherungsgeld für Arbeitsuchende (früher Bürgergeld) dient der Sicherung des Lebensunterhalts und unterstützt die Eingliederung in Arbeit.",
       "zielgruppe": "Erwerbsfähige Hilfebedürftige zwischen 15 Jahren und der Altersgrenze in der Gesetzlichen Rentenversicherung",
       "zustaendige_stelle": "Jobcenter",
       "leistungsart": "Geldleistung",
@@ -1915,7 +1466,7 @@
         "fristen"
       ],
       "quellen_urls": [
-        "https://www.stmas.bayern.de/sozialhilfe/index.php"
+        "https://www.arbeitsagentur.de/grundsicherung"
       ],
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:41:41",
@@ -2094,35 +1645,6 @@
       "konfidenz": 0.8,
       "hinzugefuegt_am": "2026-06-06T16:41:41",
       "aktualisiert_am": "2026-06-06T16:41:41"
-    },
-    {
-      "name": "Agrarinvestitionsförderprogramm (AFP)",
-      "beschreibung": "Förderprogramm für landwirtschaftliche Betriebe in Bayern",
-      "zielgruppe": "Landwirte in Bayern",
-      "zustaendige_stelle": "Bayerisches Staatsministerium für Ernährung, Landwirtschaft und Forsten",
-      "leistungsart": "Förderprogramm",
-      "ebene": "Land Bayern",
-      "abgedeckte_bedarfe": [
-        "finanzielle_entlastung",
-        "teilhabe_am_arbeitsleben"
-      ],
-      "zugangsvoraussetzungen": [
-        "Landwirtschaftlicher Betrieb in Bayern"
-      ],
-      "antragskanaele": [
-        "online",
-        "schriftlich"
-      ],
-      "bekannte_prozessrisiken": [
-        "fristen",
-        "begrenzte_kapazitaeten"
-      ],
-      "quellen_urls": [
-        "https://www.wochenblatt-dlv.de/feld-stall/betriebsfuehrung/bayerns-foerdertoepfe-leer-afp-antrag-gefoerdert-583206"
-      ],
-      "konfidenz": 0.8,
-      "hinzugefuegt_am": "2026-06-06T16:41:46",
-      "aktualisiert_am": "2026-06-06T16:41:46"
     },
     {
       "name": "Jugendsozialarbeit an Schulen (JaS)",
