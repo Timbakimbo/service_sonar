@@ -1,52 +1,52 @@
 {
   "schema_version": "1.0-de",
-  "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-  "erstellt_am": "2026-07-12T19:29:27",
+  "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+  "erstellt_am": "2026-07-13T23:27:24",
   "output_status": "complete",
   "failed_pass_count": 0,
   "failed_passes": [],
   "modell_backend": "openai",
   "modell": "gpt-4.1-mini",
   "pass_statistik": {
-    "pass1_topics_evaluated": 26,
-    "pass2_gaps_evaluated": 17,
+    "pass1_topics_evaluated": 25,
+    "pass2_gaps_evaluated": 16,
     "pass2_gaps_skipped_out_of_scope": 0,
-    "pass3_innovations_evaluated": 11,
+    "pass3_innovations_evaluated": 10,
     "pass4_aggregation_calls": 1
   },
   "source_stats_status": "complete",
   "topic_evaluations": [
     {
       "topic_id": "0",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
+      "unambiguous": true,
+      "confidence": 0.95,
+      "begruendung": "The topic deals with parental leave duration and Elterngeld Plus, clearly within family-related social benefits in Bavaria and overlaps with other Elterngeld topics.",
+      "evaluation_id": "TE_001"
+    },
+    {
+      "topic_id": "1",
       "in_scope": false,
       "noise": false,
       "redundancy_cluster": null,
       "verdict": "remove",
       "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Das Topic enthält zu allgemeine geografische Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen in Bayern, somit out-of-scope.",
-      "evaluation_id": "TE_001"
-    },
-    {
-      "topic_id": "1",
-      "in_scope": true,
-      "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
-      "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Thema Bürokratie und Kommunikation mit Behörden ist relevant für familienbezogene Sozialleistungen, insbesondere Empfangsbestätigungen und Akteneinsicht.",
+      "begruendung": "Focuses on general administrative procedures like records access without specific relation to family social benefits, thus out-of-scope.",
       "evaluation_id": "TE_002"
     },
     {
       "topic_id": "2",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Elterliche Fürsorge und Erziehung sind zentrale Aspekte im Kontext familienbezogener Sozialleistungen.",
+      "confidence": 0.9,
+      "begruendung": "Concerns delays and legal help in Elterngeld application processing, clearly relevant and overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_003"
     },
     {
@@ -57,18 +57,18 @@
       "verdict": "remove",
       "unambiguous": true,
       "confidence": 0.95,
-      "begruendung": "Allgemeine Informationen zur Coronavirus-Pandemie ohne direkten Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
+      "begruendung": "General coronavirus topic without specific connection to family social benefits in Bavaria, thus out-of-scope.",
       "evaluation_id": "TE_004"
     },
     {
       "topic_id": "4",
-      "in_scope": true,
-      "noise": false,
+      "in_scope": false,
+      "noise": true,
       "redundancy_cluster": null,
-      "verdict": "keep",
+      "verdict": "remove",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Themen rund um Elternzeit und deren Aufteilung sind relevant und eigenständig im Kontext familienbezogener Sozialleistungen.",
+      "confidence": 1.0,
+      "begruendung": "Contains generic language and country labels without coherent content, typical technical noise from crawling.",
       "evaluation_id": "TE_005"
     },
     {
@@ -78,8 +78,8 @@
       "redundancy_cluster": null,
       "verdict": "keep",
       "unambiguous": true,
-      "confidence": 0.8,
-      "begruendung": "Rechtliche Auseinandersetzungen und Amtsgerichtsthemen können Familien im Kontext sozialer Leistungen betreffen, daher relevant.",
+      "confidence": 0.85,
+      "begruendung": "Addresses mental stress and challenges of mothers in family care, relevant to family social support though more subjective.",
       "evaluation_id": "TE_006"
     },
     {
@@ -90,95 +90,95 @@
       "verdict": "remove",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Allgemeine geografische und wirtschaftliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
+      "begruendung": "Focus on general labor law and unemployment benefits without family-specific context, thus out-of-scope.",
       "evaluation_id": "TE_007"
     },
     {
       "topic_id": "7",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": "kindergeld",
-      "verdict": "keep",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Kindergeld und Zuständigkeiten der Familienkasse sind zentrale Themen im Bereich familienbezogener Sozialleistungen.",
+      "confidence": 0.95,
+      "begruendung": "Discusses parental leave and Elterngeld questions, clearly relevant and overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_008"
     },
     {
       "topic_id": "8",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
+      "redundancy_cluster": "familiengeld",
       "verdict": "keep",
       "unambiguous": true,
-      "confidence": 0.8,
-      "begruendung": "Arbeitsverhältnis und Arbeitslosigkeit beeinflussen die finanzielle Situation von Familien und deren Zugang zu Sozialleistungen.",
+      "confidence": 0.9,
+      "begruendung": "Focuses on the Bavarian Familiengeld, a specific family benefit, clearly relevant and distinct.",
       "evaluation_id": "TE_009"
     },
     {
       "topic_id": "9",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": null,
+      "verdict": "keep",
+      "unambiguous": true,
+      "confidence": 0.8,
+      "begruendung": "Concerns legal proceedings related to health disabilities and their impact on social benefits, relevant though somewhat specialized.",
+      "evaluation_id": "TE_010"
+    },
+    {
+      "topic_id": "10",
       "in_scope": false,
       "noise": false,
       "redundancy_cluster": null,
       "verdict": "remove",
       "unambiguous": true,
-      "confidence": 0.75,
-      "begruendung": "Die Begriffe sind zu unspezifisch und ergeben keinen klaren Bezug zu familienbezogenen Sozialleistungen, daher out-of-scope.",
-      "evaluation_id": "TE_010"
-    },
-    {
-      "topic_id": "10",
-      "in_scope": true,
-      "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
-      "unambiguous": false,
-      "confidence": 0.7,
-      "begruendung": "Gesundheitliche Herausforderungen im Kontext der Pandemie können Familien betreffen, sind aber nicht immer eindeutig familienleistungsbezogen.",
+      "confidence": 0.9,
+      "begruendung": "General questions about EU citizenship and residence without direct link to family social benefits, thus out-of-scope.",
       "evaluation_id": "TE_011"
     },
     {
       "topic_id": "11",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
+      "redundancy_cluster": "familiengeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Rechtliche Herausforderungen mit Amtsgerichtbezug sind relevant für Familien im Kontext sozialer Leistungen.",
+      "confidence": 0.9,
+      "begruendung": "Discusses Bavarian Familiengeld and its conditions, overlapping with other Familiengeld topics.",
       "evaluation_id": "TE_012"
     },
     {
       "topic_id": "12",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": "familiengeld",
-      "verdict": "keep",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Familiengeld in Bayern ist ein zentrales Thema familienbezogener Sozialleistungen.",
+      "begruendung": "Focuses on Elterngeldbescheid issues and appeals, clearly relevant and overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_013"
     },
     {
       "topic_id": "13",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
+      "redundancy_cluster": "familiengeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.8,
-      "begruendung": "Probleme im Bereich Wohnen sind für Familien relevant und können Auswirkungen auf soziale Leistungen haben.",
+      "confidence": 0.85,
+      "begruendung": "Deals with application form difficulties for Bavarian Familiengeld, related and overlapping with other Familiengeld topics.",
       "evaluation_id": "TE_014"
     },
     {
       "topic_id": "14",
-      "in_scope": true,
+      "in_scope": false,
       "noise": false,
-      "redundancy_cluster": "elterngeld",
-      "verdict": "merge",
+      "redundancy_cluster": null,
+      "verdict": "remove",
       "unambiguous": true,
-      "confidence": 0.95,
-      "begruendung": "Themen rund um Elterngeldbescheid und Antrag sind eng verwandt mit anderen Elterngeld-Topics und sollten zusammengeführt werden.",
+      "confidence": 0.9,
+      "begruendung": "Contains vague, general conversational terms without clear thematic relation, thus out-of-scope.",
       "evaluation_id": "TE_015"
     },
     {
@@ -189,95 +189,95 @@
       "verdict": "remove",
       "unambiguous": true,
       "confidence": 1.0,
-      "begruendung": "Technische Themen zu Cookies und Datenschutzerklärung sind reine Crawling-Artefakte ohne inhaltliche Kohärenz (Noise).",
+      "begruendung": "Technical website elements like cookies and privacy notices without content relevance, clear noise.",
       "evaluation_id": "TE_016"
     },
     {
       "topic_id": "16",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": "kindergeld",
-      "verdict": "merge",
+      "redundancy_cluster": "landeserziehungsgeld",
+      "verdict": "keep",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Kindergeldantrag und Familienkasse-Themen sind redundant zu anderen Kindergeld-Topics und sollten zusammengeführt werden.",
+      "confidence": 0.85,
+      "begruendung": "Discusses Landeserziehungsgeld in Bavaria and its relation to other family benefits, relevant and distinct.",
       "evaluation_id": "TE_017"
     },
     {
       "topic_id": "17",
+      "in_scope": true,
+      "noise": false,
+      "redundancy_cluster": "kindergeld",
+      "verdict": "keep",
+      "unambiguous": true,
+      "confidence": 0.9,
+      "begruendung": "Focuses on Kindergeld application and childcare cost support, clearly relevant and distinct.",
+      "evaluation_id": "TE_018"
+    },
+    {
+      "topic_id": "18",
       "in_scope": false,
       "noise": false,
       "redundancy_cluster": null,
       "verdict": "remove",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Allgemeine geografische und sprachliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "evaluation_id": "TE_018"
-    },
-    {
-      "topic_id": "18",
-      "in_scope": true,
-      "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
-      "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Sozialhilfe, Bürgergeld und Sozialamt sind wichtige Themen im Kontext familienbezogener Sozialleistungen.",
+      "begruendung": "Mentions cities outside Bavaria without family social benefits context, thus out-of-scope.",
       "evaluation_id": "TE_019"
     },
     {
       "topic_id": "19",
-      "in_scope": true,
+      "in_scope": false,
       "noise": false,
-      "redundancy_cluster": "elterngeld",
-      "verdict": "merge",
+      "redundancy_cluster": null,
+      "verdict": "remove",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Elternzeit und Elterngeldstelle-Themen sind eng verwandt mit anderen Elterngeld-Topics und sollten zusammengeführt werden.",
+      "begruendung": "General country and language terms without specific family social benefit relevance, out-of-scope.",
       "evaluation_id": "TE_020"
     },
     {
       "topic_id": "20",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "keep",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.8,
-      "begruendung": "Nutzung des Bayernportals und Zentrums Bayern Familie & Soziales ist relevant für Familien bei Sozialleistungen.",
+      "confidence": 0.95,
+      "begruendung": "Concerns Bavarian Elterngeldstelle and application issues, overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_021"
     },
     {
       "topic_id": "21",
       "in_scope": true,
       "noise": false,
-      "redundancy_cluster": "elterngeld",
-      "verdict": "merge",
+      "redundancy_cluster": null,
+      "verdict": "keep",
       "unambiguous": true,
-      "confidence": 0.95,
-      "begruendung": "Elterngeld und ElterngeldPlus mit Elternzeit sind zentrale und eng verwandte Themen, daher Zusammenführung sinnvoll.",
+      "confidence": 0.8,
+      "begruendung": "Discusses kindergarten year organization and deadlines in a federal state comparison, relevant for family services.",
       "evaluation_id": "TE_022"
     },
     {
       "topic_id": "22",
-      "in_scope": false,
+      "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "remove",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Geografische Begriffe außerhalb Bayerns ohne Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
+      "begruendung": "Addresses language barriers and bureaucratic hurdles for Elterngeld applicants in Bavaria, overlapping with Elterngeld topics.",
       "evaluation_id": "TE_023"
     },
     {
       "topic_id": "23",
-      "in_scope": false,
+      "in_scope": true,
       "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "remove",
+      "redundancy_cluster": "elterngeld",
+      "verdict": "merge",
       "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Bildungsthemen und Orte außerhalb Bayerns sind nicht relevant für familienbezogene Sozialleistungen in Bayern.",
+      "confidence": 0.9,
+      "begruendung": "Focuses on Elterngeldbescheid and Elterngeld Plus complexities, clearly relevant and overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_024"
     },
     {
@@ -288,31 +288,20 @@
       "verdict": "merge",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Online-Beantragung von Elterngeld ist ein spezifischer Aspekt des Elterngeld-Themas und sollte zusammengeführt werden.",
+      "begruendung": "Concerns delays in Elterngeldbescheid processing, relevant and overlapping with other Elterngeld topics.",
       "evaluation_id": "TE_025"
-    },
-    {
-      "topic_id": "25",
-      "in_scope": false,
-      "noise": false,
-      "redundancy_cluster": null,
-      "verdict": "remove",
-      "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Allgemeine Begriffe zu ZBFS und Bayern ohne spezifische Problemstellung sind out-of-scope.",
-      "evaluation_id": "TE_026"
     }
   ],
   "gap_evaluations": [
     {
-      "topic_id": "1",
+      "topic_id": "0",
       "klassifikation_plausibel": true,
       "matching_plausibel": true,
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.95,
-      "begruendung": "Das Kernproblem beschreibt eindeutig ein Prozessproblem bei der Kommunikation mit Behörden, und die Empfehlung adressiert dies mit einem digitalen Portal, was gut passt.",
+      "begruendung": "Das Kernproblem betrifft eindeutig Prozessprobleme bei Antragstellung und Planung, die passenden Services Elterngeld und ElterngeldPlus sind semantisch stimmig, und die Empfehlung ist konkret und zielgerichtet.",
       "evaluation_id": "GE_001"
     },
     {
@@ -323,30 +312,15 @@
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.95,
-      "begruendung": "Die Klassifizierung als bereits_abgedeckt ist korrekt, da die genannten Matching Services umfassend psychosoziale und erziehungsunterstützende Beratung abdecken.",
+      "begruendung": "Die Verzögerungen bei der Bearbeitung sind klar ein Prozessproblem, die zugeordneten Services passen gut, und die Empfehlung adressiert die Problematik mit einem interaktiven Assistenten.",
       "evaluation_id": "GE_002"
     },
     {
-      "topic_id": "4",
-      "klassifikation_plausibel": true,
-      "matching_plausibel": true,
-      "empfehlung_qualitaet": "gut",
-      "verdict": "accept",
-      "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Das Prozessproblem bei der Elternzeitplanung wird durch die vorgeschlagenen Services passend adressiert, die Empfehlung ist konkret und zielführend.",
-      "evaluation_id": "GE_003"
-    },
-    {
       "topic_id": "5",
-      "klassifikation_plausibel": true,
-      "matching_plausibel": true,
-      "empfehlung_qualitaet": "gut",
       "verdict": "accept",
-      "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Das Kernproblem beschreibt eine echte Lücke im Bereich rechtlicher Unterstützung, die fehlenden Matching Services sind plausibel, und die Empfehlung ist spezifisch und sinnvoll.",
-      "evaluation_id": "GE_004"
+      "begruendung": "keine LLM-Bewertung erhalten",
+      "needs_review": true,
+      "evaluation_id": "GE_003"
     },
     {
       "topic_id": "7",
@@ -355,9 +329,9 @@
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.95,
-      "begruendung": "Das Prozessproblem bei Zuständigkeitsfragen wird durch die passenden Services adressiert, die Empfehlung ist klar und zielführend.",
-      "evaluation_id": "GE_005"
+      "confidence": 0.9,
+      "begruendung": "Die Informationslücke bei der Planung der Partnermonate passt gut zur Klassifikation, die Services sind passend, und die Empfehlung ist konkret und adressiert die Informationsbedarfe.",
+      "evaluation_id": "GE_004"
     },
     {
       "topic_id": "8",
@@ -367,20 +341,19 @@
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Problem bei Arbeitslosigkeit und finanzieller Stabilität ist durch die genannten Leistungen abgedeckt, die Klassifizierung als bereits_abgedeckt ist korrekt.",
-      "evaluation_id": "GE_006"
+      "begruendung": "Der Informationsbedarf zum Bayerischen Familiengeld ist klar eine Informationslücke, die Matching Services sind passend, und die Empfehlung ist spezifisch und zielführend.",
+      "evaluation_id": "GE_005"
     },
     {
-      "topic_id": "10",
-      "klassifikation_plausibel": false,
+      "topic_id": "9",
+      "klassifikation_plausibel": true,
       "matching_plausibel": true,
-      "empfehlung_qualitaet": "vage",
-      "verdict": "reclassify",
-      "vorgeschlagene_klassifikation": "informationsluecke",
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.85,
-      "begruendung": "Das Kernproblem beschreibt Belastungen durch gesundheitliche Herausforderungen, die eher auf Informations- und Beratungsbedarf hinweisen als auf eine bereits abgedeckte Leistung.",
-      "evaluation_id": "GE_007"
+      "confidence": 0.95,
+      "begruendung": "Das Prozessproblem bei rechtlichen Auseinandersetzungen passt gut zur Klassifikation, die Services sind semantisch passend, und die Empfehlung adressiert die Problematik mit einem digitalen Widerspruchsassistenten.",
+      "evaluation_id": "GE_006"
     },
     {
       "topic_id": "11",
@@ -390,8 +363,8 @@
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Kernproblem einer echten Lücke im Bereich rechtlicher Unterstützung vor Amtsgerichtsverfahren wird durch die Empfehlung eines digitalen Rechtshilfe-Assistenten gut adressiert.",
-      "evaluation_id": "GE_008"
+      "begruendung": "Die Informationslücke bezüglich des Bayerischen Familiengeldes ist korrekt klassifiziert, die Services passen, und die Empfehlung ist konkret und zielführend.",
+      "evaluation_id": "GE_007"
     },
     {
       "topic_id": "12",
@@ -400,9 +373,9 @@
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Die Informationslücke zum Bayerischen Familiengeld wird durch den vorgeschlagenen Chatbot sinnvoll adressiert, die Matching Services passen gut.",
-      "evaluation_id": "GE_009"
+      "confidence": 0.95,
+      "begruendung": "Das Prozessproblem bei rechtlichen Hürden und Widersprüchen passt zur Klassifikation, die Services sind passend, und die Empfehlung ist konkret und adressiert die Problematik effektiv.",
+      "evaluation_id": "GE_008"
     },
     {
       "topic_id": "13",
@@ -412,19 +385,8 @@
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Prozessproblem im Bereich Wohnen wird durch passende Services abgedeckt, die Empfehlung eines Online-Klärassistenten ist zielführend.",
-      "evaluation_id": "GE_010"
-    },
-    {
-      "topic_id": "14",
-      "klassifikation_plausibel": true,
-      "matching_plausibel": true,
-      "empfehlung_qualitaet": "gut",
-      "verdict": "accept",
-      "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Das Prozessproblem bei Elterngeldanträgen und Bescheiden wird durch die genannten Services gut abgedeckt, die Empfehlung ist konkret und passend.",
-      "evaluation_id": "GE_011"
+      "begruendung": "Das Prozessproblem bei der Antragstellung des Bayerischen Familiengeldes ist korrekt klassifiziert, die Services passen, und die Empfehlung ist konkret und zielführend.",
+      "evaluation_id": "GE_009"
     },
     {
       "topic_id": "16",
@@ -433,31 +395,20 @@
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.95,
-      "begruendung": "Das Prozessproblem bei der Beantragung von Kindergeld wird durch die passenden Services adressiert, die Empfehlung eines integrierten Online-Assistenten ist zielführend.",
-      "evaluation_id": "GE_012"
+      "confidence": 0.9,
+      "begruendung": "Die Informationslücke bei der Abgrenzung und dem Übergang des Landeserziehungsgeldes ist passend klassifiziert, die Services sind stimmig, und die Empfehlung adressiert den Bedarf zielgerichtet.",
+      "evaluation_id": "GE_010"
     },
     {
-      "topic_id": "18",
+      "topic_id": "17",
       "klassifikation_plausibel": true,
       "matching_plausibel": true,
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Prozessproblem beim Zugang zu Sozialhilfe und Grundsicherung wird durch die genannten Leistungen abgedeckt, die Empfehlung eines gemeinsamen Antragsportals ist sinnvoll.",
-      "evaluation_id": "GE_013"
-    },
-    {
-      "topic_id": "19",
-      "klassifikation_plausibel": true,
-      "matching_plausibel": true,
-      "empfehlung_qualitaet": "gut",
-      "verdict": "accept",
-      "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Die Informationslücke bei der Planung von Elternzeitmonaten wird durch passende Services adressiert, die Empfehlung eines kontextsensitiven Chatbots ist zielführend.",
-      "evaluation_id": "GE_014"
+      "begruendung": "Das Prozessproblem bei der Beantragung von Kindergeld ist korrekt klassifiziert, die Services passen gut, und die Empfehlung ist konkret und zielführend.",
+      "evaluation_id": "GE_011"
     },
     {
       "topic_id": "20",
@@ -466,9 +417,9 @@
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Das Prozessproblem bei der Nutzung des Bayernportals wird durch passende Services adressiert, die Empfehlung eines Chatbot-Assistenten ist sinnvoll.",
-      "evaluation_id": "GE_015"
+      "confidence": 0.95,
+      "begruendung": "Das Prozessproblem bei den Elterngeldstellen ist passend klassifiziert, die Services sind semantisch stimmig, und die Empfehlung ist konkret und adressiert die Problematik umfassend.",
+      "evaluation_id": "GE_012"
     },
     {
       "topic_id": "21",
@@ -478,8 +429,30 @@
       "verdict": "accept",
       "unambiguous": true,
       "confidence": 0.9,
-      "begruendung": "Das Prozessproblem bei der Beantragung von Elterngeld und Elternzeit wird durch die genannten Services abgedeckt, die Empfehlung eines integrierten Planers ist zielführend.",
-      "evaluation_id": "GE_016"
+      "begruendung": "Die Informationslücke bei Kindergartenjahreswechseln ist korrekt klassifiziert, die Services passen, und die Empfehlung ist konkret und zielführend.",
+      "evaluation_id": "GE_013"
+    },
+    {
+      "topic_id": "22",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "unambiguous": true,
+      "confidence": 0.95,
+      "begruendung": "Das Prozessproblem bei Sprachbarrieren für Expats bei Elterngeldanträgen ist passend klassifiziert, die Services sind stimmig, und die Empfehlung adressiert die Problematik mit einem mehrsprachigen Assistenten.",
+      "evaluation_id": "GE_014"
+    },
+    {
+      "topic_id": "23",
+      "klassifikation_plausibel": true,
+      "matching_plausibel": true,
+      "empfehlung_qualitaet": "gut",
+      "verdict": "accept",
+      "unambiguous": true,
+      "confidence": 0.9,
+      "begruendung": "Das Prozessproblem bei der Komplexität der ElterngeldPlus-Bescheide ist korrekt klassifiziert, die Services passen, und die Empfehlung ist konkret und zielführend.",
+      "evaluation_id": "GE_015"
     },
     {
       "topic_id": "24",
@@ -488,9 +461,9 @@
       "empfehlung_qualitaet": "gut",
       "verdict": "accept",
       "unambiguous": true,
-      "confidence": 0.9,
-      "begruendung": "Das Prozessproblem bei der Online-Beantragung von Elterngeld wird durch den passenden Service adressiert, die Empfehlung eines schrittweisen Online-Assistenten ist sinnvoll.",
-      "evaluation_id": "GE_017"
+      "confidence": 0.95,
+      "begruendung": "Das Prozessproblem bei langen Bearbeitungszeiten der Elterngeldbescheide ist passend klassifiziert, die Services sind stimmig, und die Empfehlung adressiert die Problematik mit einem Status- und Fristen-Tracker.",
+      "evaluation_id": "GE_016"
     }
   ],
   "innovation_evaluations": [
@@ -500,14 +473,26 @@
       "traeger_domain_plausibel": true,
       "integrationspunkte_plausibel": true,
       "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "digitales_statusportal_bayernid_dms",
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Das digitale Statusportal passt inhaltlich zur Domäne, die Träger sind zuständig, und die Integration von BayernID sowie Dokumentenmanagementsystemen ist sinnvoll für Antragsstatus und Akteneinsicht.",
+      "begruendung": "Die Lösung passt inhaltlich zur Domäne Elterngeld, der Träger ist zuständig, und die Integrationspunkte BayernID und ELSTER sind sinnvoll für die Antragstellung.",
       "evaluation_id": "IE_001"
     },
     {
       "innovation_id": "INN_002",
+      "domain_plausibilitaet": true,
+      "traeger_domain_plausibel": false,
+      "integrationspunkte_plausibel": true,
+      "traeger_in_integrationspunkten": false,
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "rework",
+      "rework_briefing": "Familienkasse ist für Elterngeld nicht zuständig, bitte Träger auf Elterngeldstelle oder zuständige Behörde anpassen.",
+      "begruendung": "Der Träger Familienkasse ist für Elterngeld nicht zuständig, daher ist die Träger-Domain-Plausibilität nicht gegeben.",
+      "evaluation_id": "IE_002"
+    },
+    {
+      "innovation_id": "INN_003",
       "domain_plausibilitaet": true,
       "traeger_domain_plausibel": true,
       "integrationspunkte_plausibel": true,
@@ -515,19 +500,7 @@
       "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Der Elterngeld-Planer ist fachlich passend, die Träger sind zuständig, und die Nutzung von BayernID und ELSTER ist für die Antragstellung und Datenabgleich sinnvoll.",
-      "evaluation_id": "IE_002"
-    },
-    {
-      "innovation_id": "INN_003",
-      "domain_plausibilitaet": true,
-      "traeger_domain_plausibel": true,
-      "integrationspunkte_plausibel": false,
-      "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "rechtshilfe_assistent_bayernid",
-      "verdict": "rework",
-      "rework_briefing": "ELSTER-Schnittstelle nur nutzen, wenn Einkommens- oder Steuerdaten relevant sind; hier ist das fraglich, daher Integration überdenken oder entfernen.",
-      "begruendung": "Die Lösung passt zur Domäne und der Träger ist zuständig, jedoch ist die ELSTER-Integration unplausibel, da keine Einkommensdaten relevant sind.",
+      "begruendung": "Die Lösung passt zur Domäne Familiengeld, die Träger sind zuständig, und die Integrationspunkte sind sinnvoll für die Antragstellung und Datenabgleich.",
       "evaluation_id": "IE_003"
     },
     {
@@ -539,7 +512,7 @@
       "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Kindergeld-Assistent ist fachlich passend, Träger sind zuständig, und BayernID sowie ELSTER sind für Antragstellung und Datenabgleich sinnvoll.",
+      "begruendung": "Die Lösung ist inhaltlich passend, die Träger sind zuständig, und die Integrationspunkte sind plausibel für den Widerspruchsprozess.",
       "evaluation_id": "IE_004"
     },
     {
@@ -548,34 +521,34 @@
       "traeger_domain_plausibel": true,
       "integrationspunkte_plausibel": true,
       "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "rechtshilfe_assistent_bayernid",
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Die Lösung ist inhaltlich passend, die Träger sind zuständig, und die Integration von BayernID, ELSTER und Amtsgericht-Schnittstelle ist plausibel für rechtliche Verfahren.",
+      "begruendung": "Die Lösung passt zur Domäne Elterngeld, Träger sind zuständig, und die Integrationspunkte BayernID und ELSTER sind sinnvoll für Statusverfolgung und Datenabgleich.",
       "evaluation_id": "IE_005"
     },
     {
       "innovation_id": "INN_006",
       "domain_plausibilitaet": true,
       "traeger_domain_plausibel": true,
-      "integrationspunkte_plausibel": false,
+      "integrationspunkte_plausibel": true,
       "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "chatbot_bayernid_informationsservice",
-      "verdict": "rework",
-      "rework_briefing": "BayernID ist für niedrigschwellige Beratung (Chatbot) nicht sinnvoll, da keine Authentifizierung nötig ist; BayernID-Integration entfernen oder durch anonymisierte Lösung ersetzen.",
-      "begruendung": "Die Lösung passt zur Domäne und der Träger ist zuständig, jedoch widerspricht die BayernID-Integration der Anonymität und dem niedrigschwelligen Charakter des Chatbots.",
+      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
+      "verdict": "accept",
+      "rework_briefing": null,
+      "begruendung": "Die Lösung ist inhaltlich passend, die Träger sind zuständig, und die Integrationspunkte sind plausibel für den Familiengeld-Antrag.",
       "evaluation_id": "IE_006"
     },
     {
       "innovation_id": "INN_007",
       "domain_plausibilitaet": true,
       "traeger_domain_plausibel": true,
-      "integrationspunkte_plausibel": true,
+      "integrationspunkte_plausibel": false,
       "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "digitaler_antragsassistent_elster_wohngeld",
-      "verdict": "accept",
-      "rework_briefing": null,
-      "begruendung": "Die Lösung ist fachlich passend, die Träger sind zuständig, und die ELSTER-Integration ist sinnvoll für Einkommensdaten bei Wohngeld und Wohnungslosenhilfe.",
+      "konvergenz_cluster": "interaktiver_planer",
+      "verdict": "rework",
+      "rework_briefing": "BayernID ist nur sinnvoll, wenn Identifikation echten Mehrwert bringt; hier ist unklar, ob BayernID für reine Informationsdienste notwendig ist. Bitte prüfen und ggf. entfernen.",
+      "begruendung": "Der Einsatz von BayernID ist bei einem rein informationsbasierten Assistenten ohne Antragsprozess fraglich.",
       "evaluation_id": "IE_007"
     },
     {
@@ -587,19 +560,19 @@
       "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Die Lösung passt zur Domäne, die Träger sind zuständig, und die Integration von BayernID, ELSTER und Datenbanken ist sinnvoll für automatisierten Datenabgleich.",
+      "begruendung": "Die Lösung passt zur Domäne Kindergeld, der Träger Familienkasse ist zuständig, und die Integrationspunkte sind plausibel für die Antragstellung.",
       "evaluation_id": "IE_008"
     },
     {
       "innovation_id": "INN_009",
       "domain_plausibilitaet": true,
-      "traeger_domain_plausibel": true,
-      "integrationspunkte_plausibel": true,
+      "traeger_domain_plausibel": false,
+      "integrationspunkte_plausibel": false,
       "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
-      "verdict": "accept",
-      "rework_briefing": null,
-      "begruendung": "Der Elterngeld-Assistent ist fachlich passend, die Träger sind zuständig, und die Integration von BayernID und ELSTER ist sinnvoll für personalisierte Antragshilfe.",
+      "konvergenz_cluster": "interaktiver_planer",
+      "verdict": "rework",
+      "rework_briefing": "Das Kultusministerium ist für Kindertagesbetreuung zuständig, aber BayernID ist hier nur sinnvoll, wenn Identifikation echten Mehrwert bringt. Bitte prüfen, ob BayernID notwendig ist, und ggf. Träger und Integrationspunkte anpassen.",
+      "begruendung": "BayernID ist für öffentlich zugängliche Informationen oder niedrigschwellige Beratung nicht sinnvoll, daher Integrationspunkte fraglich.",
       "evaluation_id": "IE_009"
     },
     {
@@ -611,77 +584,59 @@
       "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
       "verdict": "accept",
       "rework_briefing": null,
-      "begruendung": "Die Lösung passt zur Domäne, die Träger sind zuständig, und die Integration von BayernID und ELSTER ist für Antragsprozessunterstützung sinnvoll.",
+      "begruendung": "Die Lösung passt zur Domäne ElterngeldPlus, die Träger sind zuständig, und die Integrationspunkte BayernID und ELSTER sind sinnvoll für die Einkommensprüfung und Bescheid-Einsicht.",
       "evaluation_id": "IE_010"
-    },
-    {
-      "innovation_id": "INN_011",
-      "domain_plausibilitaet": true,
-      "traeger_domain_plausibel": true,
-      "integrationspunkte_plausibel": true,
-      "traeger_in_integrationspunkten": false,
-      "konvergenz_cluster": "digitaler_antragsassistent_bayernid_elster",
-      "verdict": "accept",
-      "rework_briefing": null,
-      "begruendung": "Der Elterngeld-Assistent ist fachlich passend, der Träger ist zuständig, und die Integration von BayernID und ELSTER ist sinnvoll für automatisierte Antragstellung.",
-      "evaluation_id": "IE_011"
     }
   ],
   "priorisierung": [
     {
       "rang": 1,
       "innovation_id": "INN_004",
-      "begruendung": "Der 'Kindergeld-Assistent' adressiert zentrale Prozessprobleme bei Kindergeldanträgen und der Familienkasse, ein häufig nachgefragtes und komplexes Thema mit hohem Nutzerbedarf."
+      "begruendung": "Der 'Widerspruchsassistent' adressiert ein zentrales rechtliches Problem bei Elterngeldbescheiden und bietet dadurch eine wichtige Unterstützung bei der rechtlichen Absicherung, was eine hohe Relevanz und Nutzerbedürftigkeit aufweist."
     },
     {
       "rang": 2,
       "innovation_id": "INN_001",
-      "begruendung": "Das 'Digitale Statusportal' verbessert die Transparenz und Nachverfolgbarkeit von Anträgen, was grundlegend für viele Familienleistungen ist und die Nutzerzufriedenheit deutlich steigert."
+      "begruendung": "Der 'Elterngeld-Assistent' deckt mehrere prozessbezogene Themen rund um Elterngeldanträge ab und verbessert die Antragstellung durch digitale Hilfestellung, was eine große Nutzergruppe anspricht."
     },
     {
       "rang": 3,
-      "innovation_id": "INN_002",
-      "begruendung": "Der 'Elterngeld-Planer' unterstützt Familien bei der Planung und Antragstellung der Elternzeit und Elterngeld, was eine hohe Relevanz und Nutzungshäufigkeit aufweist."
+      "innovation_id": "INN_005",
+      "begruendung": "Der 'Elterngeld-Tracker' fokussiert auf die Nachverfolgung von Elterngeldbescheiden und deren Bearbeitungsstatus, was die Transparenz und Nutzerzufriedenheit bei einem häufig kritisierten Prozess erhöht."
     },
     {
       "rang": 4,
-      "innovation_id": "INN_005",
-      "begruendung": "Der 'Rechtshilfe-Assistent' für rechtliche Fragestellungen mit Amtsgerichtbezug bietet eine wichtige Hilfestellung in einem komplexen und oft belastenden Bereich für Familien."
+      "innovation_id": "INN_006",
+      "begruendung": "Der 'Familiengeld-Assistent' erleichtert die Antragstellung für das Familiengeld, ein wichtiges bayerisches Familienleistungsthema, und adressiert damit eine relevante Informations- und Prozesslücke."
     },
     {
       "rang": 5,
-      "innovation_id": "INN_007",
-      "begruendung": "Die Innovation 'Wohnraum-Sicherung' adressiert ein essenzielles Thema, das die Lebenssituation von Familien stark beeinflusst und eng mit sozialen Leistungen verknüpft ist."
+      "innovation_id": "INN_003",
+      "begruendung": "Der 'Familiengeld-Vergleich' bietet eine hilfreiche Orientierungshilfe bei der Auswahl und dem Verständnis verschiedener Familiengeldvarianten, was die Entscheidungsfindung für Familien verbessert."
     },
     {
       "rang": 6,
       "innovation_id": "INN_008",
-      "begruendung": "Der 'Sozialhilfe-Antrag 2.0' optimiert die Antragstellung im Bereich Sozialhilfe, ein wichtiges Element der Existenzsicherung für Familien in schwierigen finanziellen Lagen."
+      "begruendung": "Der 'Kindergeld-Antrag' fokussiert auf einen zentralen Familienleistungsbereich mit hohem Antragsaufkommen und adressiert damit einen wichtigen Bedarf an digitaler Unterstützung."
     },
     {
       "rang": 7,
-      "innovation_id": "INN_009",
-      "begruendung": "Der 'Elterngeld-Assistent' für Informationslücken rund um Elterngeld-Anträge schließt wichtige Wissenslücken und erleichtert die Antragstellung."
-    },
-    {
-      "rang": 8,
       "innovation_id": "INN_010",
-      "begruendung": "Der 'Familiengeld-Assistent' verbessert die digitale Unterstützung bei der Beantragung von Familiengeld über das BayernID-System und ergänzt bestehende Angebote."
-    },
-    {
-      "rang": 9,
-      "innovation_id": "INN_011",
-      "begruendung": "Der 'Elterngeld-Assistent' für Online-Beantragung adressiert spezifische Prozessprobleme und trägt zur Digitalisierung und Vereinfachung der Antragsprozesse bei."
+      "begruendung": "Der 'ElterngeldPlus-Erklärer' klärt komplexe Aspekte von Elterngeld Plus und unterstützt damit die Informationsvermittlung bei einem speziellen, aber wichtigen Familienleistungsthema."
     }
   ],
   "rework_warteschlange": [
     {
-      "innovation_id": "INN_003",
-      "issue": "ELSTER-Schnittstelle nur nutzen, wenn Einkommens- oder Steuerdaten relevant sind; hier ist das fraglich, daher Integration überdenken oder entfernen."
+      "innovation_id": "INN_002",
+      "issue": "Familienkasse ist für Elterngeld nicht zuständig, bitte Träger auf Elterngeldstelle oder zuständige Behörde anpassen."
     },
     {
-      "innovation_id": "INN_006",
-      "issue": "BayernID ist für niedrigschwellige Beratung (Chatbot) nicht sinnvoll, da keine Authentifizierung nötig ist; BayernID-Integration entfernen oder durch anonymisi…"
+      "innovation_id": "INN_007",
+      "issue": "BayernID ist nur sinnvoll, wenn Identifikation echten Mehrwert bringt; hier ist unklar, ob BayernID für reine Informationsdienste notwendig ist. Bitte prüfen u…"
+    },
+    {
+      "innovation_id": "INN_009",
+      "issue": "Das Kultusministerium ist für Kindertagesbetreuung zuständig, aber BayernID ist hier nur sinnvoll, wenn Identifikation echten Mehrwert bringt. Bitte prüfen, ob…"
     }
   ],
   "konvergenz_status": {
@@ -697,51 +652,52 @@
   },
   "keyword_feedback": {
     "schwache_keywords": [
-      "berhördliche Unterstützung Familie Bayern",
       "Familienunterstützung Bayern Probleme",
+      "Familienunterstützung Bayern Antrag Erfahrungen",
       "Sozialamt Bayern nicht erreichbar",
       "Antrag Bayern abgelehnt Familie"
     ],
     "neue_keywords_vorgeschlagen": [
-      "Pflegegeld Antrag Bayern",
+      "Pflegegeld Bayern",
       "Sorgerecht Beratung Bayern",
       "Umgangsrecht Informationen Bayern",
-      "Kita-Zuschuss Antrag Bayern",
-      "Fördermittel Familie Bayern",
-      "Unterhalt Berechnung Bayern"
+      "Kita Zuschuss Antrag Bayern",
+      "Familienfördermittel Bayern",
+      "Unterhalt Anspruch Bayern"
     ]
   },
   "aggregierte_aktionen": {
     "regenerieren": [
-      "INN_003",
-      "INN_006"
+      "INN_002",
+      "INN_007",
+      "INN_009"
     ],
-    "reklassifizieren": [
-      "10"
-    ],
+    "reklassifizieren": [],
     "topics_entfernen": [
-      "0",
+      "1",
       "3",
+      "4",
       "6",
-      "9",
+      "10",
+      "14",
       "15",
-      "17",
-      "22",
-      "23",
-      "25"
+      "18",
+      "19"
     ],
     "konvergenz_zusammenfuehren": [
       [
+        "INN_001",
         "INN_002",
+        "INN_003",
         "INN_004",
+        "INN_005",
+        "INN_006",
         "INN_008",
-        "INN_009",
-        "INN_010",
-        "INN_011"
+        "INN_010"
       ],
       [
-        "INN_003",
-        "INN_005"
+        "INN_007",
+        "INN_009"
       ]
     ]
   },
@@ -749,30 +705,30 @@
     {
       "source": "reddit",
       "status": "blocked_or_stale",
-      "attempted_requests": 55,
-      "blocked_403_count": 55,
+      "attempted_requests": 10,
+      "blocked_403_count": 10,
       "successful_requests": 0,
       "existing_data_preserved": true,
       "reason": "Letzter Reddit-Run lieferte keine frischen Daten und wurde überwiegend/komplett mit 403 blockiert."
     }
   ],
-  "review_count": 0,
+  "review_count": 1,
   "review_reasons": [],
   "aktionen": [
     {
       "action_type": "topic_remove",
       "target_agent": "gap-analysis",
-      "target": "0",
-      "topic_id": "0",
-      "stable_target": "topic:0",
+      "target": "1",
+      "topic_id": "1",
+      "stable_target": "topic:1",
       "autonomy": "auto_apply",
-      "confidence": 0.85,
+      "confidence": 0.9,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Das Topic enthält zu allgemeine geografische Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen in Bayern, somit out-of-scope.",
-      "reason": "Das Topic enthält zu allgemeine geografische Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen in Bayern, somit out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_3673740b6ae71fb0"
+      "recommendation": "Focuses on general administrative procedures like records access without specific relation to family social benefits, thus out-of-scope.",
+      "reason": "Focuses on general administrative procedures like records access without specific relation to family social benefits, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_067204ff74c23452"
     },
     {
       "action_type": "topic_remove",
@@ -784,10 +740,25 @@
       "confidence": 0.95,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Allgemeine Informationen zur Coronavirus-Pandemie ohne direkten Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "reason": "Allgemeine Informationen zur Coronavirus-Pandemie ohne direkten Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "recommendation": "General coronavirus topic without specific connection to family social benefits in Bavaria, thus out-of-scope.",
+      "reason": "General coronavirus topic without specific connection to family social benefits in Bavaria, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_topic_remove_e722dee5d464fcde"
+    },
+    {
+      "action_type": "topic_remove",
+      "target_agent": "gap-analysis",
+      "target": "4",
+      "topic_id": "4",
+      "stable_target": "topic:4",
+      "autonomy": "auto_apply",
+      "confidence": 1.0,
+      "risk": "low",
+      "original_value": "in_scope",
+      "recommendation": "Contains generic language and country labels without coherent content, typical technical noise from crawling.",
+      "reason": "Contains generic language and country labels without coherent content, typical technical noise from crawling.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_0612411d9e897bc2"
     },
     {
       "action_type": "topic_remove",
@@ -799,25 +770,40 @@
       "confidence": 0.9,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Allgemeine geografische und wirtschaftliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "reason": "Allgemeine geografische und wirtschaftliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "recommendation": "Focus on general labor law and unemployment benefits without family-specific context, thus out-of-scope.",
+      "reason": "Focus on general labor law and unemployment benefits without family-specific context, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_topic_remove_881b3c17d426ba30"
     },
     {
       "action_type": "topic_remove",
       "target_agent": "gap-analysis",
-      "target": "9",
-      "topic_id": "9",
-      "stable_target": "topic:9",
-      "autonomy": "human_required",
-      "confidence": 0.75,
-      "risk": "medium",
+      "target": "10",
+      "topic_id": "10",
+      "stable_target": "topic:10",
+      "autonomy": "auto_apply",
+      "confidence": 0.9,
+      "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Die Begriffe sind zu unspezifisch und ergeben keinen klaren Bezug zu familienbezogenen Sozialleistungen, daher out-of-scope.",
-      "reason": "Die Begriffe sind zu unspezifisch und ergeben keinen klaren Bezug zu familienbezogenen Sozialleistungen, daher out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_ec3abe972db9b664"
+      "recommendation": "General questions about EU citizenship and residence without direct link to family social benefits, thus out-of-scope.",
+      "reason": "General questions about EU citizenship and residence without direct link to family social benefits, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_6e01dc537b2cf750"
+    },
+    {
+      "action_type": "topic_remove",
+      "target_agent": "gap-analysis",
+      "target": "14",
+      "topic_id": "14",
+      "stable_target": "topic:14",
+      "autonomy": "auto_apply",
+      "confidence": 0.9,
+      "risk": "low",
+      "original_value": "in_scope",
+      "recommendation": "Contains vague, general conversational terms without clear thematic relation, thus out-of-scope.",
+      "reason": "Contains vague, general conversational terms without clear thematic relation, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_0c58f5b25a1cf6a9"
     },
     {
       "action_type": "topic_remove",
@@ -829,231 +815,173 @@
       "confidence": 1.0,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Technische Themen zu Cookies und Datenschutzerklärung sind reine Crawling-Artefakte ohne inhaltliche Kohärenz (Noise).",
-      "reason": "Technische Themen zu Cookies und Datenschutzerklärung sind reine Crawling-Artefakte ohne inhaltliche Kohärenz (Noise).",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "recommendation": "Technical website elements like cookies and privacy notices without content relevance, clear noise.",
+      "reason": "Technical website elements like cookies and privacy notices without content relevance, clear noise.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_topic_remove_441dc9d86cd3ad7d"
     },
     {
       "action_type": "topic_remove",
       "target_agent": "gap-analysis",
-      "target": "17",
-      "topic_id": "17",
-      "stable_target": "topic:17",
+      "target": "18",
+      "topic_id": "18",
+      "stable_target": "topic:18",
       "autonomy": "auto_apply",
       "confidence": 0.9,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Allgemeine geografische und sprachliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "reason": "Allgemeine geografische und sprachliche Begriffe ohne spezifischen Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_dd44a264bed2527f"
+      "recommendation": "Mentions cities outside Bavaria without family social benefits context, thus out-of-scope.",
+      "reason": "Mentions cities outside Bavaria without family social benefits context, thus out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_299390a94be26969"
     },
     {
       "action_type": "topic_remove",
       "target_agent": "gap-analysis",
-      "target": "22",
-      "topic_id": "22",
-      "stable_target": "topic:22",
+      "target": "19",
+      "topic_id": "19",
+      "stable_target": "topic:19",
       "autonomy": "auto_apply",
       "confidence": 0.9,
       "risk": "low",
       "original_value": "in_scope",
-      "recommendation": "Geografische Begriffe außerhalb Bayerns ohne Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "reason": "Geografische Begriffe außerhalb Bayerns ohne Bezug zu familienbezogenen Sozialleistungen sind out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_8a2c7596c99320a0"
-    },
-    {
-      "action_type": "topic_remove",
-      "target_agent": "gap-analysis",
-      "target": "23",
-      "topic_id": "23",
-      "stable_target": "topic:23",
-      "autonomy": "auto_apply",
-      "confidence": 0.85,
-      "risk": "low",
-      "original_value": "in_scope",
-      "recommendation": "Bildungsthemen und Orte außerhalb Bayerns sind nicht relevant für familienbezogene Sozialleistungen in Bayern.",
-      "reason": "Bildungsthemen und Orte außerhalb Bayerns sind nicht relevant für familienbezogene Sozialleistungen in Bayern.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_696051faa547394f"
-    },
-    {
-      "action_type": "topic_remove",
-      "target_agent": "gap-analysis",
-      "target": "25",
-      "topic_id": "25",
-      "stable_target": "topic:25",
-      "autonomy": "auto_apply",
-      "confidence": 0.85,
-      "risk": "low",
-      "original_value": "in_scope",
-      "recommendation": "Allgemeine Begriffe zu ZBFS und Bayern ohne spezifische Problemstellung sind out-of-scope.",
-      "reason": "Allgemeine Begriffe zu ZBFS und Bayern ohne spezifische Problemstellung sind out-of-scope.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_topic_remove_3b015c81e973149e"
-    },
-    {
-      "action_type": "gap_reclassify",
-      "target_agent": "gap-analysis",
-      "target": "10",
-      "topic_id": "10",
-      "cluster_id": "solo_10",
-      "stable_target": "gap:solo_10:topic:10",
-      "proposed_value": "informationsluecke",
-      "autonomy": "auto_apply",
-      "confidence": 0.85,
-      "risk": "low",
-      "original_value": "bereits_abgedeckt",
-      "recommendation": "Das Kernproblem beschreibt Belastungen durch gesundheitliche Herausforderungen, die eher auf Informations- und Beratungsbedarf hinweisen als auf eine bereits abgedeckte Leistung.",
-      "reason": "Das Kernproblem beschreibt Belastungen durch gesundheitliche Herausforderungen, die eher auf Informations- und Beratungsbedarf hinweisen als auf eine bereits abgedeckte Leistung.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_gap_reclassify_9b6f7759afe80b9d"
-    },
-    {
-      "action_type": "real_gap_review",
-      "target_agent": "gap-analysis",
-      "target": "solo_5",
-      "topic_id": "5",
-      "cluster_id": "solo_5",
-      "stable_target": "gap:solo_5:topic:5",
-      "autonomy": "human_required",
-      "confidence": 0.9,
-      "risk": "high",
-      "original_value": "echte_luecke",
-      "recommendation": "Das Kernproblem beschreibt eine echte Lücke im Bereich rechtlicher Unterstützung, die fehlenden Matching Services sind plausibel, und die Empfehlung ist spezifisch und sinnvoll.",
-      "reason": "Das Kernproblem beschreibt eine echte Lücke im Bereich rechtlicher Unterstützung, die fehlenden Matching Services sind plausibel, und die Empfehlung ist spezifisch und sinnvoll.",
-      "evaluator_verdict": "accept",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_real_gap_review_8ce220dd6b92fe48"
-    },
-    {
-      "action_type": "real_gap_review",
-      "target_agent": "gap-analysis",
-      "target": "solo_11",
-      "topic_id": "11",
-      "cluster_id": "solo_11",
-      "stable_target": "gap:solo_11:topic:11",
-      "autonomy": "human_required",
-      "confidence": 0.9,
-      "risk": "high",
-      "original_value": "echte_luecke",
-      "recommendation": "Das Kernproblem einer echten Lücke im Bereich rechtlicher Unterstützung vor Amtsgerichtsverfahren wird durch die Empfehlung eines digitalen Rechtshilfe-Assistenten gut adressiert.",
-      "reason": "Das Kernproblem einer echten Lücke im Bereich rechtlicher Unterstützung vor Amtsgerichtsverfahren wird durch die Empfehlung eines digitalen Rechtshilfe-Assistenten gut adressiert.",
-      "evaluator_verdict": "accept",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_real_gap_review_b4833cf37ecf1b95"
+      "recommendation": "General country and language terms without specific family social benefit relevance, out-of-scope.",
+      "reason": "General country and language terms without specific family social benefit relevance, out-of-scope.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_topic_remove_9c305e7d24d67d67"
     },
     {
       "action_type": "innovation_rework",
       "target_agent": "innovation",
-      "target": "solo_5",
-      "cluster_id": "solo_5",
-      "display_target": "INN_003",
-      "innovation_id": "INN_003",
-      "stable_target": "cluster:solo_5",
+      "target": "solo_7",
+      "cluster_id": "solo_7",
+      "display_target": "INN_002",
+      "innovation_id": "INN_002",
+      "stable_target": "cluster:solo_7",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
-      "original_value": "Rechtshilfe-Assistent",
-      "recommendation": "ELSTER-Schnittstelle nur nutzen, wenn Einkommens- oder Steuerdaten relevant sind; hier ist das fraglich, daher Integration überdenken oder entfernen.",
-      "reason": "Die Lösung passt zur Domäne und der Träger ist zuständig, jedoch ist die ELSTER-Integration unplausibel, da keine Einkommensdaten relevant sind.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_innovation_rework_8e9e23e187d64165"
+      "original_value": "Elterngeld-Planer",
+      "recommendation": "Familienkasse ist für Elterngeld nicht zuständig, bitte Träger auf Elterngeldstelle oder zuständige Behörde anpassen.",
+      "reason": "Der Träger Familienkasse ist für Elterngeld nicht zuständig, daher ist die Träger-Domain-Plausibilität nicht gegeben.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_innovation_rework_7dbfb4e864324704"
     },
     {
       "action_type": "innovation_rework",
       "target_agent": "innovation",
-      "target": "solo_12",
-      "cluster_id": "solo_12",
-      "display_target": "INN_006",
-      "innovation_id": "INN_006",
-      "stable_target": "cluster:solo_12",
+      "target": "solo_16",
+      "cluster_id": "solo_16",
+      "display_target": "INN_007",
+      "innovation_id": "INN_007",
+      "stable_target": "cluster:solo_16",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
-      "original_value": "Familiengeld-Assistent",
-      "recommendation": "BayernID ist für niedrigschwellige Beratung (Chatbot) nicht sinnvoll, da keine Authentifizierung nötig ist; BayernID-Integration entfernen oder durch anonymisierte Lösung ersetzen.",
-      "reason": "Die Lösung passt zur Domäne und der Träger ist zuständig, jedoch widerspricht die BayernID-Integration der Anonymität und dem niedrigschwelligen Charakter des Chatbots.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_innovation_rework_234274bfa38152f4"
+      "original_value": "Erziehungsgeld-Assistent",
+      "recommendation": "BayernID ist nur sinnvoll, wenn Identifikation echten Mehrwert bringt; hier ist unklar, ob BayernID für reine Informationsdienste notwendig ist. Bitte prüfen und ggf. entfernen.",
+      "reason": "Der Einsatz von BayernID ist bei einem rein informationsbasierten Assistenten ohne Antragsprozess fraglich.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_innovation_rework_ac89514a66c7b987"
+    },
+    {
+      "action_type": "innovation_rework",
+      "target_agent": "innovation",
+      "target": "solo_21",
+      "cluster_id": "solo_21",
+      "display_target": "INN_009",
+      "innovation_id": "INN_009",
+      "stable_target": "cluster:solo_21",
+      "autonomy": "human_required",
+      "confidence": null,
+      "risk": "medium",
+      "original_value": "Kindergarteninfo",
+      "recommendation": "Das Kultusministerium ist für Kindertagesbetreuung zuständig, aber BayernID ist hier nur sinnvoll, wenn Identifikation echten Mehrwert bringt. Bitte prüfen, ob BayernID notwendig ist, und ggf. Träger und Integrationspunkte anpassen.",
+      "reason": "BayernID ist für öffentlich zugängliche Informationen oder niedrigschwellige Beratung nicht sinnvoll, daher Integrationspunkte fraglich.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_innovation_rework_59062b8a4ae9bf29"
     },
     {
       "action_type": "innovation_merge",
       "target_agent": "innovation",
-      "target": "clusters:elterngeld|kindergeld|solo_18|solo_19|solo_20|solo_24",
-      "stable_target": "clusters:elterngeld|kindergeld|solo_18|solo_19|solo_20|solo_24",
+      "target": "clusters:bayerisches_familiengeld|elterngeld|elterngeld_bescheid|solo_13|solo_17|solo_23|solo_7|solo_9",
+      "stable_target": "clusters:bayerisches_familiengeld|elterngeld|elterngeld_bescheid|solo_13|solo_17|solo_23|solo_7|solo_9",
       "targets": [
+        "bayerisches_familiengeld",
         "elterngeld",
-        "kindergeld",
-        "solo_18",
-        "solo_19",
-        "solo_20",
-        "solo_24"
+        "elterngeld_bescheid",
+        "solo_13",
+        "solo_17",
+        "solo_23",
+        "solo_7",
+        "solo_9"
       ],
       "display_targets": [
+        "INN_001",
         "INN_002",
+        "INN_003",
         "INN_004",
+        "INN_005",
+        "INN_006",
         "INN_008",
-        "INN_009",
-        "INN_010",
-        "INN_011"
+        "INN_010"
       ],
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": [
+        "bayerisches_familiengeld",
         "elterngeld",
-        "kindergeld",
-        "solo_18",
-        "solo_19",
-        "solo_20",
-        "solo_24"
+        "elterngeld_bescheid",
+        "solo_13",
+        "solo_17",
+        "solo_23",
+        "solo_7",
+        "solo_9"
       ],
       "recommendation": "Konvergente Innovationen fachlich zusammenführen",
       "reason": "Mehrere Innovationen folgen demselben Lösungsmuster.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_innovation_merge_f8b870c3c1eeb882"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_innovation_merge_d2c2a40808fa0860"
     },
     {
       "action_type": "innovation_merge",
       "target_agent": "innovation",
-      "target": "clusters:solo_11|solo_5",
-      "stable_target": "clusters:solo_11|solo_5",
+      "target": "clusters:solo_16|solo_21",
+      "stable_target": "clusters:solo_16|solo_21",
       "targets": [
-        "solo_11",
-        "solo_5"
+        "solo_16",
+        "solo_21"
       ],
       "display_targets": [
-        "INN_003",
-        "INN_005"
+        "INN_007",
+        "INN_009"
       ],
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": [
-        "solo_11",
-        "solo_5"
+        "solo_16",
+        "solo_21"
       ],
       "recommendation": "Konvergente Innovationen fachlich zusammenführen",
       "reason": "Mehrere Innovationen folgen demselben Lösungsmuster.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_innovation_merge_863907c5cb156d08"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_innovation_merge_ce3900051e4a88b8"
     },
     {
       "action_type": "keyword_add",
       "target_agent": "source-discovery/reddit-scraper",
-      "target": "Pflegegeld Antrag Bayern",
-      "stable_target": "keyword:pflegegeld antrag bayern",
+      "target": "Pflegegeld Bayern",
+      "stable_target": "keyword:pflegegeld bayern",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": null,
-      "recommendation": "Keyword hinzufügen: Pflegegeld Antrag Bayern",
+      "recommendation": "Keyword hinzufügen: Pflegegeld Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_keyword_add_2ee7ee58ff6fd047"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_keyword_add_0ca0090f129e8936"
     },
     {
       "action_type": "keyword_add",
@@ -1066,7 +994,7 @@
       "original_value": null,
       "recommendation": "Keyword hinzufügen: Sorgerecht Beratung Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_keyword_add_68d22de7502257dc"
     },
     {
@@ -1080,64 +1008,50 @@
       "original_value": null,
       "recommendation": "Keyword hinzufügen: Umgangsrecht Informationen Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_keyword_add_d2f727b7d274df2c"
     },
     {
       "action_type": "keyword_add",
       "target_agent": "source-discovery/reddit-scraper",
-      "target": "Kita-Zuschuss Antrag Bayern",
-      "stable_target": "keyword:kita-zuschuss antrag bayern",
+      "target": "Kita Zuschuss Antrag Bayern",
+      "stable_target": "keyword:kita zuschuss antrag bayern",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": null,
-      "recommendation": "Keyword hinzufügen: Kita-Zuschuss Antrag Bayern",
+      "recommendation": "Keyword hinzufügen: Kita Zuschuss Antrag Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_keyword_add_3f47676bda8b4c5c"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_keyword_add_850b3ffd4409a663"
     },
     {
       "action_type": "keyword_add",
       "target_agent": "source-discovery/reddit-scraper",
-      "target": "Fördermittel Familie Bayern",
-      "stable_target": "keyword:fördermittel familie bayern",
+      "target": "Familienfördermittel Bayern",
+      "stable_target": "keyword:familienfördermittel bayern",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": null,
-      "recommendation": "Keyword hinzufügen: Fördermittel Familie Bayern",
+      "recommendation": "Keyword hinzufügen: Familienfördermittel Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_keyword_add_9db26f3e4429d903"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_keyword_add_10b8d5c153de22b7"
     },
     {
       "action_type": "keyword_add",
       "target_agent": "source-discovery/reddit-scraper",
-      "target": "Unterhalt Berechnung Bayern",
-      "stable_target": "keyword:unterhalt berechnung bayern",
+      "target": "Unterhalt Anspruch Bayern",
+      "stable_target": "keyword:unterhalt anspruch bayern",
       "autonomy": "human_required",
       "confidence": null,
       "risk": "medium",
       "original_value": null,
-      "recommendation": "Keyword hinzufügen: Unterhalt Berechnung Bayern",
+      "recommendation": "Keyword hinzufügen: Unterhalt Anspruch Bayern",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_keyword_add_abfd31920735dcf0"
-    },
-    {
-      "action_type": "keyword_remove",
-      "target_agent": "source-discovery/reddit-scraper",
-      "target": "berhördliche Unterstützung Familie Bayern",
-      "stable_target": "keyword:berhördliche unterstützung familie bayern",
-      "autonomy": "human_required",
-      "confidence": null,
-      "risk": "medium",
-      "original_value": null,
-      "recommendation": "Schwaches Keyword entfernen: berhördliche Unterstützung Familie Bayern",
-      "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
-      "action_id": "EA_keyword_remove_67c5110ecec03ffe"
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_keyword_add_0c1365cce8646b71"
     },
     {
       "action_type": "keyword_remove",
@@ -1150,8 +1064,22 @@
       "original_value": null,
       "recommendation": "Schwaches Keyword entfernen: Familienunterstützung Bayern Probleme",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_keyword_remove_d24259d0fa34e8a7"
+    },
+    {
+      "action_type": "keyword_remove",
+      "target_agent": "source-discovery/reddit-scraper",
+      "target": "Familienunterstützung Bayern Antrag Erfahrungen",
+      "stable_target": "keyword:familienunterstützung bayern antrag erfahrungen",
+      "autonomy": "human_required",
+      "confidence": null,
+      "risk": "medium",
+      "original_value": null,
+      "recommendation": "Schwaches Keyword entfernen: Familienunterstützung Bayern Antrag Erfahrungen",
+      "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
+      "action_id": "EA_keyword_remove_8ab6d496333bcc61"
     },
     {
       "action_type": "keyword_remove",
@@ -1164,7 +1092,7 @@
       "original_value": null,
       "recommendation": "Schwaches Keyword entfernen: Sozialamt Bayern nicht erreichbar",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_keyword_remove_4a23f49bad1d2bce"
     },
     {
@@ -1178,7 +1106,7 @@
       "original_value": null,
       "recommendation": "Schwaches Keyword entfernen: Antrag Bayern abgelehnt Familie",
       "reason": "Keyword-Aenderungen veraendern die Datengrundlage und brauchen Freigabe.",
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_keyword_remove_82a6228b6dfd9e09"
     },
     {
@@ -1195,13 +1123,13 @@
       "details": {
         "source": "reddit",
         "status": "blocked_or_stale",
-        "attempted_requests": 55,
-        "blocked_403_count": 55,
+        "attempted_requests": 10,
+        "blocked_403_count": 10,
         "successful_requests": 0,
         "existing_data_preserved": true,
         "reason": "Letzter Reddit-Run lieferte keine frischen Daten und wurde überwiegend/komplett mit 403 blockiert."
       },
-      "evaluator_run_id": "ER_20260712T192927_9972d02be0",
+      "evaluator_run_id": "ER_20260713T232724_c71d27e155",
       "action_id": "EA_source_quality_warning_e0a6bfcb5ffcffd4"
     }
   ]

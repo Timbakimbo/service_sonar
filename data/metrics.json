@@ -190,5 +190,89 @@
     "min_words": 13,
     "max_words": 798,
     "median_words": 79
+  },
+  {
+    "source": "web",
+    "run_label": "web_scraper_run",
+    "run_timestamp": "2026-07-12T20:05:37",
+    "output_path": "data/raw/scraped_web.json",
+    "urls_found": 171,
+    "urls_scraped": 126,
+    "filter_rate_pct": 26.3,
+    "file_size_mb": 1.49,
+    "top_domains": {
+      "www.bayernportal.de": 13,
+      "www.zbfs.bayern.de": 8,
+      "www.stmas.bayern.de": 7,
+      "www.urbia.de": 4,
+      "einfach-elterngeld.de": 3,
+      "www.elterngeld.de": 3,
+      "meinelterngeld24.de": 3,
+      "www.elterngeld.net": 3,
+      "familienportal.de": 3,
+      "www.nuernberg.de": 3
+    },
+    "categories": {
+      "forum": 6,
+      "amt": 34,
+      "sonstige": 86
+    },
+    "min_words": 107,
+    "max_words": 29910,
+    "median_words": 1019
+  },
+  {
+    "source": "reddit",
+    "run_label": "reddit_scraper_run",
+    "run_timestamp": "2026-07-12T20:06:43",
+    "output_path": "data/raw/scraped_reddit.json",
+    "attempted_subreddits": 4,
+    "attempted_queries": 22,
+    "attempted_requests": 10,
+    "successful_requests": 0,
+    "failed_requests": 10,
+    "blocked_403_count": 10,
+    "collected_posts": 0,
+    "saved_posts": 0,
+    "filtered_too_short": 0,
+    "filtered_too_long": 0,
+    "subreddits": {
+      "germany": 58,
+      "LegaladviceGerman": 118,
+      "Eltern": 105,
+      "de": 80
+    },
+    "interrupted": false,
+    "existing_data_preserved": true,
+    "blocked_run": true,
+    "fresh_data_collected": false,
+    "early_abort_reason": "all_initial_requests_blocked_403",
+    "partial_posts_collected": 0,
+    "partial_output_path": "",
+    "preserve_reason": "all_requests_failed",
+    "run_status": "preserved_all_requests_failed",
+    "min_words": 25,
+    "max_words": 4218,
+    "median_words": 280
+  },
+  {
+    "source": "fragdenstaat",
+    "run_label": "fragdenstaat_scraper_run",
+    "run_timestamp": "2026-07-12T20:07:03",
+    "output_path": "data/raw/scraped_fragdenstaat.json",
+    "authorities_checked": 3,
+    "existing_count_before_run": 68,
+    "new_count": 0,
+    "total_count_after_run": 68,
+    "duplicate_count": 0,
+    "authorities": {
+      "ZBFS": 18,
+      "Familienkasse_Bayern_Nord": 1,
+      "StMAS_Bayern_Familie": 49
+    },
+    "api_limitation_note": "FragDenStaat messages API requires OAuth; scraper currently uses request description/request body and summary fields.",
+    "min_words": 13,
+    "max_words": 798,
+    "median_words": 79
   }
 ]
