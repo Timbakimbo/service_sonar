@@ -905,3 +905,16 @@ Vor dem Einfügen prüfe nur noch:
 & $Py scripts\pipeline_status.py
 
 Steht dort tatsächlich human_offen=0, kann der Text unverändert übernommen werden. Andernfalls den Satz über den abgeschlossenen Human Review erst nach Abschluss der 15 Entscheidungen ergänzen.
+
+
+## Übergabekorrektur — 14.07.2026
+
+Die finalen E2E-Artefakte wurden bereits im Commit `eb0a157` gespeichert. Der finale Human
+Review ist abgeschlossen; `pipeline_status.py` meldet `human_offen=0`. Der zugehörige
+Evaluator-Lauf ist `ER_20260713T232724_c71d27e155` mit `output_status=complete` und
+`failed_pass_count=0`. Ein zusätzlicher Pipeline-Lauf ist für den aktuellen Übergabestand
+nicht erforderlich.
+
+Der versehentlich im vorherigen Nachtrag enthaltene `contentReference`-Marker sowie die dortige
+redaktionelle Einfüge-/Prüfanweisung sind Editorial Noise und kein Bestandteil der technischen
+Findings.

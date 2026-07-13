@@ -60,17 +60,18 @@ The system explicitly mixes hardcoded modules and LLM-based agents:
 
 ## Current State
 - Full forward pipeline implemented through Innovation and four-pass Evaluation
-- Current curated corpus: 575 documents (146 web + 361 Reddit + 68 FragDenStaat)
-- Current committed output: 26 topics (17 relevant), 17 Gaps in 14 clusters, 9 Innovations,
-  Evaluator result with 7 accept and 2 rework verdicts
+- Current curated corpus: 555 preprocessed documents (126 web + 361 Reddit + 68 FragDenStaat)
+- Current committed output: 25 Topics (16 relevant), 16 Gaps in 11 clusters and 10 Innovations
+- Final Evaluator output is complete: all 16 Gaps were evaluated in Pass 2, 0 Gaps were skipped,
+  and the Human Gate is closed
 - Read-only pipeline status/validation and German operational runbook implemented
 - Terminal Human-in-the-Loop review implemented; accepted keyword feedback is executable
 - Topic removal, Gap reclassification and accepted Innovation rework are consumed only by the
   next manually started target agent; merge decisions remain visible human guidance and never
   merge Innovations automatically
 - Every new Evaluator output carries `evaluator_run_id`; action IDs use stable Topic/Gap/cluster
-  identity. The committed legacy Human Decisions lack this provenance and are ignored until a
-  fresh controlled Evaluator run and Human Review are completed.
+  identity. The final committed Human Decisions belong to the current Evaluator run, whose
+  output is complete with `failed_pass_count=0`; no fresh pipeline run is currently required.
 - Evaluator/Innovation preserve prior outputs on missing configuration or complete LLM failure;
   partial outputs expose failed passes/clusters.
 - Human Gate means only unresolved current `human_required` actions. Every new

@@ -915,7 +915,7 @@ def run() -> int:
         return 0
 
     # Pass 1: Strukturierung.
-    print("\nPass 1: Strukturierung (1 Groq-Call für alle Topics)...")
+    print("\nPass 1: Strukturierung (1 LLM-Call für alle Topics)...")
     raw_result = run_gap_analysis_pass1(client, analysis, reference)
     result = validate_and_normalize_gaps(raw_result, reference, expected_topic_ids)
     gaps = result.get("gaps", [])
@@ -942,7 +942,7 @@ def run() -> int:
     print(f"  {cluster_summary['anzahl_cluster']} Cluster gebildet")
 
     # Pass 2: Konkretisierung pro relevantem Cluster.
-    print("\nPass 2: Konkretisierung (1 Groq-Call pro relevantem Cluster)...")
+    print("\nPass 2: Konkretisierung (1 LLM-Call pro relevantem Cluster)...")
     pass2_calls = 0
     pass2_skipped = 0
     for cluster_id, cluster_gaps in clusters.items():

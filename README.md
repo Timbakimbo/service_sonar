@@ -135,10 +135,10 @@ success.
 - Analysis, Gap Analysis, Innovation, and Evaluator require external LLM APIs.
 - Evaluator feedback is intentionally bounded: low-risk topic/gap corrections may be auto-applied; keywords and innovation changes still require human approval; code/scraper changes remain suggestions only.
 - Existing generated JSON data is kept in the repo as prototype/demo data. New local scratch outputs should not be committed unless intentionally curated.
-- The committed legacy `human_decisions.json` predates action provenance and is intentionally
-  ignored by current code. `pipeline_status.py` reports the accompanying Evaluator artifact as
-  `LEGACY EVALUATOR OUTPUT — FRESH EVALUATOR RUN REQUIRED`; Human Review refuses it before any
-  prompt or write. A fresh controlled Evaluator run and Human Review are required.
+- The final committed Evaluator output is provenance-bound and complete with
+  `failed_pass_count=0`. The final Human Decisions belong to the current Evaluator run,
+  `pipeline_status.py` reports `human_offen=0`, and no additional pipeline run is currently
+  required.
 
 ## Offline Tests
 
