@@ -688,3 +688,233 @@ Input für den nächsten Stage-Lauf.
 - FragDenStaat fand keine neuen Anfragen und übersprang alle 68 bestehenden Einträge ohne Duplikate.
 - Keine `echte_luecke` trotz breiterem Themenspektrum bleibt ein Signal, die Kriterien und das
   Service-Matching weiter zu prüfen.
+
+---
+
+## Abschlussaudit und Correctness-Fixes — 12.07.2026
+
+### Datenstand vor den Fixes
+
+- 207 Sources; 146 Web-Dokumente; 361 erhaltene Reddit-Posts; 68 FragDenStaat-Anfragen
+- 575 Preprocessing-/Analysis-Dokumente
+- 26 Topics: 17 relevant, 9 irrelevant
+- 17 Gaps in 14 Clustern: 10 Prozessprobleme, 2 Informationslücken,
+  3 bereits abgedeckt, 2 irrelevant, 0 echte Lücken
+- 9 Innovationen; Evaluator: 7 accept, 2 rework
+- 29 normalisierte Aktionen: 11 auto_apply, 17 human_required, 1 suggestion_only
+- needs_review: Gap 2, Innovation 3, Evaluator 0
+- human_decisions.json: 54 Entscheidungen (31 accepted, 11 rejected, 12 deferred)
+
+### Bestätigte Probleme
+
+Die vorhandenen Human Decisions waren über mehrere Evaluator-Läufe akkumuliert und nur über
+Aktionstyp plus wiederverwendbare Ziele wie `INN_005` verbunden. Dadurch konnten alte Rework-
+oder Merge-Entscheidungen auf fachlich andere neue Innovationen wirken. Die bestehende
+`human_decisions.json` besitzt keine passende Run-/Action-Provenienz, gilt daher als stale und
+kann nicht als finale fachliche Evidenz verwendet werden.
+
+Weitere bestätigte Correctness-Probleme waren: konsumierbare deferred Auto-Aktionen, zu breite
+Evaluator-Autonomie ohne explizites Unambiguous-Signal, fehlende Pflichtprüfung neuer
+`echte_luecke`-Behauptungen, Überschreiben valider Evaluator-/Innovation-Outputs bei kompletten
+LLM-Fehlern, falsche Human-Gate-Aktivierung durch Auto-/Suggestion-/Review-Zähler, doppelte
+Innovations-Ränge, möglicher Reddit-Corpusverlust bei null verwendbaren Posts sowie ein
+Windows-Encoding-Crash im Text-Status.
+
+### Umgesetzte begrenzte Korrekturen
+
+- `evaluator_run_id` und semantische, stabile `action_id` für Topic-/Gap-/Cluster-Ziele
+- stale/legacy Decisions werden sichtbar gemeldet und nie konsumiert
+- accepted/rejected/deferred und auto_apply entsprechen der freigegebenen Rechte-Matrix
+- jede neue `echte_luecke` erzeugt eine unresolved `real_gap_review`-Aktion
+- output-preserving Fehlerpfade und explizite Partial-Metadaten für Evaluator/Innovation
+- Human Gate nur für aktuelle unresolved `human_required`-Aktionen
+- eindeutige, sequenzielle Innovation-Priorisierung ohne Duplikate
+- Erhalt des Reddit-Haupt-Corpus bei null verwendbaren Posts
+- offline-sichere Tests; DDG-Smoke-Test nur opt-in
+
+### Konsequenz für die finale Evidenz
+
+Nach Code-Freeze ist ein frischer kontrollierter Lauf mit anschließender neuer Human Review
+erforderlich. Erst dessen provenance-gebundene Gap-, Innovation-, Evaluator- und Human-Decision-
+Artefakte dürfen für die finale Ergebnisdarstellung verwendet werden. Der nächste fachliche
+Schritt ist die kuratierte Prüfung der bestehenden Leistungsreferenz; bestehende generierte
+Artefakte wurden in diesem Fix-Schritt bewusst nicht verändert.
+
+
+## Finaler kontrollierter E2E-Lauf nach Analysis-Encoding-Fix — 13.07.2026
+
+Nach Abschluss der Stabilisierung wurde ein letzter gezielter Downstream-Lauf
+mit der reparierten Version des Analysis Agents durchgeführt:
+
+```text
+Analysis → Gap Analysis → Innovation → Evaluator → Human Review
+
+Source Discovery, Scraper und Preprocessing wurden nicht erneut ausgeführt,
+da der zugrunde liegende Korpus unverändert blieb.
+
+Ausgangsdaten
+
+Der finale Lauf verwendete insgesamt 555 vorverarbeitete Dokumente:
+
+126 Web-Dokumente
+361 erhaltene Reddit-Dokumente
+68 FragDenStaat-Dokumente
+
+Der aktuelle Reddit-Zugriff blieb extern blockiert. Beim vorherigen vollständigen
+E2E-Lauf endeten 10 von 10 Anfragen mit HTTP 403. Der bestehende Korpus mit
+361 Datensätzen wurde dabei vollständig erhalten und nicht überschrieben.
+
+Analysis
+
+Der Analysis Agent wurde nach der Reparatur der UTF-8-Kodierung und der
+Gemini-Modellkonfiguration erneut ausgeführt.
+
+Ergebnis:
+
+555 analysierte Dokumente
+25 Topics
+16 relevante Topics
+9 irrelevante Topics
+
+Die Analysis-Ausgabe wurde erfolgreich unter
+data/analysis/analysis_output.json gespeichert und vom Pipeline-Validator
+als technisch valide bestätigt.
+
+Während eines ersten Versuchs antwortete Gemini mit einem temporären
+503 UNAVAILABLE aufgrund hoher Modellnachfrage. Der unmittelbar folgende
+Wiederholungsversuch war erfolgreich. Dies war eine externe temporäre
+Verfügbarkeitsstörung und kein Fehler der lokalen Pipeline.
+
+Gap Analysis
+
+Die Gap Analysis wurde mit dem OpenAI-Backend und gpt-4.1-mini ausgeführt.
+
+Ergebnis:
+
+16 verarbeitete relevante Topics
+16 Gap-Einträge
+11 Cluster
+0 echte Lücken
+10 Prozessprobleme
+5 Informationslücken
+1 bereits abgedecktes Thema
+0 irrelevante Einträge
+0 Review-Fälle
+0 entfernte ungültige Matching Services
+10 erfolgreiche Pass-2-Aufrufe
+1 übersprungener Cluster
+
+Alle finalen gap.topic_id-Werte entsprechen wieder den kanonischen
+Analysis-Topic-IDs. Der zuvor gefundene Fehler, bei dem semantische Werte wie
+1_aktenauskunft_... in topic_id geschrieben wurden, trat nicht erneut auf.
+
+Innovation
+
+Der Innovation Agent erzeugte auf Basis der 11 Gap-Cluster:
+
+10 Innovationen
+1 übersprungenen bereits abgedeckten Cluster
+4 intern markierte Review-Fälle
+0 fehlgeschlagene Cluster
+
+Zu den erzeugten Konzepten gehörten unter anderem Assistenten für Elterngeld,
+Familiengeld, Kindergeld, Widerspruchsverfahren und Informationsangebote.
+
+Evaluator
+
+Der finale Evaluator-Lauf wurde mit OpenAI und gpt-4.1-mini ausgeführt.
+
+Evaluator Run ID: ER_20260713T232724_c71d27e155
+Output status: complete
+Failed passes: 0
+
+Ergebnis:
+
+25 Topics evaluiert
+16 Gaps in Pass 2 evaluiert
+0 Gaps aufgrund fehlender Scope-Zuordnung übersprungen
+10 Innovationen evaluiert
+7 Innovationen mit Verdict accept
+3 Innovationen mit Verdict rework
+
+Evaluator-Aktionen:
+
+9 auto_apply
+15 human_required
+1 suggestion_only
+
+Nach dem finalen Human Review wurden alle offenen menschlichen Entscheidungen
+geschlossen. Es wurde keine weitere Regenerations- oder Discovery-Schleife
+gestartet, da die Datengrundlage für den finalen Projektstand eingefroren wurde.
+
+Im Live-Test gefundene und behobene Probleme
+
+Während der kontrollierten Tests wurden mehrere Probleme identifiziert:
+
+Fehlender Import von topic_removals im Gap Agent.
+Überschreitung des Groq-TPM-Limits beim kombinierten Gap-Prompt.
+Nicht verfügbare ältere Gemini-Modellbezeichnung.
+Beschädigte UTF-8-Zeichen im Analysis-Prompt.
+Semantische zusammengesetzte Werte in gap.topic_id.
+Dadurch verursachtes vollständiges Überspringen aller Gaps in Evaluator
+Pass 2.
+Temporäre Gemini-Überlastung mit HTTP 503.
+Externe Reddit-Blockierung mit HTTP 403.
+
+Die Import-, Encoding- und Topic-ID-Probleme waren lokale Codefehler und wurden
+behoben sowie durch Regressionstests abgesichert. TPM-Limits, Modellverfügbarkeit,
+Gemini 503 und Reddit 403 waren externe betriebliche Einschränkungen.
+
+Finale technische Validierung
+
+Nach den letzten Codekorrekturen ergab die Offline-Test-Suite:
+
+49 passed, 1 skipped, 2 subtests passed
+
+Zusätzlich wurden bestätigt:
+
+alle Python-Dateien erfolgreich per AST geparst
+git diff --check ohne Fehler
+keine UTF-8-BOM im Analysis Agent
+keine bekannten Mojibake-Zeichen im Analysis-Prompt
+keine Änderung an data/reference/existing_services.json
+weiterhin 60 kuratierte Services
+keine API-Keys oder .env-Dateien in Git
+alle Pipeline-Outputs technisch valide
+Evaluator vollständig und ohne fehlgeschlagene Passes
+alle 16 Gaps erfolgreich in Pass 2 verarbeitet
+kein weiterer vollständiger Pipeline-Lauf erforderlich
+Fazit
+
+Der finale Lauf bestätigt, dass die stabilisierte Pipeline technisch
+funktionsfähig ist und der Human-in-the-Loop-Prozess kontrolliert arbeitet.
+Insbesondere wurden stale Entscheidungen nicht auf neue Evaluator-Läufe
+übertragen, Agenten nicht automatisch verkettet und bestehende Outputs bei
+Client- oder API-Fehlern geschützt.
+
+Der aktuelle Projektstand ist bereit für die abschließende Dokumentation,
+den separaten Commit der finalen E2E-Artefakte und die Übergabe zur fachlichen
+Bewertung.
+
+
+Der Abschnitt ergänzt die bisherigen Findings, ohne die ältere Testhistorie zu überschreiben. Die im Codex-Audit dokumentierten Vorher-nachher-Vergleiche und technischen Verbesserungen bleiben damit erhalten. :contentReference[oaicite:0]{index=0}
+
+Vor dem Einfügen prüfe nur noch:
+
+```powershell
+& $Py scripts\pipeline_status.py
+
+Steht dort tatsächlich human_offen=0, kann der Text unverändert übernommen werden. Andernfalls den Satz über den abgeschlossenen Human Review erst nach Abschluss der 15 Entscheidungen ergänzen.
+
+
+## Übergabekorrektur — 14.07.2026
+
+Die finalen E2E-Artefakte wurden bereits im Commit `eb0a157` gespeichert. Der finale Human
+Review ist abgeschlossen; `pipeline_status.py` meldet `human_offen=0`. Der zugehörige
+Evaluator-Lauf ist `ER_20260713T232724_c71d27e155` mit `output_status=complete` und
+`failed_pass_count=0`. Ein zusätzlicher Pipeline-Lauf ist für den aktuellen Übergabestand
+nicht erforderlich.
+
+Der versehentlich im vorherigen Nachtrag enthaltene `contentReference`-Marker sowie die dortige
+redaktionelle Einfüge-/Prüfanweisung sind Editorial Noise und kein Bestandteil der technischen
+Findings.

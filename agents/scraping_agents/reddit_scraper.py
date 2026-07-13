@@ -54,6 +54,7 @@ def init_metrics(keywords: list[str] | None = None) -> dict:
         "blocked_run": False,
         "fresh_data_collected": False,
         "early_abort_reason": "",
+        "run_status": "started",
     }
 
 
@@ -128,24 +129,26 @@ def parse_post(post: dict, metrics: dict) -> dict | None:
     }
 
 
-def should_preserve_existing_file(metrics: dict, mostly_blocked: bool) -> bool:
+def should_preserve_existing_file(metrics: dict, mostly_blocked: bool, usable_post_count: int) -> bool:
     no_successful_requests = (
         metrics["attempted_requests"] > 0
         and metrics["successful_requests"] == 0
     )
     return (
         os.path.exists(OUTPUT_PATH)
-        and (metrics["interrupted"] or no_successful_requests or mostly_blocked)
+        and (metrics["interrupted"] or no_successful_requests or mostly_blocked or usable_post_count == 0)
     )
 
 
-def preserve_reason(metrics: dict, mostly_blocked: bool) -> str:
+def preserve_reason(metrics: dict, mostly_blocked: bool, usable_post_count: int) -> str:
     if metrics["interrupted"]:
         return "interrupted"
     if metrics["attempted_requests"] > 0 and metrics["successful_requests"] == 0:
         return "all_requests_failed"
     if mostly_blocked:
         return "mostly_blocked"
+    if metrics["successful_requests"] > 0 and usable_post_count == 0:
+        return "zero_usable_posts"
     return ""
 
 
@@ -197,10 +200,11 @@ def run():
     )
     metrics["blocked_run"] = bool(mostly_blocked or metrics["early_abort_reason"])
 
-    if should_preserve_existing_file(metrics, mostly_blocked):
+    if should_preserve_existing_file(metrics, mostly_blocked, len(results)):
         metrics["existing_data_preserved"] = True
         metrics["partial_posts_collected"] = len(results)
-        metrics["preserve_reason"] = preserve_reason(metrics, mostly_blocked)
+        metrics["preserve_reason"] = preserve_reason(metrics, mostly_blocked, len(results))
+        metrics["run_status"] = f"preserved_{metrics['preserve_reason']}"
         print(
             f"{len(results)} Posts gesammelt. Bestehende {OUTPUT_PATH} bleibt erhalten, "
             "damit Downstream-Tests nicht durch einen blockierten Lauf geleert werden."
@@ -217,6 +221,7 @@ def run():
             json.dump(results, f, ensure_ascii=False, indent=2)
         metrics["saved_posts"] = len(results)
         metrics["fresh_data_collected"] = bool(results)
+        metrics["run_status"] = "fresh" if results else "empty_no_existing_corpus"
         print(f"{len(results)} Posts gescrapt -> {OUTPUT_PATH}")
 
     if mostly_blocked:

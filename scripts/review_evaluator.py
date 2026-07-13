@@ -16,7 +16,7 @@ from typing import Callable
 EVALUATOR_PATH = Path("data/evaluation/evaluator_output.json")
 OUTPUT_PATH = Path("data/evaluation/human_decisions.json")
 SCHEMA_VERSION = "1.0-de"
-SECTION_CHOICES = ("all", "keywords", "rework", "topics", "reclassify", "merge")
+SECTION_CHOICES = ("all", "keywords", "rework", "topics", "reclassify", "merge", "real-gaps")
 
 
 def load_json(path: Path) -> dict:
@@ -29,11 +29,53 @@ def load_json(path: Path) -> dict:
     return data
 
 
-def action_key(item: dict) -> tuple[str, str]:
-    return str(item.get("action_type", "")), str(item.get("target", ""))
+def action_key(item: dict) -> str:
+    return str(item.get("action_id", ""))
 
 
-def load_decision_keys(path: Path) -> set[tuple[str, str]]:
+def validate_evaluator_provenance(evaluator: dict) -> None:
+    run_id = str(evaluator.get("evaluator_run_id", "")).strip()
+    if not run_id:
+        raise ValueError(
+            "LEGACY EVALUATOR OUTPUT - zuerst einen frischen Evaluator-Lauf ausfuehren"
+        )
+    actions = evaluator.get("aktionen", [])
+    if not isinstance(actions, list):
+        raise ValueError("Evaluator-Aktionen muessen eine Liste sein")
+    required = {
+        "action_id", "action_type", "evaluator_run_id", "stable_target",
+        "target", "target_agent", "autonomy",
+    }
+    for index, action in enumerate(actions, start=1):
+        if not isinstance(action, dict):
+            raise ValueError(f"Evaluator-Aktion {index} ist kein Objekt")
+        missing = [field for field in required if not str(action.get(field, "")).strip()]
+        if missing or str(action.get("evaluator_run_id")) != run_id:
+            detail = ", ".join(missing) if missing else "evaluator_run_id passt nicht"
+            raise ValueError(
+                f"Evaluator-Aktion {index} ohne gueltige Provenienz ({detail}); "
+                "frischen Evaluator-Lauf ausfuehren"
+            )
+
+
+def decision_matches_current(item: dict, evaluator: dict) -> bool:
+    run_id = str(evaluator.get("evaluator_run_id", ""))
+    current = {
+        action_key(action): action
+        for action in evaluator.get("aktionen", [])
+        if isinstance(action, dict) and action_key(action)
+    }
+    action = current.get(action_key(item))
+    return bool(
+        run_id
+        and action
+        and str(item.get("evaluator_run_id", "")) == run_id
+        and str(item.get("stable_target", "")) == str(action.get("stable_target", ""))
+        and str(item.get("action_type", "")) == str(action.get("action_type", ""))
+    )
+
+
+def load_decision_keys(path: Path, evaluator: dict) -> set[str]:
     if not path.is_file():
         return set()
     try:
@@ -44,7 +86,21 @@ def load_decision_keys(path: Path) -> set[tuple[str, str]]:
         action_key(item)
         for item in data.get("decisions", [])
         if item.get("decision") in ("accepted", "rejected")
+        and decision_matches_current(item, evaluator)
     }
+
+
+def stale_decision_count(path: Path, evaluator: dict) -> int:
+    if not path.is_file():
+        return 0
+    try:
+        data = load_json(path)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return 0
+    return sum(
+        1 for item in data.get("decisions", [])
+        if not decision_matches_current(item, evaluator)
+    )
 
 
 def section_matches(action: dict, section: str) -> bool:
@@ -56,6 +112,7 @@ def section_matches(action: dict, section: str) -> bool:
         "topics": {"topic_remove"},
         "reclassify": {"gap_reclassify"},
         "merge": {"innovation_merge"},
+        "real-gaps": {"real_gap_review"},
     }.get(section, set()).__contains__(action.get("action_type"))
 
 
@@ -70,7 +127,7 @@ def collect_actions(
     normalized = evaluator.get("aktionen", [])
     if isinstance(normalized, list) and normalized:
         actions = []
-        decided = load_decision_keys(decisions_path) if only_open else set()
+        decided = load_decision_keys(decisions_path, evaluator) if only_open else set()
         for action in normalized:
             autonomy = action.get("autonomy", "human_required")
             if autonomy == "auto_apply" and not include_auto:
@@ -149,13 +206,15 @@ def collect_actions(
                 "recommendation": "Konvergente Innovationen fachlich zusammenführen",
             })
     if only_open:
-        decided = load_decision_keys(decisions_path)
+        decided = load_decision_keys(decisions_path, evaluator)
         actions = [action for action in actions if action_key(action) not in decided]
     return actions
 
 
 def ask_decision(action: dict, input_fn: Callable[[str], str] = input) -> tuple[str, str]:
     print(f"\n[{action['action_type']}] {action['target']}")
+    if action.get("stable_target"):
+        print("Stabiles Ziel: " + str(action["stable_target"]))
     if action.get("autonomy"):
         print("Autonomie: " + str(action.get("autonomy")))
     if action.get("risk"):
@@ -205,25 +264,47 @@ def review(
     decisions = []
     for action in actions:
         decision, note = ask_decision(action, input_fn)
-        decisions.append({**action, "decision": decision, "human_note": note})
+        decisions.append({
+            **action,
+            "decision": decision,
+            "human_reason": note,
+            "human_note": note,
+            "application_status": {
+                "accepted": "approved_for_manual_consumption",
+                "rejected": "refused",
+                "deferred": "deferred",
+            }[decision],
+            "conflict_reason": note if decision == "rejected" else "",
+        })
     return decisions
 
 
-def save_decisions(output_path: Path, evaluator_path: Path, section: str, decisions: list[dict]) -> None:
+def save_decisions(
+    output_path: Path,
+    evaluator_path: Path,
+    section: str,
+    decisions: list[dict],
+    evaluator: dict | None = None,
+) -> None:
+    evaluator = evaluator or load_json(evaluator_path)
+    evaluator_run_id = str(evaluator.get("evaluator_run_id", ""))
+    if not evaluator_run_id:
+        raise ValueError("Evaluator-Output ohne evaluator_run_id; zuerst Evaluator neu ausfuehren")
     existing_decisions: list[dict] = []
     reviewed_sections: list[str] = []
     if output_path.is_file():
         try:
             existing = load_json(output_path)
-            existing_decisions = existing.get("decisions", [])
-            reviewed_sections = existing.get("reviewed_sections", [])
-            if not reviewed_sections and existing.get("reviewed_section"):
-                reviewed_sections = [existing["reviewed_section"]]
+            if str(existing.get("evaluator_run_id", "")) == evaluator_run_id:
+                existing_decisions = existing.get("decisions", [])
+                reviewed_sections = existing.get("reviewed_sections", [])
+                if not reviewed_sections and existing.get("reviewed_section"):
+                    reviewed_sections = [existing["reviewed_section"]]
         except (OSError, ValueError, json.JSONDecodeError):
             pass
 
-    def key(item: dict) -> tuple[str, str]:
-        return str(item.get("action_type", "")), str(item.get("target", ""))
+    def key(item: dict) -> str:
+        return str(item.get("action_id", ""))
 
     merged = {key(item): item for item in existing_decisions}
     merged.update({key(item): item for item in decisions})
@@ -233,6 +314,7 @@ def save_decisions(output_path: Path, evaluator_path: Path, section: str, decisi
         "schema_version": SCHEMA_VERSION,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "source_evaluator_output": str(evaluator_path),
+        "evaluator_run_id": evaluator_run_id,
         "reviewed_sections": sections,
         "decisions": all_decisions,
         "summary": {
@@ -251,11 +333,21 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
     parser.add_argument("--include-auto", action="store_true", help="Auto-Apply-Aktionen ebenfalls anzeigen")
     parser.add_argument("--include-suggestions", action="store_true", help="Suggestion-only-Aktionen ebenfalls anzeigen")
-    parser.add_argument("--only-open", action="store_true", help="Bereits akzeptierte/abgelehnte Aktionen ausblenden")
+    parser.add_argument(
+        "--only-open", action="store_true",
+        help="Nur unentschiedene oder vertagte human_required Aktionen anzeigen",
+    )
     args = parser.parse_args()
 
     try:
         evaluator = load_json(args.input)
+        validate_evaluator_provenance(evaluator)
+        stale_count = stale_decision_count(args.output, evaluator)
+        if stale_count:
+            print(
+                f"WARNUNG: {stale_count} bestehende Entscheidung(en) gehoeren nicht zum "
+                "aktuellen Evaluator-Lauf und werden ignoriert."
+            )
         decisions = review(
             evaluator,
             args.section,
@@ -264,7 +356,7 @@ def main() -> int:
             only_open=args.only_open,
             decisions_path=args.output,
         )
-        save_decisions(args.output, args.input, args.section, decisions)
+        save_decisions(args.output, args.input, args.section, decisions, evaluator=evaluator)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"FEHLER: {exc}")
         return 1

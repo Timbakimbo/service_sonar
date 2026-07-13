@@ -50,20 +50,34 @@ The system explicitly mixes hardcoded modules and LLM-based agents:
 - **Plain Python, no framework** — every step transparent for thesis defense
 - **Single Responsibility per module** — each agent/module in its own file
 - **Two-output preprocessing** — BERTopic needs lemmatized tokens, GerVader needs sentence structure
-- **Human-controlled feedback** — the Evaluator proposes changes; only accepted keyword
-  decisions affect a later manual run
+- **Human-controlled feedback** — current, provenance-matched accepted decisions may affect a
+  later manual run; rejected decisions are closed/non-consumable; deferred decisions remain open
+  and keep the Human Gate active but are non-consumable; legacy and stale decisions never apply
 - **No orchestrator** — stages remain manual and communicate through JSON artifacts
 - **Two-level content filter** — URL-level (early) + content-level (after scraping)
-- **Cost optimization** — Gemini Flash for simple reasoning, Claude Haiku for complex judgment
+- **Configured backends** — Gemini Flash for Analysis, Groq for Innovation, and selectable
+  Groq/OpenAI backends for Gap Analysis and Evaluator
 
 ## Current State
 - Full forward pipeline implemented through Innovation and four-pass Evaluation
-- Current curated corpus: 575 documents (146 web + 361 Reddit + 68 FragDenStaat)
-- Current output: 28 topics, clustered gaps, 10 innovations, ranked Evaluator result
+- Current curated corpus: 555 preprocessed documents (126 web + 361 Reddit + 68 FragDenStaat)
+- Current committed output: 25 Topics (16 relevant), 16 Gaps in 11 clusters and 10 Innovations
+- Final Evaluator output is complete: all 16 Gaps were evaluated in Pass 2, 0 Gaps were skipped,
+  and the Human Gate is closed
 - Read-only pipeline status/validation and German operational runbook implemented
 - Terminal Human-in-the-Loop review implemented; accepted keyword feedback is executable
-- Topic removal, gap reclassification, innovation rework, and merge decisions are recorded but
-  not yet consumed automatically by the respective manually started agents
+- Topic removal, Gap reclassification and accepted Innovation rework are consumed only by the
+  next manually started target agent; merge decisions remain visible human guidance and never
+  merge Innovations automatically
+- Every new Evaluator output carries `evaluator_run_id`; action IDs use stable Topic/Gap/cluster
+  identity. The final committed Human Decisions belong to the current Evaluator run, whose
+  output is complete with `failed_pass_count=0`; no fresh pipeline run is currently required.
+- Evaluator/Innovation preserve prior outputs on missing configuration or complete LLM failure;
+  partial outputs expose failed passes/clusters.
+- Human Gate means only unresolved current `human_required` actions. Every new
+  `echte_luecke` assertion creates a mandatory `real_gap_review` action.
+- A legacy Evaluator artifact without complete run/action provenance requires a fresh Evaluator
+  run and is refused by Human Review before prompts or writes.
 
 ## Key Files
 - `agents/analysis_agent.py` — current Analysis Agent (BERTopic + sentiment + Gemini)
