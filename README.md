@@ -5,8 +5,8 @@ Prototype for an agentic AI workflow around family-related social benefits in th
 The project collects public web, Reddit and FragDenStaat data, preprocesses text, runs topic/sentiment analysis, compares needs with existing services, and prepares later service innovation work.
 
 The pipeline is deliberately manual and has no orchestrator. For the authoritative German
-operating procedure—including inputs, outputs, success checks, and the human handoff after
-evaluation—see [`RUNBOOK.md`](RUNBOOK.md).
+operating procedure, including inputs, outputs, success checks, and the human handoff after
+evaluation, see [`RUNBOOK.md`](RUNBOOK.md).
 
 ## Current Status
 
