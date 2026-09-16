@@ -1,48 +1,288 @@
 {
   "schema_version": "1.0-de",
-  "erstellt_am": "2026-07-10T20:34:34",
+  "erstellt_am": "2026-07-13T23:25:29",
   "modell": "llama-3.3-70b-versatile",
   "max_tokens": 3000,
-  "input_cluster_count": 14,
-  "skipped_cluster_count": 5,
-  "generated_innovation_count": 9,
-  "review_count": 3,
+  "output_status": "complete",
+  "input_cluster_count": 11,
+  "eligible_cluster_count": 10,
+  "skipped_cluster_count": 1,
+  "generated_innovation_count": 10,
+  "failed_cluster_count": 0,
+  "failed_clusters": [],
+  "review_count": 4,
   "innovations": [
     {
       "innovation_id": "INN_001",
-      "cluster_id": "solo_1",
+      "cluster_id": "elterngeld",
       "addressierte_topics": [
-        "1"
+        "0",
+        "2",
+        "20",
+        "22"
       ],
-      "betroffene_leistungen": [],
+      "betroffene_leistungen": [
+        "Elterngeld",
+        "ElterngeldPlus",
+        "Elterngeld-Bescheid",
+        "Servicetelefon Elterngeld"
+      ],
       "klassifizierung": "prozessproblem",
       "innovation_typ": "digitalisierung",
-      "titel": "Digitales Aktenportal",
-      "kurzbeschreibung": "Ein digitales Akten- und Kommunikationsportal für Familien und Behörden, um den Informationsaustausch und die Bearbeitung von Anträgen zu verbessern. Dies ermöglicht eine effizientere und transparentere Kommunikation.",
-      "konkrete_loesung": "Das Portal ermöglicht es Familien, ihre Anträge digital einzureichen und den Bearbeitungsstand in Echtzeit zu verfolgen. Automatische Empfangsbestätigungen und Benachrichtigungen über den Bearbeitungsfortschritt werden generiert. Sachbearbeiter können über das Portal direkt mit den Antragstellern kommunizieren und relevante Dokumente bereitstellen. Durch die Integration mit bestehenden Antrags- und Dokumentenmanagementsystemen der Behörden wird die Bearbeitungseffizienz gesteigert.",
+      "titel": "Elterngeld-Assistent",
+      "kurzbeschreibung": "Ein interaktiver Online-Assistent, der Eltern bei der Antragstellung und Planung von Elterngeld unterstützt. Der Assistent bindet relevante Daten über BayernID ein und bietet Echtzeit-Statusupdates zur Bearbeitung.",
+      "konkrete_loesung": "Der Elterngeld-Assistent führt Antragsteller durch den Antragsprozess, indem er relevante Fragen stellt und die benötigten Informationen automatisch aus ElterngeldPlus und Elterngeld-Bescheid-Systemen über BayernID abruft. Antragsteller können die optimale zeitliche Aufteilung von Elternzeit und Elterngeld visualisieren und Echtzeit-Statusupdates zur Bearbeitung erhalten. Der Assistent ist mehrsprachig und bietet englischsprachigen Expats eine einfache Antragstellung.",
       "adressierte_phasen": [
+        "antragstellung",
         "bearbeitung"
       ],
       "zielgruppen": [
-        "Familien mit Anträgen",
-        "Sachbearbeiter in Behörden"
+        "Väter und Mütter mit Antrag auf Elterngeld",
+        "Englischsprachige Expats"
       ],
       "moegliche_traeger": [
         "Elterngeldstelle",
-        "Jugendamt",
-        "Kommune"
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend"
       ],
       "anknuepfungspunkte": [
-        "Elterngeldantrag"
+        "Elterngeld",
+        "ElterngeldPlus",
+        "Elterngeld-Bescheid",
+        "Servicetelefon Elterngeld"
       ],
-      "removed_invalid_anknuepfungspunkte": [
-        "Kinderzuschlagantrag"
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle",
+        "Datenabgleich Elterngeldstelle"
+      ],
+      "erwarteter_nutzen": "Der Elterngeld-Assistent reduziert bürokratische Hürden und Verzögerungen bei der Antragstellung und Bearbeitung. Antragsteller erhalten eine einfache und transparente Antragstellung, während die Verwaltung den Prozess effizienter gestalten kann.",
+      "umsetzungshuerden": [
+        "Technische Integration mit bestehenden Systemen",
+        "Sprachbarrieren für englischsprachige Expats"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_002",
+      "cluster_id": "solo_7",
+      "addressierte_topics": [
+        "7"
+      ],
+      "betroffene_leistungen": [
+        "Elterngeld",
+        "ElterngeldPlus",
+        "Servicetelefon Elterngeld",
+        "Elterngeldrechner"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Elterngeld-Planer",
+      "kurzbeschreibung": "Ein interaktiver Online-Planungsassistent für Elterngeld und ElterngeldPlus, der über BayernID auf individuelle Daten zugreift und bei der optimalen Aufteilung der Partnermonate unterstützt.",
+      "konkrete_loesung": "Der Elterngeld-Planer ermöglicht es Eltern, ihre individuellen Elterngeld- und ElterngeldPlus-Daten über BayernID abzurufen und mit Hilfe eines interaktiven Planungsassistenten die optimale Aufteilung der Partnermonate zu planen. Der Assistent bietet personalisierte Szenarien mit automatischer Fristen- und Einkommensprüfung und integriert den Elterngeldrechner. Bei komplexen Fragen kann der Assistent eine direkte Weiterleitung an das Servicetelefon Elterngeld anbieten.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Väter und Mütter mit Elterngeld-Anspruch"
+      ],
+      "moegliche_traeger": [
+        "Elterngeldstelle",
+        "Familienkasse",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Elterngeld",
+        "ElterngeldPlus",
+        "Servicetelefon Elterngeld",
+        "Elterngeldrechner"
       ],
       "integrationspunkte": [
         "BayernID",
         "ELSTER-Schnittstelle"
       ],
-      "erwarteter_nutzen": "Für Bürger bedeutet dies eine verbesserte Transparenz und Effizienz bei der Antragsbearbeitung. Für die Verwaltung führt dies zu einer Reduzierung des Verwaltungsaufwands und einer verbesserten Datenkonsistenz.",
+      "erwarteter_nutzen": "Der Elterngeld-Planer bietet Eltern eine einfache und transparente Möglichkeit, ihre Elterngeld-Ansprüche zu planen und zu beantragen. Durch die Integration von BayernID und ELSTER-Schnittstelle können Eltern ihre Daten einfach und sicher abrufen. Die Verwaltung profitiert von einer reduzierten Anzahl an Anträgen und einer verbesserten Bearbeitungszeit.",
+      "umsetzungshuerden": [
+        "Technische Integration von BayernID und ELSTER-Schnittstelle",
+        "Abstimmung mit den beteiligten Behörden und Institutionen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_003",
+      "cluster_id": "bayerisches_familiengeld",
+      "addressierte_topics": [
+        "8",
+        "11"
+      ],
+      "betroffene_leistungen": [
+        "Bayerisches Familiengeld"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Familiengeld-Vergleich",
+      "kurzbeschreibung": "Interaktives Online-Tool für bayerisches Familiengeld. Eltern erhalten personalisierte Informationen und Vergleiche zu anderen Bundesländern.",
+      "konkrete_loesung": "Das Tool bindet über BayernID Einkommensdaten und Familienstand ein. Eltern können ihre Berechtigung und Auszahlung live überprüfen und mit anderen Bundesländern vergleichen. Der Antrag kann direkt online gestellt werden, wodurch die Bearbeitungszeit verkürzt wird.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Eltern mit Kindern im 2. und 3. Lebensjahr"
+      ],
+      "moegliche_traeger": [
+        "Land Bayern",
+        "ZBFS"
+      ],
+      "anknuepfungspunkte": [
+        "Bayerisches Familiengeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Bürger erhalten einfacher und schneller Informationen über das bayerische Familiengeld. Die Verwaltung kann den Antragsprozess effizienter gestalten und die Bearbeitungszeit reduzieren.",
+      "umsetzungshuerden": [
+        "Technische Anbindung an BayernID und ELSTER",
+        "Abstimmung mit anderen Bundesländern"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_004",
+      "cluster_id": "solo_9",
+      "addressierte_topics": [
+        "9"
+      ],
+      "betroffene_leistungen": [
+        "Schwerbehindertenausweis",
+        "Leistungen für Menschen mit Behinderung"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Widerspruchsassistent",
+      "kurzbeschreibung": "Ein digitaler Widerspruchs- und Klageassistent für Menschen mit gesundheitlichen Einschränkungen, der über eine BayernID-gesicherte Webplattform den Einreichungsprozess von Nachweisen erleichtert und automatisch relevante Daten abruft.",
+      "konkrete_loesung": "Der Widerspruchsassistent führt Betroffene Schritt für Schritt durch die Einreichung und Nachreichung von Nachweisen, indem er relevante Daten aus dem Schwerbehindertenausweis- und Leistungsaktenbestand abruft. Der aktuelle Verfahrensstand wird in Echtzeit angezeigt, und Sachbearbeiter im Zentrum Bayern Familie und Soziales erhalten eine integrierte Übersicht, um schneller auf eingereichte Dokumente reagieren zu können. Die Plattform ermöglicht es Betroffenen, ihre Anträge und Nachweise digital einzureichen, und reduziert somit den Verwaltungsaufwand.",
+      "adressierte_phasen": [
+        "widerspruch_und_klage"
+      ],
+      "zielgruppen": [
+        "Menschen mit gesundheitlichen Einschränkungen und deren Angehörige"
+      ],
+      "moegliche_traeger": [
+        "ZBFS",
+        "Land Bayern"
+      ],
+      "anknuepfungspunkte": [
+        "Schwerbehindertenausweis",
+        "Leistungen für Menschen mit Behinderung"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "Schwerbehindertenausweis- und Leistungsaktenbestand"
+      ],
+      "erwarteter_nutzen": "Der Widerspruchsassistent erleichtert den Einreichungsprozess für Betroffene, reduziert den Verwaltungsaufwand und ermöglicht eine schnellere Bearbeitung von Anträgen. Durch die digitale Einreichung von Nachweisen und die automatische Abrufung von Daten wird der Prozess effizienter und transparenter.",
+      "umsetzungshuerden": [
+        "Datenschutz und Sicherheit der Plattform",
+        "Integration mit bestehenden Systemen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": false,
+      "review_reason": ""
+    },
+    {
+      "innovation_id": "INN_005",
+      "cluster_id": "elterngeld_bescheid",
+      "addressierte_topics": [
+        "12",
+        "24"
+      ],
+      "betroffene_leistungen": [
+        "Elterngeld-Bescheid",
+        "Widerspruch gegen Elterngeld-Bescheid",
+        "Elterngeld",
+        "ElterngeldPlus"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Elterngeld-Tracker",
+      "kurzbeschreibung": "Ein digitaler Elterngeld-Tracker, der Eltern über eine App personalisierte Echtzeit-Updates zu Bearbeitungsständen und Widerspruchsfristen liefert. Dieser Tracker integriert eine vorbefüllte Widerspruchsformular-Funktion und ist nahtlos mit dem bestehenden Elterngeld- und Bescheidverwaltungssystem verbunden.",
+      "konkrete_loesung": "Der Elterngeld-Tracker ermöglicht es Eltern, den Bearbeitungsstand ihres Elterngeldantrags und den Status von Widersprüchen in Echtzeit zu verfolgen. Durch die Integration mit BayernID und ELSTER-Schnittstellen können Daten automatisiert synchronisiert und manuelle Nachfragen reduziert werden. Eltern können außerdem Widersprüche direkt über die App einlegen, indem sie ein vorbefülltes Formular nutzen, das alle notwendigen Informationen enthält.",
+      "adressierte_phasen": [
+        "bearbeitung",
+        "bescheid_und_kommunikation"
+      ],
+      "zielgruppen": [
+        "Eltern mit Elterngeldantrag"
+      ],
+      "moegliche_traeger": [
+        "Elterngeldstelle",
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend"
+      ],
+      "anknuepfungspunkte": [
+        "Elterngeld-Bescheid",
+        "Widerspruch gegen Elterngeld-Bescheid",
+        "Elterngeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Durch den Elterngeld-Tracker können Eltern ihre Anträge und Widersprüche effizienter verfolgen, was zu einer höheren Zufriedenheit und einer geringeren Belastung für die Elterngeldstelle führt. Die Automatisierung von Prozessen und die Reduzierung manueller Nachfragen können auch zu Kosteneinsparungen für die Verwaltung führen.",
+      "umsetzungshuerden": [
+        "Technische Integration mit bestehenden Systemen",
+        "Datenverfügbarkeit und -sicherheit"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_006",
+      "cluster_id": "solo_13",
+      "addressierte_topics": [
+        "13"
+      ],
+      "betroffene_leistungen": [
+        "Bayerisches Familiengeld"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "Familiengeld-Assistent",
+      "kurzbeschreibung": "Interaktiver Online-Assistent für die Antragstellung des Bayerischen Familiengelds, um bürokratische Hürden und Verständnisprobleme zu reduzieren. Der Assistent bietet kontextsensitive Hilfetexte und Validierungen in Echtzeit.",
+      "konkrete_loesung": "Der Online-Assistent wird über BayernID automatisch die Stammdaten des Antragstellers und des Kindes vorbefüllen. Antragsteller können dann Schritt für Schritt durch den Antrag geführt werden, wobei der Assistent kontextsensitive Hinweise und Validierungen anbietet, um Fehler zu vermeiden. Durch die Integration mit bestehenden Systemen kann der Antrag automatisch an die zuständige Stelle übermittelt werden.",
+      "adressierte_phasen": [
+        "antragstellung"
+      ],
+      "zielgruppen": [
+        "Eltern, die das Bayerische Familiengeld beantragen"
+      ],
+      "moegliche_traeger": [
+        "Land Bayern",
+        "ZBFS"
+      ],
+      "anknuepfungspunkte": [
+        "Bayerisches Familiengeld"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle"
+      ],
+      "erwarteter_nutzen": "Der Online-Assistent reduziert die Anzahl der fehlerhaften Anträge und beschleunigt den Antragsprozess. Antragsteller profitieren von einer einfacheren und transparenteren Antragstellung, während die Verwaltung von geringerem Aufwand und weniger Nachbearbeitung profitiert.",
       "umsetzungshuerden": [
         "Integration mit bestehenden Systemen",
         "Datensicherheit und Datenschutz"
@@ -51,179 +291,28 @@
       "prioritaet": 4,
       "confidence": 0.7,
       "needs_review": false,
-      "review_reason": "",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_1",
-          "targets": [
-            "INN_001",
-            "INN_004",
-            "INN_006",
-            "INN_008"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
+      "review_reason": ""
     },
     {
-      "innovation_id": "INN_002",
-      "cluster_id": "elterngeld",
+      "innovation_id": "INN_007",
+      "cluster_id": "solo_16",
       "addressierte_topics": [
-        "4",
-        "14",
-        "21"
-      ],
-      "betroffene_leistungen": [
-        "Elterngeld",
-        "ElterngeldPlus",
-        "Partnerschaftsbonus",
-        "Elterngeldantrag Bayern",
-        "Elterngeld-Bescheid"
-      ],
-      "klassifizierung": "prozessproblem",
-      "innovation_typ": "digitalisierung",
-      "titel": "Elterngeld-Assistent",
-      "kurzbeschreibung": "Ein interaktiver Online-Assistent für Eltern, um Elterngeld und ElterngeldPlus zu planen und zu beantragen. Der Assistent bietet personalisierte Planungsszenarien und automatisierte Antragserstellung.",
-      "konkrete_loesung": "Der Elterngeld-Assistent ermöglicht es Eltern, ihre Elternzeit und Elterngeldansprüche zu planen, indem er auf bestehende Daten aus Elterngeldanträgen und Bescheiden zugreift. Der Assistent integriert sich in das bestehende Elterngeldantrag Bayern-System und ermöglicht eine digitale, stufenweise Antragseinreichung mit Echtzeit-Statusupdates. Eltern können ihre Anträge online erstellen und einreichen, ohne dass sie sich persönlich bei der Behörde melden müssen.",
-      "adressierte_phasen": [
-        "antragstellung",
-        "information_suche"
-      ],
-      "zielgruppen": [
-        "Väter und Mütter mit Elterngeldanspruch"
-      ],
-      "moegliche_traeger": [
-        "Elterngeldstelle",
-        "Familienkasse",
-        "Jobcenter"
-      ],
-      "anknuepfungspunkte": [
-        "Elterngeld",
-        "ElterngeldPlus",
-        "Elterngeldantrag Bayern"
-      ],
-      "integrationspunkte": [
-        "Digitale Identitätsprüfung",
-        "Datenabgleich mit der Elterngeldstelle"
-      ],
-      "erwarteter_nutzen": "Der Elterngeld-Assistent vereinfacht den Antragsprozess für Eltern und reduziert die Bearbeitungszeit für die Verwaltung. Durch die digitale Antragseinreichung und den automatischen Datenabgleich können Fehler und Verzögerungen minimiert werden.",
-      "umsetzungshuerden": [
-        "Technische Integration in das bestehende Elterngeldantrag Bayern-System",
-        "Datensicherheit und Datenschutz"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": false,
-      "review_reason": "",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_012",
-      "rework_briefing_used": "BayernID ist für Informationsportale ohne personenbezogene Antragsprozesse nicht sinnvoll, ELSTER ebenfalls nicht. Bitte Integrationspunkte anpassen und ggf. auf andere Authentifizierungs- oder Informationsquellen fokussieren.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_2",
-          "targets": [
-            "INN_002",
-            "INN_003",
-            "INN_007",
-            "INN_009"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_003",
-      "cluster_id": "kindergeld",
-      "addressierte_topics": [
-        "7",
         "16"
       ],
       "betroffene_leistungen": [
-        "Kindergeld",
-        "Elterngeld",
-        "ElterngeldPlus",
-        "Kindergeld-Erhöhung",
-        "Kinderzuschlag"
-      ],
-      "klassifizierung": "prozessproblem",
-      "innovation_typ": "digitalisierung",
-      "titel": "Kindergeld-Assistent",
-      "kurzbeschreibung": "Ein digitaler Assistent, der Familien bei der Beantragung von Kindergeld unterstützt. Er überprüft die Zuständigkeit und bereitet die Antragsformulare vor.",
-      "konkrete_loesung": "Der Assistent wird auf der Website der Familienkasse integriert und führt die Eltern durch den Antragprozess. Er überprüft die Einkommensdaten und bereitet die Antragsformulare für Kindergeld, Elterngeld und Kinderzuschlag vor. Die Eltern müssen nur noch die fehlenden Informationen eintragen und den Antrag absenden.",
-      "adressierte_phasen": [
-        "antragstellung"
-      ],
-      "zielgruppen": [
-        "Familien mit Kindern unter 18 Jahren"
-      ],
-      "moegliche_traeger": [
-        "Familienkasse",
-        "Land Bayern"
-      ],
-      "anknuepfungspunkte": [
-        "Kindergeld",
-        "Elterngeld",
-        "Kinderzuschlag"
-      ],
-      "integrationspunkte": [
-        "ELSTER-Schnittstelle",
-        "Einkommensdaten-Abgleich"
-      ],
-      "erwarteter_nutzen": "Die Familien werden durch den Assistenten entlastet, da sie nicht mehr alle Antragsformulare selbst ausfüllen müssen. Die Verwaltung kann durch die Automatisierung des Antragprozesses Zeit und Ressourcen sparen.",
-      "umsetzungshuerden": [
-        "Integration in die bestehende IT-Infrastruktur",
-        "Datenschutz und Sicherheit"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": false,
-      "review_reason": "",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_013",
-      "rework_briefing_used": "BayernID ist für ein Informationsangebot ohne personenbezogene Antragsprozesse nicht sinnvoll. Bitte Integrationspunkte überdenken und ggf. entfernen.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_2",
-          "targets": [
-            "INN_002",
-            "INN_003",
-            "INN_007",
-            "INN_009"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_004",
-      "cluster_id": "solo_12",
-      "addressierte_topics": [
-        "12"
-      ],
-      "betroffene_leistungen": [
-        "Bayerisches Familiengeld"
+        "Landeserziehungsgeld"
       ],
       "klassifizierung": "informationsluecke",
       "innovation_typ": "informations_service",
-      "titel": "Familiengeld-Info",
-      "kurzbeschreibung": "Ein interaktiver Online-Service, der Familien in Bayern Informationen zum Bayerischen Familiengeld bietet. Der Service ermöglicht es, Fragen zu Anspruchsvoraussetzungen, Fristen und Einkommensprüfungen zu stellen und erhält personalisierte Auskünfte.",
-      "konkrete_loesung": "Der Online-Service wird als webbasierte Anwendung konzipiert, die anonym oder mit niedrigschwelliger Authentifizierung genutzt werden kann. Der Service integriert Daten aus dem Antragssystem und der Elterngeldstelle, um genaue und aktuelle Informationen bereitzustellen. Die Nutzer können ihre Fragen in natürlicher Sprache eingeben und erhalten eine entsprechende Antwort. Der Service kann auch als Chatbot auf der Website des Bayerischen Familiengeldes integriert werden.",
+      "titel": "Erziehungsgeld-Assistent",
+      "kurzbeschreibung": "Ein interaktiver Online-Assistent, der Eltern bei der Informationssuche zu Landeserziehungsgeld und anderen Familienleistungen unterstützt. Durch die Anbindung an bestehende Systeme wie BayernID und das Landeserziehungsgeld-System können Nutzer:innen gezielt durch die Abgrenzung, Anspruchsvoraussetzungen und Übergänge zu anderen Leistungen geführt werden.",
+      "konkrete_loesung": "Der Online-Assistent führt Eltern durch einen Fragebogen, der ihre individuelle Familiensituation erfasst. Basierend auf diesen Informationen werden relevante Details zum Landeserziehungsgeld und anderen Familienleistungen wie dem Bayerischen Familiengeld bereitgestellt. Der Assistent kann auch auf die Einkommensdaten der Eltern zugreifen, um eine vorläufige Bewertung der Anspruchsvoraussetzungen durchzuführen. Durch die Integration mit dem Landeserziehungsgeld-System und dem Bayerischen Familiengeld-System können Eltern direkt zu den entsprechenden Antragsformularen geleitet werden, um den Antragstellungsvorgang zu vereinfachen.",
       "adressierte_phasen": [
         "information_suche"
       ],
       "zielgruppen": [
-        "Eltern in Bayern",
-        "Sachbearbeiter"
+        "Eltern mit Kindern unter 18 Jahren",
+        "Antragstellende für Landeserziehungsgeld"
       ],
       "moegliche_traeger": [
         "Land Bayern"
@@ -232,360 +321,157 @@
         "Bayerisches Staatsministerium für Familie, Senioren, Frauen und Jugend"
       ],
       "anknuepfungspunkte": [
-        "Bayerisches Familiengeld"
-      ],
-      "integrationspunkte": [
-        "Antragssystem",
-        "Elterngeldstelle"
-      ],
-      "erwarteter_nutzen": "Der Online-Service bietet Familien in Bayern eine einfache und schnelle Möglichkeit, Informationen zum Bayerischen Familiengeld zu erhalten. Dies kann dazu beitragen, dass mehr Familien von dem Familiengeld profitieren und die Verwaltung entlastet wird. Durch die Automatisierung von Auskünften kann die Bearbeitungszeit für Anträge verkürzt werden.",
-      "umsetzungshuerden": [
-        "Datenschutz und Datensicherheit",
-        "Integration mit bestehenden Systemen"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": true,
-      "review_reason": "titel_zu_kurz",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_013",
-      "rework_briefing_used": "BayernID ist für einen Chatbot mit anonymen oder niedrigschwelligen Beratungsfunktionen nicht geeignet; bitte Integration über anonymisierte oder niedrigschwellige Zugänge prüfen.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_1",
-          "targets": [
-            "INN_001",
-            "INN_004",
-            "INN_006",
-            "INN_008"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_005",
-      "cluster_id": "solo_13",
-      "addressierte_topics": [
-        "13"
-      ],
-      "betroffene_leistungen": [
-        "Wohngeld",
-        "Wohnungslosenhilfe"
-      ],
-      "klassifizierung": "prozessproblem",
-      "innovation_typ": "digitalisierung",
-      "titel": "Wohnraum-Sicherungs-Assistent",
-      "kurzbeschreibung": "Ein interaktiver Online-Assistent zur Wohnraum-Sicherung, der Familien passgenaue Unterstützungsoptionen anzeigt. Der Assistent authentifiziert über BayernID und bindet eine mehrsprachige Chatbot-Funktion ein.",
-      "konkrete_loesung": "Der Wohnraum-Sicherungs-Assistent wird als webbasierte Anwendung entwickelt, die Familien über BayernID authentifiziert und ihre Wohnsituation und finanzielle Lage automatisiert mit Wohngeld- und Wohnungslosenhilfe-Daten abgleicht. Der Assistent zeigt passgenaue Unterstützungsoptionen und konkrete nächste Schritte an und bindet eine mehrsprachige Chatbot-Funktion ein, die bei Verständnisschwierigkeiten unterstützt und eine direkte Terminvereinbarung bei Wohngeldstellen oder Wohnungslosenhilfe ermöglicht. Der Assistent wird in mehreren Sprachen verfügbar sein, um auch Menschen mit Sprachbarrieren zu unterstützen.",
-      "adressierte_phasen": [
-        "information_suche"
-      ],
-      "zielgruppen": [
-        "Familien mit Wohnraumproblemen"
-      ],
-      "moegliche_traeger": [
-        "Jobcenter",
-        "Kommune",
-        "Wohngeldstelle"
-      ],
-      "anknuepfungspunkte": [
-        "Wohngeld",
-        "Wohnungslosenhilfe"
+        "Landeserziehungsgeld"
       ],
       "integrationspunkte": [
         "BayernID",
-        "Wohngeld-Datenbank",
-        "Wohnungslosenhilfe-Datenbank"
+        "Landeserziehungsgeld-System",
+        "Bayerisches Familiengeld-System"
       ],
-      "erwarteter_nutzen": "Der Wohnraum-Sicherungs-Assistent bietet Familien eine einfache und schnelle Möglichkeit, ihre Wohnsituation zu klären und passgenaue Unterstützung zu erhalten. Für die Verwaltung reduziert sich der Aufwand für die Bearbeitung von Anträgen und die Kommunikation mit den Familien.",
+      "erwarteter_nutzen": "Für Bürger: Vereinfachung der Informationssuche und Antragstellung für Familienleistungen. Für die Verwaltung: Reduzierung des Verwaltungsaufwands durch automatisierte Vorprüfungen und direkte Weiterleitung zu den entsprechenden Antragsformularen.",
       "umsetzungshuerden": [
-        "Datenschutzrechtliche Anforderungen",
-        "Technische Integration mit bestehenden Systemen"
+        "Technische Integration mit bestehenden Systemen",
+        "Datenschutz und Sicherheit bei der Verwendung von personenbezogenen Daten"
       ],
       "geschaetzter_aufwand": "mittel",
       "prioritaet": 4,
       "confidence": 0.7,
       "needs_review": false,
-      "review_reason": "",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_014",
-      "rework_briefing_used": "ELSTER ist für Gesundheitsleistungen wie Kinderkrankengeld und Mutterschaftsgeld nicht relevant, bitte Integrationspunkte entsprechend anpassen. BayernID ist nur sinnvoll, wenn Identifikation echten Mehrwert bringt.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_3",
-          "targets": [
-            "INN_005",
-            "INN_006"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
+      "review_reason": ""
     },
     {
-      "innovation_id": "INN_006",
-      "cluster_id": "solo_18",
+      "innovation_id": "INN_008",
+      "cluster_id": "solo_17",
       "addressierte_topics": [
-        "18"
+        "17"
       ],
       "betroffene_leistungen": [
-        "Sozialhilfe",
-        "Bürgergeld-Mehrbedarfe für Alleinerziehende"
+        "Kindergeld"
       ],
       "klassifizierung": "prozessproblem",
       "innovation_typ": "digitalisierung",
-      "titel": "Sozialhilfe-Antrag",
-      "kurzbeschreibung": "Digitales Antragstool für Sozialhilfe und Bürgergeld-Mehrbedarfe, um Antragstellung und Bearbeitung zu vereinfachen. Durch den Einsatz von BayernID und automatisiertem Datenabgleich zwischen Jobcenter und Sozialamt können Mehrfachprüfungen vermieden werden.",
-      "konkrete_loesung": "Das digitale Antragstool ermöglicht es den Nutzern, ihre Anträge online zu stellen und die erforderlichen Dokumente hochzuladen. Durch die Anbindung an BayernID können Einkommens- und Vermögensdaten automatisch abgeglichen werden, um die Antragstellung zu beschleunigen. Die Sachbearbeiter können den Status der Anträge live nachvollziehen und die Bearbeitung effizienter gestalten.",
+      "titel": "Kindergeld-Antrag",
+      "kurzbeschreibung": "Vorausgefüllter Online-Antrag für Kindergeld, der über BayernID relevante Daten zieht, um Mehrfacheingaben zu ersparen. Dieser Antrag unterstützt insbesondere Alleinerziehende und Eltern bei der Antragstellung und reduziert Fristversäumnisse durch integrierte Erinnerungsfunktionen.",
+      "konkrete_loesung": "Der vorausgefüllte Online-Antrag für Kindergeld wird über BayernID automatisch mit relevanten Stammdaten und bisherigen Leistungsbezügen wie Kinderbetreuungskosten aus bestehenden Systemen der Familienkasse und des Bayerischen Familiengeldes gefüllt. Dies ermöglicht es Eltern, den Antrag ohne Mehrfacheingaben zu stellen und reduziert das Risiko von Fristversäumnissen. Durch die Integration von Erinnerungsfunktionen wird sichergestellt, dass Eltern rechtzeitig an bevorstehende Fristen erinnert werden.",
       "adressierte_phasen": [
         "antragstellung"
       ],
       "zielgruppen": [
         "Alleinerziehende",
-        "Sachbearbeiter"
+        "Eltern"
       ],
       "moegliche_traeger": [
-        "Jobcenter",
-        "Sozialamt"
+        "Familienkasse"
+      ],
+      "removed_invalid_traeger": [
+        "Bayerisches Staatsministerium für Familie, Senioren, Frauen und Jugend"
       ],
       "anknuepfungspunkte": [
-        "Sozialhilfe",
-        "Bürgergeld-Mehrbedarfe für Alleinerziehende"
+        "Kindergeld"
       ],
       "integrationspunkte": [
         "BayernID",
-        "Datenabgleich zwischen Jobcenter und Sozialamt"
+        "Familienkasse-System"
       ],
-      "erwarteter_nutzen": "Die digitale Antragstellung und Bearbeitung von Sozialhilfe und Bürgergeld-Mehrbedarfe können die Verwaltung und die Bürger entlasten, indem sie den Prozess beschleunigen und die Fehlerquote reduzieren. Die automatisierte Überprüfung von Einkommens- und Vermögensdaten kann auch die Genauigkeit der Antragsbearbeitung erhöhen.",
+      "erwarteter_nutzen": "Der vorausgefüllte Online-Antrag für Kindergeld bietet Eltern eine einfache und zeitsparende Möglichkeit, Kindergeld zu beantragen. Durch die Automatisierung der Datenübernahme und die integrierten Erinnerungsfunktionen wird die Antragstellung vereinfacht und das Risiko von Fehlern oder Fristversäumnissen minimiert. Für die Verwaltung bietet dies die Möglichkeit, Anträge effizienter zu bearbeiten und den Service für die Bürger zu verbessern.",
       "umsetzungshuerden": [
-        "Technische Umsetzung des digitalen Antragstools",
-        "Sicherstellung der Datenqualität und -sicherheit"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": true,
-      "review_reason": "titel_zu_kurz",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_015",
-      "rework_briefing_used": "Bitte einen zuständigen Träger benennen, da aktuell keiner angegeben ist. Zudem ist ELSTER nur sinnvoll, wenn Einkommensdaten relevant sind und BayernID nur bei echten Identifikationsprozessen. Integrationspunkte entsprechend anpassen.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_1",
-          "targets": [
-            "INN_001",
-            "INN_004",
-            "INN_006",
-            "INN_008"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        },
-        {
-          "merge_group": "merge_group_3",
-          "targets": [
-            "INN_005",
-            "INN_006"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_007",
-      "cluster_id": "solo_19",
-      "addressierte_topics": [
-        "19"
-      ],
-      "betroffene_leistungen": [
-        "Elterngeld",
-        "ElterngeldPlus",
-        "Elterngeldantrag Bayern"
-      ],
-      "klassifizierung": "informationsluecke",
-      "innovation_typ": "informations_service",
-      "titel": "Elterngeld-Assistent",
-      "kurzbeschreibung": "Ein interaktiver Online-Planungsassistent für Eltern, um die Antragstellung für Elterngeld zu erleichtern. Der Assistent unterstützt bei der optimalen Einlegung und Beantragung von Elternzeitmonaten.",
-      "konkrete_loesung": "Der Elterngeld-Assistent wird über BayernID die individuellen Einkommens- und Beschäftigungsdaten automatisch aus dem Elterngeldsystem und der Familienkasse abrufen. Eltern können Schritt für Schritt ihre Elternzeitmonate planen und den Antrag stellen. Der Assistent integriert sich nahtlos in den bestehenden Elterngeldantrag Bayern und bietet eine Echtzeit-Validierung von Fristen und Einkommensprüfungen, um Fehler und Nachfragen bei der Antragstellung zu minimieren. Durch die automatische Übernahme von Daten wird der Antragstellungsprozess beschleunigt und vereinfacht.",
-      "adressierte_phasen": [
-        "antragstellung"
-      ],
-      "zielgruppen": [
-        "Väter",
-        "Mütter",
-        "Alleinerziehende"
-      ],
-      "moegliche_traeger": [
-        "Elterngeldstelle",
-        "Familienkasse",
-        "Land Bayern"
-      ],
-      "anknuepfungspunkte": [
-        "Elterngeld",
-        "ElterngeldPlus",
-        "Elterngeldantrag Bayern"
-      ],
-      "integrationspunkte": [
-        "BayernID",
-        "ELSTER-Schnittstelle"
-      ],
-      "erwarteter_nutzen": "Der Elterngeld-Assistent bietet einen erheblichen Nutzen für Eltern, da er die Antragstellung für Elterngeld vereinfacht und beschleunigt. Durch die automatische Übernahme von Daten und die Echtzeit-Validierung von Fristen und Einkommensprüfungen können Fehler und Nachfragen minimiert werden. Für die Verwaltung bietet der Assistent eine Möglichkeit, den Antragstellungsprozess zu optimieren und die Bearbeitungszeit zu reduzieren.",
-      "umsetzungshuerden": [
-        "Technische Integration von BayernID und ELSTER-Schnittstelle",
-        "Abstimmung mit den beteiligten Behörden und Institutionen"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": false,
-      "review_reason": "",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_2",
-          "targets": [
-            "INN_002",
-            "INN_003",
-            "INN_007",
-            "INN_009"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_008",
-      "cluster_id": "solo_20",
-      "addressierte_topics": [
-        "20"
-      ],
-      "betroffene_leistungen": [],
-      "klassifizierung": "prozessproblem",
-      "innovation_typ": "digitalisierung",
-      "titel": "Familien-Info-Chat",
-      "kurzbeschreibung": "Ein interaktiver Chatbot für Familien, um Fragen zu beantworten und bei der Nutzung von Diensten zu unterstützen. Der Chatbot ist anonym und öffentlich zugänglich.",
-      "konkrete_loesung": "Der Chatbot wird auf der Website des Zentrums Bayern Familie und Soziales integriert und beantwortet häufige Fragen zu den Diensten und Leistungen. Er bietet niedrigschwellige Beratung und kann bei Bedarf an zuständige Sachbearbeiter oder weiterführende Online-Services verweisen. Der Chatbot ist auf Basis von FAQs und themenspezifischen Inhalten trainiert, um eine hohe Trefferquote bei den Anfragen zu erreichen.",
-      "adressierte_phasen": [
-        "information_suche"
-      ],
-      "zielgruppen": [
-        "Familien mit Kindern",
-        "Alleinerziehende"
-      ],
-      "moegliche_traeger": [
-        "ZBFS",
-        "Kommune"
-      ],
-      "anknuepfungspunkte": [
-        "Elterngeld"
-      ],
-      "removed_invalid_anknuepfungspunkte": [
-        "Familienberatung"
-      ],
-      "integrationspunkte": [
-        "Website des Zentrums Bayern Familie und Soziales",
-        "Öffentliche Datenbanken"
-      ],
-      "erwarteter_nutzen": "Für Bürger: Schnellere und einfachere Informationssuche, weniger Wartezeiten. Für die Verwaltung: Entlastung der Sachbearbeiter, verbesserte Erreichbarkeit der Dienste.",
-      "umsetzungshuerden": [
-        "Technische Integration in die bestehende Website",
-        "Schulung des Chatbots mit themenspezifischen Inhalten"
-      ],
-      "geschaetzter_aufwand": "mittel",
-      "prioritaet": 4,
-      "confidence": 0.7,
-      "needs_review": true,
-      "review_reason": "titel_zu_kurz",
-      "human_rework_applied": true,
-      "auto_rework_applied": false,
-      "rework_action_id": "EA_014",
-      "rework_briefing_used": "BayernID ist für einen Chatbot, der häufige Fragen beantwortet und niedrigschwellige Beratung bietet, nicht plausibel; bitte auf anonymisierte oder öffentlich zugängliche Zugänge umstellen.",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_1",
-          "targets": [
-            "INN_001",
-            "INN_004",
-            "INN_006",
-            "INN_008"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
-    },
-    {
-      "innovation_id": "INN_009",
-      "cluster_id": "solo_24",
-      "addressierte_topics": [
-        "24"
-      ],
-      "betroffene_leistungen": [
-        "Elterngeld digital",
-        "Elterngeld",
-        "Elterngeldantrag Bayern"
-      ],
-      "klassifizierung": "prozessproblem",
-      "innovation_typ": "digitalisierung",
-      "titel": "Elterngeld-Assistent",
-      "kurzbeschreibung": "Ein interaktiver Online-Assistent für die Antragstellung von Elterngeld, der über BayernID relevante Daten automatisch einliest. Dieser Assistent unterstützt Eltern bei der Antragstellung und reduziert Eingabefehler.",
-      "konkrete_loesung": "Der Elterngeld-Assistent führt Eltern schrittweise durch den Antragstellungsprozess und überprüft Eingaben in Echtzeit. Durch die Anbindung an BayernID und ELSTER-Schnittstellen werden persönliche und einkommensbezogene Daten automatisch eingefügt, um Fristen einzuhalten und Prozessrisiken zu minimieren. Der Assistent ist als Web- und Mobile-App verfügbar und bietet eine integrierte Echtzeit-Datenprüfung für Sachbearbeiter im Zentrum Bayern Familie und Soziales.",
-      "adressierte_phasen": [
-        "antragstellung"
-      ],
-      "zielgruppen": [
-        "Eltern mit Elterngeld-Antrag"
-      ],
-      "moegliche_traeger": [
-        "Elterngeldstelle",
-        "ZBFS"
-      ],
-      "anknuepfungspunkte": [
-        "Elterngeld digital",
-        "Elterngeld",
-        "Elterngeldantrag Bayern"
-      ],
-      "integrationspunkte": [
-        "BayernID",
-        "ELSTER-Schnittstelle"
-      ],
-      "erwarteter_nutzen": "Für Bürger: Reduzierung von Eingabefehlern und Fristüberschreitungen bei der Antragstellung von Elterngeld. Für die Verwaltung: Effizienzsteigerung durch automatisierte Datenübernahme und Echtzeit-Datenprüfung.",
-      "umsetzungshuerden": [
-        "Technische Anbindung an bestehende Systeme",
+        "Technische Integration von BayernID und Familienkasse-System",
         "Datensicherheit und Datenschutz"
       ],
       "geschaetzter_aufwand": "mittel",
       "prioritaet": 4,
       "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_009",
+      "cluster_id": "solo_21",
+      "addressierte_topics": [
+        "21"
+      ],
+      "betroffene_leistungen": [
+        "Kinderbetreuung"
+      ],
+      "klassifizierung": "informationsluecke",
+      "innovation_typ": "informations_service",
+      "titel": "Kindergarteninfo",
+      "kurzbeschreibung": "Ein interaktiver Online-Assistent für Eltern in Bayern, um Informationen über Kindergärten und deren Regelungen zu erhalten. Der Assistent bietet personalisierte Informationen und hilft bei der Suche nach geeigneten Kindergärten.",
+      "konkrete_loesung": "Der Online-Assistent wird über BayernID authentifiziert und bindet Daten aus dem Kinderbetreuungs-Portal und länderspezifischen Informationsquellen ein. Eltern können ihre spezifischen Bedürfnisse und Anforderungen eingeben und erhalten daraufhin passgenaue Informationen zu Kindergärten in ihrer Nähe, einschließlich Fristen, Wechselmöglichkeiten und länderspezifischer Regelungen. Der Assistent kann auch Fragen zu den Kindergärten beantworten und hilft bei der Anmeldung.",
+      "adressierte_phasen": [
+        "information_suche"
+      ],
+      "zielgruppen": [
+        "Eltern mit Kindern im Kindergartenalter"
+      ],
+      "moegliche_traeger": [
+        "Bayerisches Staatsministerium für Unterricht und Kultus",
+        "Kommune"
+      ],
+      "anknuepfungspunkte": [
+        "Kinderbetreuung"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "Kinderbetreuungs-Portal"
+      ],
+      "erwarteter_nutzen": "Für Eltern bietet der Online-Assistent eine einfache und schnelle Möglichkeit, Informationen über Kindergärten zu erhalten. Die Verwaltung kann durch den Assistenten die Anzahl der Anfragen reduzieren und die Effizienz der Kindergartenverwaltung verbessern.",
+      "umsetzungshuerden": [
+        "Datenintegration aus verschiedenen Quellen",
+        "Sicherstellung der Datenschutzanforderungen"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
+      "needs_review": true,
+      "review_reason": "titel_zu_kurz"
+    },
+    {
+      "innovation_id": "INN_010",
+      "cluster_id": "solo_23",
+      "addressierte_topics": [
+        "23"
+      ],
+      "betroffene_leistungen": [
+        "ElterngeldPlus",
+        "Elterngeld-Bescheid"
+      ],
+      "klassifizierung": "prozessproblem",
+      "innovation_typ": "digitalisierung",
+      "titel": "ElterngeldPlus-Erklärer",
+      "kurzbeschreibung": "Ein interaktiver digitaler Bescheid-Erklärer für ElterngeldPlus, der über BayernID auf individuelle Bescheide zugreift und komplexe Berechnungen visuell aufschlüsselt. Dies ermöglicht Eltern und Sachbearbeitern eine einfache und transparente Kommunikation.",
+      "konkrete_loesung": "Der ElterngeldPlus-Erklärer wird als Online-Assistent konzipiert, der nahtlos mit dem bestehenden Elterngeld-Bescheid-System und der Einkommensprüfung verknüpft ist. Eltern können über die BayernID auf ihren individuellen ElterngeldPlus-Bescheid zugreifen und die komplexen Berechnungsvarianten visuell aufgeschlüsselt erhalten. Automatisierte Rückfragen an die zuständige ZBFS-Regionalstelle sind möglich, um Unklarheiten zu beseitigen. Der Assistent wird so konzipiert, dass er die Bedarfe der Eltern und der Sachbearbeiter gleichermaßen berücksichtigt.",
+      "adressierte_phasen": [
+        "bescheid_und_kommunikation"
+      ],
+      "zielgruppen": [
+        "Eltern mit ElterngeldPlus-Antrag",
+        "Sachbearbeiter der ZBFS-Regionalstellen"
+      ],
+      "moegliche_traeger": [
+        "Bundesministerium für Familie, Senioren, Frauen und Jugend",
+        "ZBFS"
+      ],
+      "anknuepfungspunkte": [
+        "ElterngeldPlus",
+        "Elterngeld-Bescheid"
+      ],
+      "integrationspunkte": [
+        "BayernID",
+        "ELSTER-Schnittstelle",
+        "Einkommensprüfung"
+      ],
+      "erwarteter_nutzen": "Für Bürger: Einfachere und transparentere Kommunikation bezüglich des ElterngeldPlus, weniger Unklarheiten und Fehlanwendungen. Für die Verwaltung: Effizientere Bearbeitung von Anträgen und weniger Rückfragen durch automatisierte Prozesse.",
+      "umsetzungshuerden": [
+        "Integration mit bestehenden Systemen",
+        "Datensicherheit und Datenschutz",
+        "Benutzerfreundlichkeit und Usability"
+      ],
+      "geschaetzter_aufwand": "mittel",
+      "prioritaet": 4,
+      "confidence": 0.7,
       "needs_review": false,
-      "review_reason": "",
-      "merge_recommendations": [
-        {
-          "merge_group": "merge_group_2",
-          "targets": [
-            "INN_002",
-            "INN_003",
-            "INN_007",
-            "INN_009"
-          ],
-          "recommendation": "Konvergente Innovationen fachlich zusammenführen",
-          "human_accepted": true,
-          "auto_applied_by_evaluator": false
-        }
-      ]
+      "review_reason": ""
     }
   ]
 }

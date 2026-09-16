@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 
@@ -34,21 +33,18 @@ KEYWORDS = [
 ]
 
 HUMAN_DECISIONS_PATH = Path("data/evaluation/human_decisions.json")
+EVALUATOR_PATH = Path("data/evaluation/evaluator_output.json")
 
 
-def get_effective_keywords(decisions_path: Path = HUMAN_DECISIONS_PATH) -> list[str]:
+def get_effective_keywords(
+    decisions_path: Path = HUMAN_DECISIONS_PATH,
+    evaluator_path: Path = EVALUATOR_PATH,
+) -> list[str]:
     """Apply only human-accepted keyword decisions to the curated seed list."""
     effective = list(KEYWORDS)
-    if not decisions_path.is_file():
-        return effective
-    try:
-        data = json.loads(decisions_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return effective
+    from agents.human_feedback import accepted_human_decisions
 
-    for decision in data.get("decisions", []):
-        if decision.get("decision") != "accepted":
-            continue
+    for decision in accepted_human_decisions(evaluator_path, decisions_path):
         keyword = str(decision.get("target", "")).strip()
         if not keyword:
             continue

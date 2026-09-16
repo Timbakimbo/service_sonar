@@ -1,63 +1,123 @@
 import unittest
+from unittest.mock import patch
 
-from agents.evaluator_agent import build_actions
+from agents.evaluator_agent import build_actions, ensure_priorisierung_vollstaendig, run_pass2_gaps
 
 
 class EvaluatorActionTests(unittest.TestCase):
-    def test_build_actions_assigns_autonomy_levels(self):
-        output = {
-            "topic_evaluations": [
-                {
-                    "topic_id": "15",
-                    "verdict": "remove",
-                    "noise": True,
-                    "in_scope": False,
-                    "begruendung": "Cookie-Artefakt",
-                }
+    def test_pass2_scope_join_accepts_string_and_integer_like_canonical_ids(self):
+        inputs = {
+            "gaps": [
+                {"topic_id": 1, "kernproblem": "eins", "klassifizierung": "prozessproblem"},
+                {"topic_id": "3", "kernproblem": "drei", "klassifizierung": "echte_luecke"},
+                {"topic_id": "2", "kernproblem": "zwei", "klassifizierung": "irrelevant"},
             ],
-            "gap_evaluations": [
-                {
-                    "topic_id": "5",
-                    "verdict": "reclassify",
-                    "vorgeschlagene_klassifikation": "informationsluecke",
-                    "begruendung": "Matching fraglich",
-                }
-            ],
-            "innovation_evaluations": [
-                {
-                    "innovation_id": "INN_001",
-                    "begruendung": "Träger prüfen",
-                    "rework_briefing": "Träger korrigieren",
-                }
-            ],
-            "aggregierte_aktionen": {
-                "regenerieren": ["INN_001"],
-                "konvergenz_zusammenfuehren": [["INN_001", "INN_002"]],
-            },
-            "keyword_feedback": {
-                "neue_keywords_vorgeschlagen": ["Kita-Finanzierung"],
-                "schwache_keywords": ["ZBFS"],
-            },
+            "reference": {"services": []},
         }
-        inputs = {"source_stats": {
-            "reddit": {
-                "attempted_requests": 10,
-                "blocked_403_count": 10,
-                "successful_requests": 0,
-                "existing_data_preserved": True,
-            }
-        }}
+        pass1 = {"topic_evaluations": [
+            {"topic_id": "1", "in_scope": True, "verdict": "keep"},
+            {"topic_id": 3, "in_scope": True, "verdict": "keep"},
+            {"topic_id": 2, "in_scope": False, "verdict": "remove"},
+        ]}
+        mocked_result = {"gap_evaluations": [
+            {"topic_id": "1", "verdict": "accept"},
+            {"topic_id": "3", "verdict": "accept"},
+        ]}
 
-        actions = build_actions(output, inputs)
-        by_type = {action["action_type"]: action for action in actions}
+        with patch("agents.evaluator_agent.call_llm", return_value=mocked_result) as llm:
+            result = run_pass2_gaps(inputs, pass1)
 
-        self.assertEqual(by_type["topic_remove"]["autonomy"], "auto_apply")
-        self.assertEqual(by_type["gap_reclassify"]["autonomy"], "auto_apply")
-        self.assertEqual(by_type["innovation_rework"]["autonomy"], "human_required")
-        self.assertEqual(by_type["keyword_add"]["autonomy"], "human_required")
-        self.assertEqual(by_type["keyword_remove"]["autonomy"], "human_required")
-        self.assertEqual(by_type["source_quality_warning"]["autonomy"], "suggestion_only")
-        self.assertTrue(all(action["action_id"].startswith("EA_") for action in actions))
+        prompt = llm.call_args.args[0]
+        self.assertEqual(result, mocked_result)
+        self.assertIn("--- Gap Topic 1 ---", prompt)
+        self.assertIn("--- Gap Topic 3 ---", prompt)
+        self.assertNotIn("--- Gap Topic 2 ---", prompt)
+
+    def make_actions(self, topics=None, gaps=None, input_gaps=None):
+        output = {
+            "evaluator_run_id": "ER_current",
+            "topic_evaluations": topics or [],
+            "gap_evaluations": gaps or [],
+            "innovation_evaluations": [],
+            "aggregierte_aktionen": {"regenerieren": [], "konvergenz_zusammenfuehren": []},
+            "keyword_feedback": {},
+        }
+        return build_actions(output, {"gaps": input_gaps or [], "innovations": [], "source_stats": {}})
+
+    def test_topic_rights_matrix(self):
+        actions = self.make_actions(topics=[
+            {"topic_id": "1", "verdict": "remove", "noise": True, "in_scope": False},
+            {"topic_id": "2", "verdict": "remove", "noise": False, "in_scope": False,
+             "unambiguous": True, "confidence": 0.9},
+            {"topic_id": "3", "verdict": "remove", "noise": False, "in_scope": False,
+             "unambiguous": False, "confidence": 0.99},
+            {"topic_id": "4", "verdict": "remove", "noise": False, "in_scope": False,
+             "unambiguous": True, "confidence": 0.8},
+        ])
+        by_topic = {a["topic_id"]: a for a in actions}
+        self.assertEqual(by_topic["1"]["autonomy"], "auto_apply")
+        self.assertEqual(by_topic["2"]["autonomy"], "auto_apply")
+        self.assertEqual(by_topic["3"]["autonomy"], "human_required")
+        self.assertEqual(by_topic["4"]["autonomy"], "human_required")
+        self.assertIsNone(by_topic["1"]["confidence"])
+
+    def test_gap_rights_matrix(self):
+        input_gaps = [
+            {"topic_id": "5", "cluster_id": "elterngeld", "klassifizierung": "prozessproblem"},
+            {"topic_id": "6", "cluster_id": "kindergeld", "klassifizierung": "prozessproblem"},
+            {"topic_id": "7", "cluster_id": "wohnen", "klassifizierung": "prozessproblem"},
+        ]
+        actions = self.make_actions(gaps=[
+            {"topic_id": "5", "verdict": "reclassify", "vorgeschlagene_klassifikation": "informationsluecke",
+             "unambiguous": True, "confidence": 0.9},
+            {"topic_id": "6", "verdict": "reclassify", "vorgeschlagene_klassifikation": "informationsluecke",
+             "unambiguous": False, "confidence": 0.99},
+            {"topic_id": "7", "verdict": "reclassify", "vorgeschlagene_klassifikation": "echte_luecke",
+             "unambiguous": True, "confidence": 0.99},
+        ], input_gaps=input_gaps)
+        by_topic = {a["topic_id"]: a for a in actions}
+        self.assertEqual(by_topic["5"]["autonomy"], "auto_apply")
+        self.assertEqual(by_topic["6"]["autonomy"], "human_required")
+        self.assertEqual(by_topic["7"]["autonomy"], "human_required")
+        self.assertEqual(by_topic["5"]["original_value"], "prozessproblem")
+
+    def test_new_real_gap_always_creates_human_review_even_when_evaluator_accepts(self):
+        actions = self.make_actions(
+            gaps=[{"topic_id": "9", "verdict": "accept", "begruendung": "plausibel"}],
+            input_gaps=[{"topic_id": "9", "cluster_id": "solo_9", "klassifizierung": "echte_luecke",
+                         "begruendung": "keine Leistung"}],
+        )
+        action = next(a for a in actions if a["action_type"] == "real_gap_review")
+        self.assertEqual(action["autonomy"], "human_required")
+        self.assertEqual(action["original_value"], "echte_luecke")
+        self.assertEqual(action["evaluator_verdict"], "accept")
+        self.assertEqual(action["stable_target"], "gap:solo_9:topic:9")
+        self.assertNotIn("proposed_value", action)
+
+    def test_innovation_rework_uses_cluster_identity(self):
+        output = {
+            "evaluator_run_id": "ER_current", "topic_evaluations": [], "gap_evaluations": [],
+            "innovation_evaluations": [{"innovation_id": "INN_005", "verdict": "rework"}],
+            "aggregierte_aktionen": {"regenerieren": ["INN_005"], "konvergenz_zusammenfuehren": []},
+            "keyword_feedback": {},
+        }
+        actions = build_actions(output, {"gaps": [], "innovations": [
+            {"innovation_id": "INN_005", "cluster_id": "wohnen", "titel": "Wohnhilfe"}
+        ], "source_stats": {}})
+        action = actions[0]
+        self.assertEqual(action["target"], "wohnen")
+        self.assertEqual(action["stable_target"], "cluster:wohnen")
+        self.assertEqual(action["evaluator_run_id"], "ER_current")
+
+    def test_ranking_removes_invalid_and_duplicate_ids_and_resequences(self):
+        ranked = ensure_priorisierung_vollstaendig([
+            {"rang": 7, "innovation_id": "INN_005"},
+            {"rang": 8, "innovation_id": "INN_005"},
+            {"rang": 2, "innovation_id": "INVALID"},
+            {"rang": 9, "innovation_id": "INN_001"},
+        ], {"INN_001", "INN_005", "INN_007"})
+        self.assertEqual([x["innovation_id"] for x in ranked], ["INN_005", "INN_001", "INN_007"])
+        self.assertEqual([x["rang"] for x in ranked], [1, 2, 3])
 
 
 if __name__ == "__main__":

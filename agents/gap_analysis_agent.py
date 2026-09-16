@@ -45,7 +45,12 @@ from typing import Any
 from dotenv import load_dotenv
 from groq import Groq
 
-from agents.human_feedback import gap_reclassifications, topic_removals
+from agents.human_feedback import (
+    gap_reclassifications,
+    report_stale_decisions,
+    topic_removal_actions,
+    topic_removals,
+)
 
 load_dotenv()
 
@@ -341,6 +346,26 @@ def normalize_cluster_id(raw: Any, topic_id: str) -> str:
     return s or f"solo_{topic_id}"
 
 
+def canonicalize_topic_id(raw: Any, expected_topic_ids: set[str]) -> tuple[str, str]:
+    """Map an LLM topic reference to one unambiguous current Analysis topic ID."""
+    raw_topic_id = str(raw or "").strip()
+    canonical_ids = {str(topic_id).strip() for topic_id in expected_topic_ids}
+
+    if raw_topic_id in canonical_ids:
+        return raw_topic_id, "exact"
+
+    prefix_matches = {
+        topic_id
+        for topic_id in canonical_ids
+        if topic_id and raw_topic_id.startswith(f"{topic_id}_")
+    }
+    if len(prefix_matches) == 1:
+        return next(iter(prefix_matches)), "prefixed"
+    if len(prefix_matches) > 1:
+        return raw_topic_id, "ambiguous"
+    return raw_topic_id, "unknown"
+
+
 def detect_generic_recommendation(text: str) -> bool:
     """
     Lightweight Generic-Detection ohne externe Dependency.
@@ -441,7 +466,10 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
     normalized_gaps = []
     for raw_gap in result.get("gaps", []):
         gap = dict(raw_gap)
-        gap["topic_id"] = str(gap.get("topic_id", "")).strip()
+        raw_topic_id = str(gap.get("topic_id", "")).strip()
+        gap["topic_id"], topic_id_status = canonicalize_topic_id(
+            raw_topic_id, expected_topic_ids
+        )
 
         cls = str(gap.get("klassifizierung", "")).strip()
         if cls not in VALID_CLASSIFICATIONS:
@@ -498,7 +526,9 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
 
         needs_review_reasons = []
 
-        if gap["topic_id"] not in expected_topic_ids:
+        if topic_id_status == "ambiguous":
+            needs_review_reasons.extend(["unerwartete_topic_id", "mehrdeutige_topic_id"])
+        elif gap["topic_id"] not in expected_topic_ids:
             needs_review_reasons.append("unerwartete_topic_id")
 
         # Diese Klassen setzen logisch meistens voraus, dass mindestens eine echte Leistung matcht.
@@ -529,7 +559,12 @@ def validate_and_normalize_gaps(result: dict, reference: dict, expected_topic_id
             gap["customer_journey_phase"] = phase
 
         # LLM-cluster_id nur zur Diagnose behalten; consolidate_clusters() ist maßgeblich.
-        gap["cluster_id_llm"] = normalize_cluster_id(gap.get("cluster_id"), gap["topic_id"])
+        # Falls das LLM die semantische Clusterbezeichnung fälschlich in topic_id geliefert
+        # hat und keine cluster_id mitsendet, bleibt sie hier diagnostisch erhalten.
+        raw_cluster_id = gap.get("cluster_id")
+        if not str(raw_cluster_id or "").strip() and raw_topic_id != gap["topic_id"]:
+            raw_cluster_id = raw_topic_id
+        gap["cluster_id_llm"] = normalize_cluster_id(raw_cluster_id, gap["topic_id"])
 
         if needs_review_reasons:
             gap["needs_review"] = True
@@ -605,13 +640,17 @@ def apply_gap_feedback(gaps: list[dict], reclassifications: dict[str, dict]) -> 
             continue
 
         original = gap.get("klassifizierung")
+        gap["original_value"] = action.get("original_value", original)
         if original != proposed:
             gap["klassifizierung_original"] = original
             gap["klassifizierung"] = proposed
 
         gap["human_override"] = action.get("decision") == "accepted"
         gap["auto_applied_by_evaluator"] = action.get("autonomy") == "auto_apply"
+        gap["evaluator_run_id"] = action.get("evaluator_run_id", "")
         gap["evaluator_action_id"] = action.get("action_id", "")
+        gap["application_status"] = "applied" if original != proposed else "confirmed_no_change"
+        gap["conflict_reason"] = ""
         gap["human_override_reason"] = action.get("recommendation") or action.get("reason", "")
 
         if feedback_questions_matching(action):
@@ -624,6 +663,7 @@ def apply_gap_feedback(gaps: list[dict], reclassifications: dict[str, dict]) -> 
             if "evaluator_matching_unplausibel" not in existing:
                 existing.append("evaluator_matching_unplausibel")
             gap["review_reason"] = ";".join(existing)
+            gap["conflict_reason"] = "evaluator_matching_unplausibel"
 
         applied += 1
     return applied
@@ -850,7 +890,9 @@ def run() -> int:
     analysis = load_json(ANALYSIS_PATH)
     reference = load_json(REFERENCE_PATH)
 
-    removed_topics = topic_removals()
+    report_stale_decisions()
+    removal_actions = topic_removal_actions()
+    removed_topics = {str(action.get("topic_id") or action.get("target")) for action in removal_actions}
     if removed_topics:
         print(f"  {len(removed_topics)} Topic-Removal Feedback-Aktion(en) aktiv: {sorted(removed_topics)}")
 
@@ -873,7 +915,7 @@ def run() -> int:
         return 0
 
     # Pass 1: Strukturierung.
-    print("\nPass 1: Strukturierung (1 Groq-Call für alle Topics)...")
+    print("\nPass 1: Strukturierung (1 LLM-Call für alle Topics)...")
     raw_result = run_gap_analysis_pass1(client, analysis, reference)
     result = validate_and_normalize_gaps(raw_result, reference, expected_topic_ids)
     gaps = result.get("gaps", [])
@@ -900,7 +942,7 @@ def run() -> int:
     print(f"  {cluster_summary['anzahl_cluster']} Cluster gebildet")
 
     # Pass 2: Konkretisierung pro relevantem Cluster.
-    print("\nPass 2: Konkretisierung (1 Groq-Call pro relevantem Cluster)...")
+    print("\nPass 2: Konkretisierung (1 LLM-Call pro relevantem Cluster)...")
     pass2_calls = 0
     pass2_skipped = 0
     for cluster_id, cluster_gaps in clusters.items():
@@ -961,6 +1003,21 @@ def run() -> int:
         "pass_statistik": pass_statistik,
         "review_count": review_count,
         "invalid_matches_removed": invalid_matches_removed,
+        "feedback_audit": {
+            "topic_removals": [
+                {
+                    "topic_id": str(action.get("topic_id") or action.get("target")),
+                    "evaluator_run_id": action.get("evaluator_run_id", ""),
+                    "evaluator_action_id": action.get("action_id", ""),
+                    "original_value": action.get("original_value"),
+                    "auto_applied_by_evaluator": action.get("autonomy") == "auto_apply",
+                    "human_override": action.get("decision") == "accepted",
+                    "application_status": "applied_topic_excluded",
+                    "conflict_reason": "",
+                }
+                for action in removal_actions
+            ]
+        },
         "gaps": gaps,
     }
 

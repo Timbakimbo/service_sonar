@@ -7,7 +7,8 @@ load_dotenv()
 INPUT_PATH = "data/preprocessed/preprocessed.json"
 OUTPUT_PATH = "data/analysis/analysis_output.json"
 
-MODEL = "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip() or DEFAULT_GEMINI_MODEL
 
 # Kontext für die LLM-Interpretation
 DOMAIN_CONTEXT = """Du analysierst Daten für ein Service Sonar im Bereich
@@ -163,7 +164,7 @@ Antworte NUR mit validem JSON in diesem Format:
 }}"""
 
     response = client.models.generate_content(
-        model=MODEL,
+        model=GEMINI_MODEL,
         contents=prompt
     )
 

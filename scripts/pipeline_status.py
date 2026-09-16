@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -167,76 +168,101 @@ def stage_status(root: Path, stage: Stage) -> tuple[str, str]:
     return "READY", "alle Inputs valide"
 
 
-def evaluator_gate(root: Path) -> tuple[bool, list[str]]:
+def evaluator_action_status(root: Path) -> dict[str, Any]:
     valid, _ = validate_artifact(root, EVALUATION)
     if not valid:
-        return False, []
+        return {
+            "unresolved_human_required": 0, "auto_actions_available": 0,
+            "suggestions_available": 0, "stale_decisions_ignored": 0,
+            "legacy_human_action_count": 0, "legacy_evaluator_output": False,
+            "legacy_auto_action_count": 0, "legacy_suggestion_count": 0,
+            "fresh_evaluator_run_required": False,
+        }
     with (root / EVALUATION.path).open(encoding="utf-8") as handle:
         data: dict[str, Any] = json.load(handle)
-    decided: set[tuple[str, str]] = set()
+    actions = data.get("aktionen", []) if isinstance(data.get("aktionen"), list) else []
+    run_id = str(data.get("evaluator_run_id", ""))
+    required = {"action_id", "action_type", "evaluator_run_id", "stable_target"}
+    provenance_valid = bool(run_id) and all(
+        isinstance(action, dict)
+        and all(str(action.get(field, "")).strip() for field in required)
+        and str(action.get("evaluator_run_id")) == run_id
+        for action in actions
+    )
+    current = {
+        str(action.get("action_id")): action
+        for action in actions if action.get("action_id")
+    }
+    decided: set[str] = set()
+    stale_count = 0
     decisions_path = root / HUMAN_DECISIONS_PATH
     if decisions_path.is_file():
         try:
             with decisions_path.open(encoding="utf-8") as handle:
                 human_data = json.load(handle)
-            decided = {
-                (str(item.get("action_type", "")), str(item.get("target", "")))
-                for item in human_data.get("decisions", [])
-                if item.get("decision") in ("accepted", "rejected")
-            }
+            human_decisions = human_data.get("decisions", [])
+            if not provenance_valid:
+                stale_count = len(human_decisions)
+            for item in human_decisions if provenance_valid else []:
+                action_id = str(item.get("action_id", ""))
+                action = current.get(action_id)
+                matches = (
+                    bool(run_id) and str(item.get("evaluator_run_id", "")) == run_id
+                    and action is not None
+                    and str(item.get("stable_target", "")) == str(action.get("stable_target", ""))
+                    and str(item.get("action_type", "")) == str(action.get("action_type", ""))
+                )
+                if matches and item.get("decision") in ("accepted", "rejected"):
+                    decided.add(action_id)
+                else:
+                    stale_count += 1
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
-    reasons = []
-    actions_list = data.get("aktionen", [])
-    if "aktionen" in data and isinstance(actions_list, list):
-        review_count = data.get("review_count", 0)
-        if isinstance(review_count, int) and review_count > 0:
-            reasons.append(f"{review_count} Review-Fall/Fälle")
-        auto_count = sum(1 for item in actions_list if item.get("autonomy") == "auto_apply")
-        suggestion_count = sum(1 for item in actions_list if item.get("autonomy") == "suggestion_only")
-        human_count = sum(
-            1 for item in actions_list
-            if item.get("autonomy", "human_required") == "human_required"
-            and (str(item.get("action_type", "")), str(item.get("target", ""))) not in decided
-        )
-        if human_count:
-            reasons.append(f"human_required_actions: {human_count}")
-        if auto_count:
-            reasons.append(f"auto_apply_actions: {auto_count}")
-        if suggestion_count:
-            reasons.append(f"suggestion_only: {suggestion_count}")
-        return bool(reasons), reasons
-
-    review_count = data.get("review_count", 0)
-    if isinstance(review_count, int) and review_count > 0:
-        reasons.append(f"{review_count} Review-Fall/Fälle")
-    actions = data.get("aggregierte_aktionen", {})
-    action_types = {
-        "regenerieren": "innovation_rework",
-        "reklassifizieren": "gap_reclassify",
-        "topics_entfernen": "topic_remove",
+    legacy_human_count = sum(
+        1 for action in actions if action.get("autonomy") == "human_required"
+    ) if not provenance_valid else 0
+    legacy_auto_count = sum(
+        1 for action in actions if action.get("autonomy") == "auto_apply"
+    ) if not provenance_valid else 0
+    legacy_suggestion_count = sum(
+        1 for action in actions if action.get("autonomy") == "suggestion_only"
+    ) if not provenance_valid else 0
+    unresolved = sum(
+        1 for action in actions
+        if provenance_valid and action.get("autonomy") == "human_required"
+        and str(action.get("action_id", "")) not in decided
+    )
+    return {
+        "unresolved_human_required": unresolved,
+        "auto_actions_available": sum(
+            1 for action in actions if provenance_valid and action.get("autonomy") == "auto_apply"
+        ),
+        "suggestions_available": sum(
+            1 for action in actions if provenance_valid and action.get("autonomy") == "suggestion_only"
+        ),
+        "stale_decisions_ignored": stale_count,
+        "legacy_human_action_count": legacy_human_count,
+        "legacy_auto_action_count": legacy_auto_count,
+        "legacy_suggestion_count": legacy_suggestion_count,
+        "legacy_evaluator_output": not provenance_valid,
+        "fresh_evaluator_run_required": not provenance_valid,
     }
-    if isinstance(actions, dict):
-        for name, values in actions.items():
-            if not values:
-                continue
-            if name == "konvergenz_zusammenfuehren":
-                open_values = [value for index, value in enumerate(values, 1)
-                               if ("innovation_merge", f"merge_group_{index}") not in decided]
-            else:
-                action_type = action_types.get(name, name)
-                open_values = [value for value in values if (action_type, str(value)) not in decided]
-            if open_values:
-                reasons.append(f"{name}: {len(open_values)}")
-    keyword_feedback = data.get("keyword_feedback", {})
-    if isinstance(keyword_feedback, dict):
-        for name in ("schwache_keywords", "neue_keywords_vorgeschlagen"):
-            values = keyword_feedback.get(name)
-            action_type = "keyword_remove" if name == "schwache_keywords" else "keyword_add"
-            open_values = [value for value in (values or []) if (action_type, str(value)) not in decided]
-            if open_values:
-                reasons.append(f"{name}: {len(open_values)}")
-    return bool(reasons), reasons
+
+
+def evaluator_gate(root: Path, status: dict[str, Any] | None = None) -> tuple[bool, list[str]]:
+    status = status or evaluator_action_status(root)
+    count = status["unresolved_human_required"]
+    return (bool(count), [f"human_required_actions: {count}"] if count else [])
+
+
+def configure_windows_safe_output() -> None:
+    """Avoid UnicodeEncodeError on restrictive Windows console encodings."""
+    reconfigure = getattr(sys.stdout, "reconfigure", None)
+    if callable(reconfigure):
+        try:
+            reconfigure(errors="replace")
+        except (OSError, ValueError):
+            pass
 
 
 def run(root: Path, selected_stage: str | None = None, as_json: bool = False) -> int:
@@ -246,20 +272,37 @@ def run(root: Path, selected_stage: str | None = None, as_json: bool = False) ->
         status, detail = stage_status(root, stage)
         results.append({"stage": stage.name, "status": status, "detail": detail, "command": stage.command})
 
-    human_gate, gate_reasons = evaluator_gate(root)
+    action_status = evaluator_action_status(root)
+    human_gate, gate_reasons = evaluator_gate(root, action_status)
     if as_json:
-        print(json.dumps({"stages": results, "human_gate": human_gate, "gate_reasons": gate_reasons},
+        print(json.dumps({"stages": results, "human_gate": human_gate, "gate_reasons": gate_reasons,
+                          "legacy_evaluator_output": action_status["legacy_evaluator_output"],
+                          "fresh_evaluator_run_required": action_status["fresh_evaluator_run_required"],
+                          "action_status": action_status},
                          ensure_ascii=False, indent=2))
     else:
         width = max(len(item["stage"]) for item in results)
         for item in results:
             print(f"{item['stage']:<{width}}  {item['status']:<14}  {item['detail']}")
+        print(
+            "\nEvaluator-Aktionen: "
+            f"human_offen={action_status['unresolved_human_required']}, "
+            f"auto_verfuegbar={action_status['auto_actions_available']}, "
+            f"vorschlaege={action_status['suggestions_available']}, "
+            f"stale_ignoriert={action_status['stale_decisions_ignored']}, "
+            f"legacy_human={action_status['legacy_human_action_count']}, "
+            f"legacy_auto={action_status['legacy_auto_action_count']}, "
+            f"legacy_vorschlaege={action_status['legacy_suggestion_count']}"
+        )
         actionable = next((item for item in results if item["status"] in ("OUTPUT INVALID", "READY")), None)
-        if actionable:
+        if action_status["legacy_evaluator_output"] and selected_stage in (None, "evaluator"):
+            print("\nLEGACY EVALUATOR OUTPUT - FRESH EVALUATOR RUN REQUIRED")
+            print("Vor Human Review zuerst den Evaluator manuell neu ausfuehren.")
+        elif actionable:
             print(f"\nNächste manuelle Aktion: {actionable['command']}")
         elif human_gate and selected_stage in (None, "evaluator"):
             print("\nHUMAN DECISION REQUIRED: " + "; ".join(gate_reasons))
-            print("Vorgehen: evaluator_output.json prüfen und den Human-in-the-Loop-Abschnitt im RUNBOOK lesen.")
+            print("Vorgehen: evaluator_output.json pruefen und den Human-in-the-Loop-Abschnitt im RUNBOOK lesen.")
         elif all(item["status"].startswith("OUTPUT VALID") for item in results):
             print("\nAlle geprüften Stage-Outputs sind technisch valide.")
 
@@ -272,6 +315,8 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="Maschinenlesbare Ausgabe")
     parser.add_argument("--root", type=Path, default=Path.cwd(), help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if not args.json:
+        configure_windows_safe_output()
     return run(args.root.resolve(), args.stage, args.json)
 
 

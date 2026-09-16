@@ -138,6 +138,7 @@ def compute_reddit_metrics(run_label: str, run_stats: dict | None = None) -> dic
         "partial_posts_collected": run_stats.get("partial_posts_collected", 0),
         "partial_output_path": run_stats.get("partial_output_path", ""),
         "preserve_reason": run_stats.get("preserve_reason", ""),
+        "run_status": run_stats.get("run_status", "unknown"),
     }
     metrics.update(word_stats(posts))
     return metrics

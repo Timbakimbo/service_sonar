@@ -44,6 +44,15 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
 Für Analysis wird `GEMINI_API_KEY`, für Gap Analysis und Innovation standardmäßig
 `GROQ_API_KEY` benötigt. Gap Analysis und Evaluator können gezielt über
 `GAP_BACKEND=openai` bzw. `EVALUATOR_BACKEND=openai` mit `OPENAI_API_KEY` laufen.
@@ -74,6 +83,10 @@ python scripts/pipeline_status.py --json
 Exit-Code `0` bedeutet, dass alle ausgewählten Outputs technisch valide sind. Exit-Code
 `1` bedeutet, dass mindestens eine Stage bereit, blockiert oder ungültig ist. Die Prüfung
 bewertet keine fachliche Qualität, startet keinen Agent und schreibt keine Datei.
+
+Der Status zeigt Evaluator-Aktionen getrennt an: offene `human_required`-Aktionen aktivieren
+das Human Gate; verfügbare `auto_apply`-Aktionen, `suggestion_only`-Hinweise, allgemeine
+`review_count`-Werte und ignorierte stale Decisions sind reine Statusinformationen.
 
 ## Stages
 
@@ -111,8 +124,8 @@ Der Evaluator unterscheidet drei Rechte-Stufen:
 
 | Stufe | Bedeutung | Beispiele |
 |---|---|---|
-| `auto_apply` | Low-risk-Korrektur wird beim nächsten manuellen Ziel-Agent-Lauf berücksichtigt. | technisches Noise-Topic entfernen, sichere Gap-Reklassifikation |
-| `human_required` | Mensch muss akzeptieren, ablehnen oder vertagen. | Keywords ändern, Innovation reworken, Innovationen mergen |
+| `auto_apply` | Low-risk-Korrektur wird beim nächsten manuellen Ziel-Agent-Lauf berücksichtigt. | technisches Noise; eindeutig out-of-scope bei hoher Confidence; eindeutige hoch-konfidente Reklassifikation, nie zu `echte_luecke` |
+| `human_required` | Mensch muss akzeptieren, ablehnen oder vertagen. | mehrdeutige/niedrig-konfidente Topic-Entfernung, Keywords, Innovation-Rework/-Merge, jede neue oder vorgeschlagene `echte_luecke` |
 | `suggestion_only` | Nur Hinweis für Entwickler/Team, nie automatische Anwendung. | Scraper-/Code-/Prompt-Verbesserung |
 
 Das Terminal-Review kann für alle Aktionen oder gezielt für einen Bereich gestartet werden:
@@ -125,8 +138,29 @@ python scripts/review_evaluator.py --include-auto --include-suggestions
 ```
 
 Für jede Empfehlung wird `akzeptiert`, `abgelehnt` oder `vertagt` erfasst. Das Ergebnis liegt
-in `data/evaluation/human_decisions.json`; spätere Review-Sitzungen ergänzen beziehungsweise
-aktualisieren bestehende Entscheidungen. Es wird keine Stage automatisch gestartet.
+in `data/evaluation/human_decisions.json`; spätere Review-Sitzungen desselben Evaluator-Laufs
+ergänzen beziehungsweise aktualisieren bestehende Entscheidungen. Bei einem neuen Evaluator-Lauf
+werden alte Entscheidungen nicht übernommen. Es wird keine Stage automatisch gestartet.
+
+Jeder Evaluator-Output besitzt eine eindeutige `evaluator_run_id`. Jede Aktion hat eine
+deterministische `action_id` aus Aktionstyp und stabiler Topic-/Gap-/Cluster-Identität. Eine
+Human Decision gilt nur, wenn beide IDs und das stabile Ziel zum aktuellen Evaluator-Output
+passen. Legacy- oder alte Entscheidungen werden als stale gemeldet und nicht konsumiert.
+
+Semantik: akzeptierte aktuelle `human_required`-Aktionen sind erledigt und dürfen konsumiert
+werden; abgelehnte Aktionen sind erledigt und werden nicht konsumiert. Vertagte Aktionen bleiben
+offen, erscheinen weiter mit `--only-open`, aktivieren weiterhin das Human Gate und werden nicht
+konsumiert. Eine noch unentschiedene `auto_apply`-Aktion darf beim nächsten manuell gestarteten
+Ziellauf wirken. Stale Entscheidungen schließen keine aktuelle Aktion und deaktivieren kein
+Human Gate.
+
+Fehlt dem Evaluator-Output eine gültige `evaluator_run_id`/Action-Provenienz, zeigt der Status
+`LEGACY EVALUATOR OUTPUT — FRESH EVALUATOR RUN REQUIRED`. Dieser Zustand ist kein normal
+auflösbares Human Gate; `review_evaluator.py` beendet sich vor Fragen und schreibt keine Decisions.
+
+Jede initiale Klassifikation `echte_luecke` erzeugt unabhängig vom LLM-Verdict eine
+`real_gap_review`-Aktion. Ablehnung erfindet keine Ersatzklassifikation; der Mensch entscheidet
+anschließend bewusst, ob und wo ein neuer manueller Lauf erforderlich ist.
 
 | Evaluator-Signal | Menschliche Entscheidung | Betroffene Wiederholung |
 |---|---|---|
@@ -135,7 +169,7 @@ aktualisieren bestehende Entscheidungen. Es wird keine Stage automatisch gestart
 | `topics_entfernen` | Nur bei riskanten Fällen prüfen; technische/out-of-scope Topics können `auto_apply` sein. | Gap Analysis ignoriert Auto-/Accepted-Topic-Removals beim nächsten manuellen Lauf. |
 | `konvergenz_zusammenfuehren` | Ähnliche Ideen vergleichen und eine führende Lösung oder klare Abgrenzung wählen. | Innovationslogik/-input anpassen; Innovation und Evaluator erneut starten. |
 | `schwache_keywords` | Nicht automatisch löschen; anhand Quellen und Topics prüfen, ob das Keyword überwiegend Noise liefert. | Bei bestätigter Änderung neuer Lauf ab Source Discovery. |
-| `neue_keywords_vorgeschlagen` | Nutzen, Scope und erwartbare Quellen prüfen; nur bewusst in `config/keywords.py` übernehmen. | Neuer Lauf ab Source Discovery. |
+| `neue_keywords_vorgeschlagen` | Nutzen, Scope und erwartbare Quellen prüfen und provenance-gebunden akzeptieren/ablehnen/vertagen. Akzeptierte aktuelle Entscheidungen werden beim nächsten manuell gestarteten Discovery-/Reddit-Lauf zur unveränderten Seed-Liste zugeschaltet. | Neuer manueller Lauf ab Source Discovery. |
 
 Akzeptierte Keyword-Ergänzungen und -Entfernungen werden beim nächsten manuell gestarteten
 Source-Discovery- und Reddit-Lauf angewendet. Die Seed-Liste bleibt unverändert und die
@@ -152,10 +186,15 @@ Abbruch bei fehlender Konvergenz.
 ## Typische Fehler
 
 - **API-Key fehlt:** `.env` prüfen; nur die LLM-Stages benötigen Keys.
+- **Evaluator/Innovation komplett fehlgeschlagen:** Bestehender valider Output bleibt
+  byte-identisch erhalten und der Prozess endet nonzero. Teil-Erfolge tragen explizite
+  `output_status`, Fehleranzahl und Pass-/Cluster-IDs.
 - **Web 403/404 oder robots.txt-Skip:** Einzelne Skips sind normal; Output-Größe und Logs prüfen.
 - **Reddit 403:** Ein Partial-Output ist kein erfolgreicher vollständiger Lauf. Bei vollständig
   blockierten Diagnose-Runs bleibt der bestehende Corpus erhalten und der Status zeigt
   `OUTPUT VALID / BLOCKED`.
+- **Reddit liefert trotz erfolgreicher Requests null verwendbare Posts:** Der bestehende
+  Haupt-Corpus bleibt ebenfalls erhalten; der Metrik-Grund lautet `zero_usable_posts`.
 - **Leerer Output:** Stage gilt als fehlgeschlagen, auch bei syntaktisch korrektem JSON.
 - **Metrics partial/missing:** Evaluator läuft defensiv weiter; `source_stats_status` prüfen.
 - **Review-Zähler größer null:** Kein technischer Abbruch, aber fachliche Freigabe erforderlich.
@@ -166,3 +205,12 @@ Ein Lauf ist abgeschlossen, wenn der Status-Checker alle Outputs als valide meld
 ungeklärten Reviews verbleiben, alle Aktionen umgesetzt oder begründet verworfen wurden
 und die priorisierten Innovationen fachlich freigegeben sind. Die Entscheidung wird in
 den Projekt-/Thesis-Notizen festgehalten; dieses Runbook führt keine State-Datei ein.
+
+## Offline-Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+Der DDG-Smoke-Test ist standardmäßig übersprungen. Er wird nur mit
+`SERVICE_SONAR_RUN_DDG_SMOKE=1` und ausdrücklich erlaubtem Netzwerkzugriff aktiviert.
